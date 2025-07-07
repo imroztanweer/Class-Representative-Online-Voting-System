@@ -112,20 +112,24 @@ A complete \*\*Class Representative Online Voting System\*\* built, designed and
 
 4\. Access via http://localhost:5000
 
+
+---
+
+
 \## Test Data
 
 Admin
 
-uname: admin
+\- \*\*uname\*\*: admin
 
-pass: admin
+\- \*\*pass\*\*: admin
 
 
 Student
 
-uname: S1001
+\- \*\*uname\*\*: S1001
 
-pass: alice123
+\- \*\*pass\*\*: alice123
 
 👤 Author
 
