@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Cast Your Vote</h2>
+
+<form method="POST" action="{{ url_for('submit_vote') }}">
+  {% for position, candidates in grouped.items() %}
+    <fieldset style="margin-bottom: 2rem;">
+      <legend><strong>{{ position }}</strong></legend>
+
+      {% for candidate in candidates %}
+        <div class="candidate">
+          <label>
+            <input type="radio" name="position_{{ candidate.position_id }}" value="{{ candidate.id }}" required>
+            {{ candidate.name }}
+          </label>
+        </div>
+      {% endfor %}
+    </fieldset>
+  {% endfor %}
+
+  <button type="submit">Submit Vote</button>
+</form>
+{% endblock %}

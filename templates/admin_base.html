@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="admin-dashboard">
+  <nav class="admin-sidebar">
+    <ul>
+      <li><a href="{{ url_for('admin_dashboard') }}" class="{% if request.endpoint == 'admin_dashboard' %}active{% endif %}">Dashboard Home</a></li>
+      <li><a href="{{ url_for('manage_positions') }}" class="{% if request.endpoint == 'manage_positions' %}active{% endif %}">Manage Positions</a></li>
+      <li><a href="{{ url_for('manage_candidates') }}" class="{% if request.endpoint == 'manage_candidates' %}active{% endif %}">Manage Candidates</a></li>
+      <li><a href="{{ url_for('election_settings') }}" class="{% if request.endpoint == 'election_settings' %}active{% endif %}">Election Settings</a></li>
+      <li><a href="{{ url_for('audit_log') }}" class="{% if request.endpoint == 'audit_log' %}active{% endif %}">Audit Log</a></li>
+      <li><a href="{{ url_for('logout') }}">Logout</a></li>
+    </ul>
+  </nav>
+
+  <main class="admin-main-content">
+    {% block admin_content %}{% endblock %}
+  </main>
+</div>
+
+<style>
+.admin-dashboard {
+  display: flex;
+  min-height: 80vh;
+}
+
+.admin-sidebar {
+  width: 220px;
+  background-color: #b3d4fc;
+  padding: 1rem;
+  border-radius: 8px 0 0 8px;
+  box-shadow: inset -3px 0 6px rgba(0,0,0,0.1);
+}
+
+.admin-sidebar ul {
+  list-style: none;
+  padding-left: 0;
+}
+
+.admin-sidebar li {
+  margin-bottom: 1rem;
+}
+
+.admin-sidebar a {
+  text-decoration: none;
+  font-weight: 600;
+  color: #003366;
+  display: block;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  transition: background-color 0.25s ease;
+}
+
+.admin-sidebar a.active,
+.admin-sidebar a:hover {
+  background-color: #79b1ff;
+  color: white;
+}
+
+.admin-main-content {
+  flex-grow: 1;
+  padding: 1.5rem 2rem;
+  background: var(--bg-color, #f9fbff);
+  border-radius: 0 8px 8px 0;
+  box-shadow: 0 0 10px rgba(0,0,0,0.05);
+}
+</style>
+{% endblock %}

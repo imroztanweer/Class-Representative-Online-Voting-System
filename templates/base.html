@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{{ title if title else "SASTRA Class Representative Voting" }}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="{{ body_class if body_class else '' }}">
+  <nav class="navbar">
+    <div class="nav-left">
+      <img src="{{ url_for('static', filename='logo.png') }}" alt="SASTRA Logo" class="logo" />
+      <span class="nav-title">SASTRA Class Representative Voting</span>
+    </div>
+    <div class="nav-right">
+      {% if session.get('user') %}
+        <span class="nav-user">Hello, {{ session.get('name', session.get('user')) }}</span>
+        <a href="{{ url_for('logout') }}" class="nav-link">Logout</a>
+      {% endif %}
+      <!-- Toggle Switch -->
+      <label class="switch" title="Toggle Dark Mode">
+        <input type="checkbox" id="theme-toggle" />
+        <span class="slider round"></span>
+      </label>
+    </div>
+  </nav>
+
+  <main class="container">
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <ul class="flash-messages">
+          {% for msg in messages %}
+            <li>{{ msg }}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    {% endwith %}
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer>
+    Designed by Imroz for SASTRA Project
+  </footer>
+
+  <script>
+    const toggleCheckbox = document.getElementById('theme-toggle');
+    const htmlEl = document.documentElement;
+
+    function setTheme(theme) {
+      htmlEl.setAttribute('data-theme', theme);
+      toggleCheckbox.checked = theme === 'dark';
+      localStorage.setItem('theme', theme);
+    }
+
+    // Detect system preference only on first visit
+    const savedTheme = localStorage.getItem('theme');
+    const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+    setTheme(savedTheme || (prefersDark ? 'dark' : 'light'));
+
+    toggleCheckbox.addEventListener('change', () => {
+      const theme = toggleCheckbox.checked ? 'dark' : 'light';
+      setTheme(theme);
+    });
+  </script>
+</body>
+</html>

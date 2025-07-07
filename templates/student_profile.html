@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Student Profile</h2>
+
+<div>
+  <p><strong>Name:</strong> {{ session.name }}</p>
+  <p><strong>Registration Number:</strong> {{ session.user }}</p>
+  <p><strong>Course:</strong> {{ session.course }}</p>
+  <p><strong>Batch:</strong> {{ session.batch }}</p>
+  <p><strong>Voting Status:</strong> {% if session.voted %}Voted{% else %}Not Voted{% endif %}</p>
+</div>
+
+<hr />
+
+<h3>Change Password</h3>
+<form method="POST" action="{{ url_for('change_password') }}">
+  <label for="current_password">Current Password:</label>
+  <input type="password" id="current_password" name="current_password" required />
+
+  <label for="new_password">New Password:</label>
+  <input type="password" id="new_password" name="new_password" required />
+
+  <button type="submit">Change Password</button>
+</form>
+
+<a href="{{ url_for('vote') }}"><button>Back to Vote Page</button></a>
+{% endblock %}

@@ -1,0 +1,23 @@
+{% extends "admin_base.html" %}
+{% block admin_content %}
+<h1>Election Settings</h1>
+
+<form method="POST">
+  <div style="margin-bottom: 1rem;">
+    <label for="title"><strong>Election Title:</strong></label><br />
+    <input type="text" id="title" name="title" value="{{ election.title }}" required />
+  </div>
+
+  <div style="margin-bottom: 1rem;">
+    <label for="start"><strong>Start Date & Time:</strong></label><br />
+    <input type="datetime-local" id="start" name="start" value="{{ election.start_date }}" required />
+  </div>
+
+  <div style="margin-bottom: 1rem;">
+    <label for="deadline"><strong>Deadline:</strong></label><br />
+    <input type="datetime-local" id="deadline" name="deadline" value="{{ election.deadline }}" required />
+  </div>
+
+  <button type="submit">Update Election Settings</button>
+</form>
+{% endblock %}

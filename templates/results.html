@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Election Results</h2>
+
+{% if results %}
+  {% for position, candidates in results.items() %}
+    <h3>{{ position }}</h3>
+    <table>
+      <tr>
+        <th>Candidate</th>
+        <th>Votes</th>
+      </tr>
+      {% for c in candidates %}
+        <tr>
+          <td>{{ c.candidate or 'N/A' }}</td>
+          <td>{{ c.votes }}</td>
+        </tr>
+      {% endfor %}
+    </table>
+    <br>
+  {% endfor %}
+{% else %}
+  <p>No results available yet.</p>
+{% endif %}
+
+<a href="{{ url_for('admin_dashboard' if session.user == 'admin' else 'student_dashboard') }}">
+  <button>Back to Dashboard</button>
+</a>
+{% endblock %}

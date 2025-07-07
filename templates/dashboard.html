@@ -1,0 +1,41 @@
+{% extends "admin_base.html" %}
+{% block admin_content %}
+
+<h1 style="color: black;">Admin Dashboard</h1>
+
+<div class="info-box" style="color: black;">
+  <p><strong>Total Voters:</strong> {{ total }}</p>
+  <p><strong>Voted:</strong> {{ voted }}</p>
+</div>
+
+<h3 style="color: black;">Voter List:</h3>
+<table style="color: black;">
+  <thead>
+    <tr>
+      <th>Reg No</th>
+      <th>Name</th>
+      <th>Course</th>
+      <th>Batch</th>
+      <th>Voted</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for s in students %}
+    <tr>
+      <td>{{ s.regno }}</td>
+      <td>{{ s.name }}</td>
+      <td>{{ s.course }}</td>
+      <td>{{ s.batch }}</td>
+      <td>
+        {% if s.voted %}
+          <span style="color:limegreen;">Yes</span>
+        {% else %}
+          <span style="color:crimson;">No</span>
+        {% endif %}
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+{% endblock %}

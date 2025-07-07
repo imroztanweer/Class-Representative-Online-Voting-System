@@ -1,0 +1,43 @@
+{% extends "admin_base.html" %}
+{% block admin_content %}
+<h1>Manage Positions</h1>
+
+<h3>Add New Position</h3>
+<form method="POST">
+  <input type="hidden" name="action" value="add">
+  <input type="text" name="name" placeholder="Position Name" required>
+  <button type="submit">Add</button>
+</form>
+
+<hr>
+
+<h3>Existing Positions</h3>
+<table>
+  <thead>
+    <tr><th>Name</th><th>Actions</th></tr>
+  </thead>
+  <tbody>
+    {% for pos in positions %}
+    <tr>
+      <td>{{ pos.name }}</td>
+      <td>
+        <!-- Edit form -->
+        <form method="POST" style="display:inline;">
+          <input type="hidden" name="action" value="edit">
+          <input type="hidden" name="id" value="{{ pos.id }}">
+          <input type="text" name="name" value="{{ pos.name }}" required>
+          <button type="submit">Update</button>
+        </form>
+
+        <!-- Delete form -->
+        <form method="POST" style="display:inline;">
+          <input type="hidden" name="action" value="delete">
+          <input type="hidden" name="id" value="{{ pos.id }}">
+          <button type="submit" onclick="return confirm('Are you sure?')">Delete</button>
+        </form>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}
