@@ -1,0 +1,206 @@
+{% extends "admin_base.html" %}
+{% block admin_content %}
+
+<h2>Live Vote Count</h2>
+
+{% if vote_data %}
+  <style>
+    .charts-wrapper {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-around;
+      gap: 2rem;
+      margin-bottom: 2rem;
+    }
+    .chart-block {
+      width: 100%;
+      margin-bottom: 3rem;
+    }
+    .chart-title {
+      text-align: center;
+      margin-bottom: 1rem;
+      font-size: 1.2rem;
+      color: #fff;
+      font-weight: bold;
+    }
+    .chart-container {
+      flex: 1 1 45%;
+      max-width: 45%;
+      min-width: 300px;
+      padding: 1rem;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 15px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.2);
+      backdrop-filter: blur(8px);
+      margin: auto;
+    }
+    canvas {
+      width: 100% !important;
+      height: auto !important;
+      max-height: 300px;
+    }
+    @media (max-width: 768px) {
+      .chart-container {
+        max-width: 100%;
+      }
+      canvas {
+        max-height: 250px;
+      }
+    }
+  </style>
+
+  {% set ns = namespace(grouped={}) %}
+  {% for item in vote_data %}
+    {% set pos = item.position %}
+    {% if pos not in ns.grouped %}
+      {% set _ = ns.grouped.update({ pos: [] }) %}
+    {% endif %}
+    {% set _ = ns.grouped[pos].append(item) %}
+  {% endfor %}
+
+  <div class="charts-wrapper">
+    {% for pos, items in ns.grouped.items() %}
+      <div class="chart-block">
+        <h3 class="chart-title">{{ pos }}</h3>
+        <div class="chart-container">
+          <canvas id="chart-{{ loop.index }}"></canvas>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+
+  <script src="{{ url_for('static', filename='chart.min.js') }}"></script>
+  <script>
+    {% for pos, items in ns.grouped.items() %}
+      const ctx{{ loop.index }} = document.getElementById('chart-{{ loop.index }}').getContext('2d');
+      new Chart(ctx{{ loop.index }}, {
+        type: 'bar',
+        data: {
+          labels: [{% for item in items %}"{{ item.candidate }}",{% endfor %}],
+          datasets: [{
+            label: 'Votes',
+            data: [{% for item in items %}{{ item.votes }},{% endfor %}],
+            backgroundColor: [
+              'rgba(255, 99, 132, 0.5)',
+              'rgba(54, 162, 235, 0.5)',
+              'rgba(255, 206, 86, 0.5)',
+              'rgba(75, 192, 192, 0.5)',
+              'rgba(153, 102, 255, 0.5)',
+              'rgba(255, 159, 64, 0.5)'
+            ],
+            borderColor: [
+              'rgba(255, 99, 132, 1)',
+              'rgba(54, 162, 235, 1)',
+              'rgba(255, 206, 86, 1)',
+              'rgba(75, 192, 192, 1)',
+              'rgba(153, 102, 255, 1)',
+              'rgba(255, 159, 64, 1)'
+            ],
+            borderWidth: 1,
+            borderRadius: 6
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            y: {
+              beginAtZero: true,
+              ticks: { precision: 0 }
+            }
+          },
+          plugins: {
+            legend: { display: false }
+          }
+        }
+      });
+    {% endfor %}
+  </script>
+{% else %}
+  <p>No vote data available yet.</p>
+{% endif %}
+
+<hr>
+
+<h3>All Ballots</h3>
+<table class="glass-table">
+  <thead>
+    <tr>
+      <th>Vote ID</th>
+      <th>Student Reg No</th>
+      <th>Candidate</th>
+      <th>Position</th>
+      <th>Timestamp</th>
+      <th>Action</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for vote in ballots %}
+    <tr>
+      <td>{{ vote.id }}</td>
+      <td>{{ vote.student_regno }}</td>
+      <td>{{ vote.candidate }}</td>
+      <td>{{ vote.position }}</td>
+      <td>{{ vote.timestamp }}</td>
+      <td>
+        <form action="{{ url_for('admin_delete_vote', vote_id=vote.id) }}" method="POST" onsubmit="return confirmDelete(this);">
+          <input type="text" name="remark" placeholder="Reason" required class="remark-input">
+          <button type="submit" class="btn-danger">Delete</button>
+        </form>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<script>
+  function confirmDelete(form) {
+    const reason = form.querySelector('input[name="remark"]').value.trim();
+    if (!reason) {
+      alert("Please enter a remark before deleting.");
+      return false;
+    }
+    return confirm("Are you sure you want to delete this vote?");
+  }
+</script>
+
+<style>
+  .glass-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 4px 30px rgba(0,0,0,0.1);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+
+  .glass-table th, .glass-table td {
+    padding: 10px;
+    text-align: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .btn-danger {
+    padding: 6px 12px;
+    background-color: #e74c3c;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    cursor: pointer;
+  }
+
+  .btn-danger:hover {
+    background-color: #c0392b;
+  }
+
+  .remark-input {
+    width: 120px;
+    padding: 4px;
+    margin-right: 6px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+  }
+</style>
+
+{% endblock %}

@@ -2,12 +2,14 @@
 {% block content %}
 <div class="admin-dashboard">
   <nav class="admin-sidebar">
-    <ul>
+    <button class="hamburger-toggle" onclick="toggleMenu()">☰ Admin Tools</button>
+    <ul id="adminMenu">
       <li><a href="{{ url_for('admin_dashboard') }}" class="{% if request.endpoint == 'admin_dashboard' %}active{% endif %}">Dashboard Home</a></li>
       <li><a href="{{ url_for('manage_positions') }}" class="{% if request.endpoint == 'manage_positions' %}active{% endif %}">Manage Positions</a></li>
       <li><a href="{{ url_for('manage_candidates') }}" class="{% if request.endpoint == 'manage_candidates' %}active{% endif %}">Manage Candidates</a></li>
       <li><a href="{{ url_for('election_settings') }}" class="{% if request.endpoint == 'election_settings' %}active{% endif %}">Election Settings</a></li>
       <li><a href="{{ url_for('audit_log') }}" class="{% if request.endpoint == 'audit_log' %}active{% endif %}">Audit Log</a></li>
+      <li><a href="{{ url_for('admin_votes') }}" class="{% if request.endpoint == 'admin_votes' %}active{% endif %}">Live Vote Count</a></li>
       <li><a href="{{ url_for('logout') }}">Logout</a></li>
     </ul>
   </nav>
@@ -20,24 +22,51 @@
 <style>
 .admin-dashboard {
   display: flex;
-  min-height: 80vh;
+  min-height: 100vh;
+  margin: 0;
 }
 
 .admin-sidebar {
   width: 220px;
   background-color: #b3d4fc;
   padding: 1rem;
-  border-radius: 8px 0 0 8px;
+  border-radius: 0;
   box-shadow: inset -3px 0 6px rgba(0,0,0,0.1);
+  min-height: 100vh;
+  margin-left: 0;
+}
+
+.hamburger-toggle {
+  background-color: #003366;
+  color: white;
+  border: none;
+  padding: 0.6rem 1rem;
+  font-weight: bold;
+  font-size: 1rem;
+  width: 100%;
+  text-align: left;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-bottom: 1rem;
+  transition: background-color 0.3s;
+}
+
+.hamburger-toggle:hover {
+  background-color: #002244;
 }
 
 .admin-sidebar ul {
   list-style: none;
   padding-left: 0;
+  margin: 0;
+}
+
+.admin-sidebar ul.collapsed {
+  display: none;
 }
 
 .admin-sidebar li {
-  margin-bottom: 1rem;
+  margin-bottom: 0.8rem;
 }
 
 .admin-sidebar a {
@@ -60,8 +89,39 @@
   flex-grow: 1;
   padding: 1.5rem 2rem;
   background: var(--bg-color, #f9fbff);
-  border-radius: 0 8px 8px 0;
   box-shadow: 0 0 10px rgba(0,0,0,0.05);
+  border-radius: 0;
+}
+
+/* Responsive sidebar for small screens */
+@media (max-width: 768px) {
+  .admin-dashboard {
+    flex-direction: column;
+  }
+
+  .admin-sidebar {
+    width: 100%;
+  }
+
+  .admin-main-content {
+    width: 100%;
+  }
 }
 </style>
+
+<script>
+function toggleMenu() {
+  const menu = document.getElementById("adminMenu");
+  const isCollapsed = menu.classList.toggle("collapsed");
+  localStorage.setItem("adminMenuCollapsed", isCollapsed);
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+  const menu = document.getElementById("adminMenu");
+  const isCollapsed = localStorage.getItem("adminMenuCollapsed") === "true";
+  if (isCollapsed) {
+    menu.classList.add("collapsed");
+  }
+});
+</script>
 {% endblock %}

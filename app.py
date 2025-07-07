@@ -125,8 +125,8 @@ def student_dashboard():
     leaders = db.execute("""
         SELECT p.name AS position, c.name AS candidate, COUNT(b.id) as votes
         FROM positions p
-        LEFT JOIN candidates c ON p.id = c.position_id
-        LEFT JOIN ballots b ON c.id = b.candidate_id AND p.id = b.position_id
+        JOIN candidates c ON p.id = c.position_id
+        LEFT JOIN ballots b ON c.id = b.candidate_id
         GROUP BY p.id, c.id
         ORDER BY p.id, votes DESC
     """).fetchall()
@@ -138,6 +138,7 @@ def student_dashboard():
                            started=started,
                            leaders=leaders,
                            session=session)
+
 
 @app.route('/vote')
 @login_required
@@ -197,7 +198,8 @@ def ballot_summary():
     """, (student,)).fetchall()
     db.close()
 
-    return render_template('ballot.html', summary=summary)
+    # Fixed template name here
+    return render_template('ballot_summary.html', summary=summary)
 
 # -------- Admin Dashboard and Management --------
 
@@ -344,6 +346,157 @@ def admin_delete_vote(vote_id):
         return redirect(url_for('admin_dashboard'))
 
     return render_template('admin_delete_vote.html', vote=vote)
+
+@app.route('/add_student', methods=['GET', 'POST'])
+@admin_required
+def add_student():
+    if request.method == 'POST':
+        name = request.form.get('name')
+        course = request.form.get('course')
+        batch = request.form.get('batch')
+
+        if not (name and course and batch):
+            flash("All fields are required.")
+            return redirect(url_for('add_student'))
+
+        db = get_db()
+        prefix = f"{course.upper()}{batch}_"
+        last = db.execute("SELECT regno FROM students WHERE regno LIKE ? ORDER BY regno DESC LIMIT 1", (prefix + '%',)).fetchone()
+        if last:
+            try:
+                last_num = int(last['regno'].split('_')[-1])
+                next_num = last_num + 1
+            except:
+                next_num = 1001
+        else:
+            next_num = 1001
+
+        new_regno = f"{prefix}{next_num}"
+        default_pw_hash = generate_password_hash("voter123")
+
+        db.execute("INSERT INTO students (regno, name, course, batch, password, voted) VALUES (?, ?, ?, ?, ?, 0)",
+                   (new_regno, name, course, batch, default_pw_hash))
+        db.commit()
+        db.close()
+
+        flash(f"Student '{name}' added with Reg No: {new_regno} and default password 'voter123'.")
+        return redirect(url_for('admin_dashboard'))
+
+    return render_template('add_student.html')
+
+
+@app.route('/edit_student/<regno>', methods=['GET', 'POST'])
+@admin_required
+def edit_student(regno):
+    db = get_db()
+    student = db.execute("SELECT * FROM students WHERE regno = ?", (regno,)).fetchone()
+
+    if not student:
+        flash("Student not found.")
+        return redirect(url_for('admin_dashboard'))
+
+    if request.method == 'POST':
+        name = request.form.get('name')
+        course = request.form.get('course')
+        batch = request.form.get('batch')
+        if name and course and batch:
+            db.execute("UPDATE students SET name = ?, course = ?, batch = ? WHERE regno = ?",
+                       (name, course, batch, regno))
+            db.commit()
+            db.close()
+            flash("Student updated.")
+            return redirect(url_for('admin_dashboard'))
+
+    db.close()
+    return render_template('edit_student.html', student=student)
+
+
+@app.route('/delete_student/<regno>', methods=['POST'])
+@admin_required
+def delete_student(regno):
+    db = get_db()
+    db.execute("DELETE FROM students WHERE regno = ?", (regno,))
+    db.commit()
+    db.close()
+    flash(f"Deleted student: {regno}")
+    return redirect(url_for('admin_dashboard'))
+
+@app.route('/admin/votes')
+@admin_required
+def admin_votes():
+    db = get_db()
+
+    # Fetch vote count per candidate
+    vote_data = db.execute("""
+        SELECT c.name AS candidate, COUNT(b.id) as votes
+        FROM candidates c
+        LEFT JOIN ballots b ON c.id = b.candidate_id
+        GROUP BY c.id
+        ORDER BY votes DESC
+    """).fetchall()
+
+    # Fetch individual ballots
+    ballots = db.execute("""
+        SELECT b.id, b.student_regno, c.name as candidate, p.name as position, b.timestamp
+        FROM ballots b
+        JOIN candidates c ON b.candidate_id = c.id
+        JOIN positions p ON b.position_id = p.id
+        ORDER BY b.timestamp DESC
+    """).fetchall()
+
+    db.close()
+
+    return render_template('admin_votes.html', vote_data=vote_data, ballots=ballots)
+
+@app.route('/live_vote_count')
+@login_required
+def live_vote_count():
+    db = get_db()
+    # Get vote counts grouped by candidate and position, descending by votes
+    data = db.execute("""
+        SELECT p.name as position, c.name as candidate, COUNT(b.id) as votes
+        FROM positions p
+        LEFT JOIN candidates c ON p.id = c.position_id
+        LEFT JOIN ballots b ON c.id = b.candidate_id AND b.position_id = p.id
+        GROUP BY p.id, c.id
+        ORDER BY p.id, votes DESC
+    """).fetchall()
+    db.close()
+
+    # Organize data by position for template use
+    results_by_position = {}
+    for row in data:
+        pos = row['position']
+        if pos not in results_by_position:
+            results_by_position[pos] = []
+        results_by_position[pos].append({'candidate': row['candidate'], 'votes': row['votes']})
+
+    return render_template('live_vote_count.html', results=results_by_position)
+
+@app.route('/student/live_vote_count')
+@login_required
+def student_live_vote_count():
+    db = get_db()
+    data = db.execute("""
+        SELECT p.name as position, c.name as candidate, COUNT(b.id) as votes
+        FROM positions p
+        LEFT JOIN candidates c ON p.id = c.position_id
+        LEFT JOIN ballots b ON c.id = b.candidate_id AND b.position_id = p.id
+        GROUP BY p.id, c.id
+        ORDER BY p.id, votes DESC
+    """).fetchall()
+    db.close()
+
+    # Structure data grouped by position for template
+    results_by_position = {}
+    for row in data:
+        pos = row['position']
+        if pos not in results_by_position:
+            results_by_position[pos] = []
+        results_by_position[pos].append({'candidate': row['candidate'], 'votes': row['votes']})
+
+    return render_template('live_vote_count.html', results=results_by_position)
+
 
 # ----------- Main -----------
 

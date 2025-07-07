@@ -13,6 +13,7 @@ body {
   display: flex;
   flex-direction: column;
   justify-content: space-between; /* footer stick bottom */
+  overflow-x: hidden;  /* Prevent horizontal scroll on body */
 }
 
 /* Smooth theme transition */
@@ -168,6 +169,7 @@ body:not(.login-page) .container {
   margin: 2rem auto;
   padding: 2rem;
   min-height: auto;
+  overflow-x: auto;  /* <-- Added: allow horizontal scroll if content wider */
 }
 
 /* Footer fixed at bottom and centered */
@@ -182,6 +184,13 @@ footer {
   font-weight: 600;
   box-shadow: 0 -2px 5px rgba(0,0,0,0.2);
   user-select: none;
+}
+
+/* Flash messages */
+.flash-messages {
+  list-style: none;
+  margin-bottom: 1rem;
+  color: #d9534f;
 }
 
 h2, h3, h4 {
@@ -256,12 +265,6 @@ input[type="radio"] {
   margin-right: 0.5rem;
 }
 
-.flash-messages {
-  list-style: none;
-  margin-bottom: 1rem;
-  color: #d9534f;
-}
-
 @media (max-width: 600px) {
   .container {
     margin: 2rem 1rem 2rem;
@@ -299,6 +302,7 @@ input[type="radio"] {
   box-sizing: border-box;
   font-size: 1rem;
 }
+
 /* Ensure readable text inside info-box and tables when background is light in dark mode */
 html[data-theme='dark'] .info-box,
 html[data-theme='dark'] table td,
@@ -308,4 +312,35 @@ html[data-theme='dark'] h2,
 html[data-theme='dark'] h3,
 html[data-theme='dark'] h4 {
   color: #111 !important;  /* Dark text to contrast white/light backgrounds */
+}
+/* Add spacing around hr to avoid overlap with buttons and headings */
+hr {
+  margin-top: 1.5rem;
+  margin-bottom: 1.5rem;
+  border: 1px solid var(--button-bg);
+  border-style: solid;
+  border-width: 1px 0 0 0; /* only top border for subtle line */
+}
+.nav-left .logo {
+  background-color: white;
+  padding: 4px 8px;        /* Add some padding around the logo */
+  border-radius: 6px;      /* Rounded corners for smoothness */
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15); /* subtle shadow for depth */
+  height: 40px;            /* keep original height */
+  width: auto;             /* maintain aspect ratio */
+  display: block;          /* remove inline quirks */
+}
+.login-container {
+  max-width: 400px;
+  margin: 5rem auto 2rem;
+  padding: 2rem 3rem;
+  background: var(--glass-bg);
+  border-radius: 15px;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 60vh;
 }

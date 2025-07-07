@@ -1,42 +1,19 @@
-{% extends "base.html" %}
-{% block content %}
-<h2>Edit Students</h2>
+{% extends "admin_base.html" %}
+{% block admin_content %}
+<h2>Edit Student - {{ student.regno }}</h2>
 
-<table style="width:100%; border-collapse: collapse; margin-bottom: 2rem;">
-  <thead>
-    <tr>
-      <th style="border-bottom: 2px solid var(--border-color); padding: 0.5rem;">Reg No</th>
-      <th style="border-bottom: 2px solid var(--border-color); padding: 0.5rem;">Name</th>
-      <th style="border-bottom: 2px solid var(--border-color); padding: 0.5rem;">Course</th>
-      <th style="border-bottom: 2px solid var(--border-color); padding: 0.5rem;">Batch</th>
-      <th style="border-bottom: 2px solid var(--border-color); padding: 0.5rem;">Actions</th>
-    </tr>
-  </thead>
-  <tbody>
-    {% for student in students %}
-    <tr>
-      <form method="POST" action="{{ url_for('edit_student') }}">
-        <td style="padding: 0.5rem;">
-          <input type="text" name="regno" value="{{ student['regno'] }}" readonly />
-        </td>
-        <td style="padding: 0.5rem;">
-          <input type="text" name="name" value="{{ student['name'] }}" required />
-        </td>
-        <td style="padding: 0.5rem;">
-          <input type="text" name="course" value="{{ student['course'] }}" required />
-        </td>
-        <td style="padding: 0.5rem;">
-          <input type="text" name="batch" value="{{ student['batch'] }}" required />
-        </td>
-        <td style="padding: 0.5rem; text-align:center;">
-          <button type="submit">Update</button>
-        </td>
-      </form>
-    </tr>
-    {% endfor %}
-  </tbody>
-</table>
+<form method="POST" class="glass-box">
+  <label>Name:</label>
+  <input type="text" name="name" value="{{ student.name }}" required>
 
-<a href="{{ url_for('dashboard') }}"><button>Back to Dashboard</button></a>
+  <label>Course:</label>
+  <input type="text" name="course" value="{{ student.course }}" required>
 
+  <label>Batch:</label>
+  <input type="text" name="batch" value="{{ student.batch }}" required>
+
+  <button type="submit">Update Student</button>
+</form>
+
+<p><a href="{{ url_for('admin_dashboard') }}">← Back to Dashboard</a></p>
 {% endblock %}

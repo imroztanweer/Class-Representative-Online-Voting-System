@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="student-dashboard">
+  <nav class="student-sidebar">
+    <button class="hamburger-toggle" onclick="toggleStudentMenu()">☰ Student Menu</button>
+    <ul id="studentMenu">
+      <li><a href="{{ url_for('student_dashboard') }}" class="{% if request.endpoint == 'student_dashboard' %}active{% endif %}">Dashboard Home</a></li>
+      <li><a href="{{ url_for('ballot_summary') }}" class="{% if request.endpoint == 'ballot_summary' %}active{% endif %}">View Your Ballot</a></li>
+      <li><a href="{{ url_for('live_vote_count') }}" class="{% if request.endpoint == 'live_vote_count' %}active{% endif %}">Live Vote Count</a></li>
+      <li><a href="{{ url_for('results') }}" class="{% if request.endpoint == 'results' %}active{% endif %}">Live Leaderboard</a></li>
+      <li><a href="{{ url_for('logout') }}">Logout</a></li>
+    </ul>
+  </nav>
+
+  <main class="student-main-content">
+    {% block student_content %}{% endblock %}
+  </main>
+</div>
+
+<style>
+.student-dashboard {
+  display: flex;
+  min-height: 100vh;
+  margin: 0;
+}
+
+.student-sidebar {
+  width: 220px;
+  background-color: #b3d4fc;
+  padding: 1rem;
+  border-radius: 0;
+  box-shadow: inset -3px 0 6px rgba(0,0,0,0.1);
+  min-height: 100vh;
+  margin-left: 0;
+}
+
+.hamburger-toggle {
+  background-color: #003366;
+  color: white;
+  border: none;
+  padding: 0.6rem 1rem;
+  font-weight: bold;
+  font-size: 1rem;
+  width: 100%;
+  text-align: left;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-bottom: 1rem;
+  transition: background-color 0.3s;
+}
+
+.hamburger-toggle:hover {
+  background-color: #002244;
+}
+
+.student-sidebar ul {
+  list-style: none;
+  padding-left: 0;
+  margin: 0;
+}
+
+.student-sidebar ul.collapsed {
+  display: none;
+}
+
+.student-sidebar li {
+  margin-bottom: 0.8rem;
+}
+
+.student-sidebar a {
+  text-decoration: none;
+  font-weight: 600;
+  color: #003366;
+  display: block;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  transition: background-color 0.25s ease;
+}
+
+.student-sidebar a.active,
+.student-sidebar a:hover {
+  background-color: #79b1ff;
+  color: white;
+}
+
+.student-main-content {
+  flex-grow: 1;
+  padding: 1.5rem 2rem;
+  background: var(--bg-color, #f9fbff);
+  box-shadow: 0 0 10px rgba(0,0,0,0.05);
+  border-radius: 0;
+}
+
+/* Responsive sidebar for small screens */
+@media (max-width: 768px) {
+  .student-dashboard {
+    flex-direction: column;
+  }
+
+  .student-sidebar {
+    width: 100%;
+  }
+
+  .student-main-content {
+    width: 100%;
+  }
+}
+</style>
+
+<script>
+function toggleStudentMenu() {
+  const menu = document.getElementById("studentMenu");
+  const isCollapsed = menu.classList.toggle("collapsed");
+  localStorage.setItem("studentMenuCollapsed", isCollapsed);
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+  const menu = document.getElementById("studentMenu");
+  const isCollapsed = localStorage.getItem("studentMenuCollapsed") === "true";
+  if (isCollapsed) {
+    menu.classList.add("collapsed");
+  }
+});
+</script>
+{% endblock %}

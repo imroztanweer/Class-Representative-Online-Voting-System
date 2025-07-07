@@ -1,0 +1,29 @@
+{% extends "student_base.html" %}
+
+{% block student_content %}
+
+<h2>Your Ballot Summary</h2>
+
+{% if summary %}
+  <table style="width:100%; border-collapse: collapse; margin-top: 1rem;">
+    <thead>
+      <tr style="background-color: #b3d4fc; color: #003366;">
+        <th style="padding: 0.5rem; border: 1px solid #ccc; text-align: left;">Position</th>
+        <th style="padding: 0.5rem; border: 1px solid #ccc; text-align: left;">Candidate</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for item in summary %}
+      <tr>
+        <td style="padding: 0.5rem; border: 1px solid #ccc;">{{ item.position }}</td>
+        <td style="padding: 0.5rem; border: 1px solid #ccc;">{{ item.candidate }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% else %}
+  <p>You have not voted yet.</p>
+  <a href="{{ url_for('vote') }}"><button>Cast Your Vote</button></a>
+{% endif %}
+
+{% endblock %}

@@ -1,6 +1,7 @@
-{% extends "base.html" %}
-{% block content %}
-<h2>Election Results</h2>
+{% extends "student_base.html" %}
+
+{% block student_content %}
+<h2>Live Leaderboard</h2>
 
 {% if results %}
   {% for position, candidates in results.items() %}
@@ -22,8 +23,4 @@
 {% else %}
   <p>No results available yet.</p>
 {% endif %}
-
-<a href="{{ url_for('admin_dashboard' if session.user == 'admin' else 'student_dashboard') }}">
-  <button>Back to Dashboard</button>
-</a>
 {% endblock %}

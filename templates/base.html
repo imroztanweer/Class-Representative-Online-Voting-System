@@ -6,11 +6,160 @@
   <title>{{ title if title else "SASTRA Class Representative Voting" }}</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      font-family: 'Segoe UI', sans-serif;
+      overflow-x: hidden;
+    }
+
+    .navbar {
+      width: 100%;
+      background-color: #003366;
+      color: white;
+      padding: 0.75rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .nav-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .nav-left img.logo {
+      height: 40px;
+    }
+
+    .nav-title {
+      font-size: 1.2rem;
+      font-weight: bold;
+    }
+
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .nav-user {
+      font-weight: bold;
+    }
+
+    .nav-link {
+      color: white;
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 44px;
+      height: 24px;
+    }
+
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #ccc;
+      transition: .4s;
+      border-radius: 24px;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 18px;
+      width: 18px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      transition: .4s;
+      border-radius: 50%;
+    }
+
+    input:checked + .slider {
+      background-color: #2196F3;
+    }
+
+    input:checked + .slider:before {
+      transform: translateX(20px);
+    }
+
+    main {
+      flex: 1;
+      width: 100%;
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 2rem;
+      overflow-x: auto;
+    }
+
+    footer {
+      width: 100%;
+      background-color: #003366;
+      color: white;
+      text-align: center;
+      padding: 1rem;
+      font-size: 0.9rem;
+    }
+
+    .flash-messages {
+      list-style: none;
+      padding: 0;
+      margin: 1rem 0;
+      color: #d8000c;
+      background-color: #ffdddd;
+      border: 1px solid #d8000c;
+      border-radius: 4px;
+    }
+
+    .flash-messages li {
+      padding: 0.5rem 1rem;
+    }
+
+    @media screen and (max-width: 768px) {
+      .navbar {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+      }
+
+      main {
+        padding: 1rem;
+      }
+    }
+  </style>
 </head>
 <body class="{{ body_class if body_class else '' }}">
   <nav class="navbar">
     <div class="nav-left">
-      <img src="{{ url_for('static', filename='logo.png') }}" alt="SASTRA Logo" class="logo" />
+      <div class="logo-box">
+  <img src="{{ url_for('static', filename='logo.png') }}" alt="SASTRA Logo" class="logo" />
+</div>
+
       <span class="nav-title">SASTRA Class Representative Voting</span>
     </div>
     <div class="nav-right">
@@ -18,7 +167,6 @@
         <span class="nav-user">Hello, {{ session.get('name', session.get('user')) }}</span>
         <a href="{{ url_for('logout') }}" class="nav-link">Logout</a>
       {% endif %}
-      <!-- Toggle Switch -->
       <label class="switch" title="Toggle Dark Mode">
         <input type="checkbox" id="theme-toggle" />
         <span class="slider round"></span>
@@ -26,7 +174,7 @@
     </div>
   </nav>
 
-  <main class="container">
+  <main>
     {% with messages = get_flashed_messages() %}
       {% if messages %}
         <ul class="flash-messages">
@@ -36,6 +184,7 @@
         </ul>
       {% endif %}
     {% endwith %}
+
     {% block content %}{% endblock %}
   </main>
 
@@ -53,7 +202,6 @@
       localStorage.setItem('theme', theme);
     }
 
-    // Detect system preference only on first visit
     const savedTheme = localStorage.getItem('theme');
     const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
     setTheme(savedTheme || (prefersDark ? 'dark' : 'light'));

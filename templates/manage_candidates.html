@@ -1,5 +1,6 @@
-{% extends "base.html" %}
-{% block content %}
+{% extends "admin_base.html" %} 
+{% block admin_content %}
+
 <h2>Manage Candidates</h2>
 
 <form method="POST" action="{{ url_for('manage_candidates') }}">
@@ -11,7 +12,7 @@
       <option value="{{ pos.id }}">{{ pos.name }}</option>
     {% endfor %}
   </select>
-  <button type="submit">Add Candidate</button>
+  <button type="submit">➕ Add Candidate</button>
 </form>
 
 <hr>
@@ -49,5 +50,5 @@
   {% endfor %}
 </table>
 
-<a href="{{ url_for('admin_dashboard') }}"><button>Back to Dashboard</button></a>
+<!-- <a href="{{ url_for('admin_dashboard') }}"><button>Back to Dashboard</button></a> --!>
 {% endblock %}
