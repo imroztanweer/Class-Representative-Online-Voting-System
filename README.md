@@ -66,7 +66,7 @@ A complete \*\*Class Representative Online Voting System\*\* built, designed and
 
 \- Unified dark/light theme with toggle switch (🌙/☀️)
 
-\- Navbar with SASTRA logo and title on every page
+\- Navbar with logo and title on every page
 
 \- Footer on all pages: `Designed by Imroz for SASTRA Project`
 
