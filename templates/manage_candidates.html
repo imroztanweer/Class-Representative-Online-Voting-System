@@ -1,54 +1,173 @@
-{% extends "admin_base.html" %} 
+{% extends "admin_base.html" %}
 {% block admin_content %}
 
-<h2>Manage Candidates</h2>
+<div class="glass-container">
+  <h2>🎯 Manage Candidates</h2>
 
-<form method="POST" action="{{ url_for('manage_candidates') }}">
-  <input type="hidden" name="action" value="add">
-  <input type="text" name="name" placeholder="Candidate Name" required>
-  <select name="position_id" required>
-    <option value="" disabled selected>Select Position</option>
-    {% for pos in positions %}
-      <option value="{{ pos.id }}">{{ pos.name }}</option>
-    {% endfor %}
-  </select>
-  <button type="submit">➕ Add Candidate</button>
-</form>
+  <form method="POST" action="{{ url_for('manage_candidates') }}" class="glass-box">
+    <input type="hidden" name="action" value="add">
 
-<hr>
+    <label>Candidate Name:</label>
+    <input type="text" name="name" placeholder="Enter name" required>
 
-<h3>Existing Candidates</h3>
-<table>
-  <tr>
-    <th>Name</th>
-    <th>Position</th>
-    <th>Actions</th>
-  </tr>
-  {% for c in candidates %}
-  <tr>
-    <td>{{ c.name }}</td>
-    <td>{{ c.position }}</td>
-    <td>
-      <form method="POST" action="{{ url_for('manage_candidates') }}" style="display: inline;">
-        <input type="hidden" name="action" value="edit">
-        <input type="hidden" name="id" value="{{ c.id }}">
-        <input type="text" name="name" value="{{ c.name }}" required>
-        <select name="position_id" required>
-          {% for pos in positions %}
-            <option value="{{ pos.id }}" {% if pos.name == c.position %}selected{% endif %}>{{ pos.name }}</option>
-          {% endfor %}
-        </select>
-        <button type="submit">Update</button>
-      </form>
-      <form method="POST" action="{{ url_for('manage_candidates') }}" style="display: inline;">
-        <input type="hidden" name="action" value="delete">
-        <input type="hidden" name="id" value="{{ c.id }}">
-        <button type="submit" onclick="return confirm('Delete this candidate?')">Delete</button>
-      </form>
-    </td>
-  </tr>
-  {% endfor %}
-</table>
+    <label>Position:</label>
+    <select name="position_id" required>
+      <option value="" disabled selected>Select Position</option>
+      {% for pos in positions %}
+        <option value="{{ pos.id }}">{{ pos.name }}</option>
+      {% endfor %}
+    </select>
 
-<!-- <a href="{{ url_for('admin_dashboard') }}"><button>Back to Dashboard</button></a> --!>
+    <button type="submit" class="btn-add">➕ Add Candidate</button>
+  </form>
+
+  <hr>
+
+  <h3>📋 Existing Candidates</h3>
+  <div class="scroll-table">
+    <table class="glass-table">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Position</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for c in candidates %}
+        <tr>
+          <td>{{ c.name }}</td>
+          <td>{{ c.position }}</td>
+          <td>
+            <form method="POST" action="{{ url_for('manage_candidates') }}" style="display:inline-block;">
+              <input type="hidden" name="action" value="edit">
+              <input type="hidden" name="id" value="{{ c.id }}">
+              <input type="text" name="name" value="{{ c.name }}" required>
+              <select name="position_id" required>
+                {% for pos in positions %}
+                  <option value="{{ pos.id }}" {% if pos.name == c.position %}selected{% endif %}>{{ pos.name }}</option>
+                {% endfor %}
+              </select>
+              <button type="submit" class="btn-update">Update</button>
+            </form>
+            <form method="POST" action="{{ url_for('manage_candidates') }}" style="display:inline-block;">
+              <input type="hidden" name="action" value="delete">
+              <input type="hidden" name="id" value="{{ c.id }}">
+              <button type="submit" class="btn-danger" onclick="return confirm('Delete this candidate?')">Delete</button>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<style>
+.glass-box {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(10px);
+  padding: 1.5rem;
+  border-radius: 16px;
+  margin-bottom: 2rem;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+}
+
+.glass-box input[type="text"],
+.glass-box select {
+  width: 100%;
+  padding: 0.6rem;
+  margin-top: 0.4rem;
+  margin-bottom: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text);
+  backdrop-filter: blur(5px);
+}
+
+.btn-add {
+  background-color: #2980b9;
+  color: #fff;
+  padding: 10px 20px;
+  font-weight: bold;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.btn-add:hover {
+  background-color: #1c5986;
+}
+
+.btn-update {
+  background-color: #2ecc71;
+  color: white;
+  padding: 6px 14px;
+  border: none;
+  border-radius: 6px;
+  font-weight: bold;
+  margin-top: 6px;
+  cursor: pointer;
+}
+
+.btn-update:hover {
+  background-color: #27ae60;
+}
+
+.btn-danger {
+  background-color: #e74c3c;
+  color: white;
+  padding: 6px 14px;
+  border: none;
+  border-radius: 6px;
+  font-weight: bold;
+  margin-top: 6px;
+  cursor: pointer;
+}
+
+.btn-danger:hover {
+  background-color: #c0392b;
+}
+
+.scroll-table {
+  overflow-x: auto;
+}
+
+.glass-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.glass-table th, .glass-table td {
+  padding: 0.75rem;
+  text-align: center;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--text);
+}
+
+input[type="text"][name="name"],
+select[name="position_id"] {
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  background: rgba(255, 255, 255, 0.2);
+  color: var(--text);
+  backdrop-filter: blur(5px);
+  transition: 0.2s ease;
+}
+
+input[type="text"][name="name"]:focus,
+select[name="position_id"]:focus {
+  outline: none;
+  border-color: #3f2b96;
+}
+
+</style>
+
 {% endblock %}

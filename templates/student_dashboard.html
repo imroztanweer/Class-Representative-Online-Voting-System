@@ -1,62 +1,137 @@
 {% extends "student_base.html" %}
-
 {% block student_content %}
 
-<header style="background:#b3d4fc; padding:1rem; border-radius:8px; display:flex; justify-content:flex-start; color:#003366; font-weight:600; margin-bottom:1rem;">
-  <div>
-    <p style="margin:0;">Welcome, {{ session.name }}</p>
-    <p style="margin:0; font-size:0.9rem;">
-      Reg No: {{ session.user }} | {{ session.course }} - Batch {{ session.batch }}
-    </p>
-    <p style="margin:0; font-size:0.9rem;">
-      Voting Status:
+<div class="dashboard-cards">
+
+  <!-- Student Info Box -->
+  <div class="glass-box card">
+    <h3>👤 Your Profile</h3>
+    <p><strong>Name:</strong> {{ session.name }}</p>
+    <p><strong>Reg No:</strong> {{ session.user }}</p>
+    <p><strong>Course:</strong> {{ session.course }}</p>
+    <p><strong>Batch:</strong> {{ session.batch }}</p>
+    <p>
+      <strong>Voting Status:</strong>
       {% if session.voted %}
-        <span style="color:green;">Voted</span>
+        <span style="color: limegreen;">Voted ✅</span>
       {% else %}
-        <span style="color:red;">Not Voted</span>
+        <span style="color: crimson;">Not Voted ❌</span>
       {% endif %}
     </p>
   </div>
-</header>
 
-<section style="background:#f5faff; padding:1rem; border-radius:8px; color:#003366; margin-bottom:1rem;">
-  <h3 style="margin-top:0;">{{ election.title }}</h3>
-  <p><strong>Start:</strong> {{ election.start_date }}</p>
-  <p><strong>Deadline:</strong> {{ election.deadline }}</p>
-  <div id="countdown" style="font-weight: bold; margin-top: 0.5rem;"></div>
-</section>
+  <!-- Election Info Box -->
+  <div class="glass-box card">
+    <h3>📅 Election Info</h3>
+    <p><strong>Title:</strong> {{ election.title }}</p>
+    <p><strong>Start:</strong> {{ election.start_date }}</p>
+    <p><strong>Deadline:</strong> {{ election.deadline }}</p>
+    <p id="countdown" style="font-weight: bold; color: #003366;"></p>
+  </div>
 
-<div style="margin-bottom:1rem;">
-  {% if not session.voted and started %}
-    <a href="{{ url_for('vote') }}"><button>Cast Your Vote</button></a>
-  {% elif not started %}
-    <p style="color: gray;">Voting has not started yet.</p>
-  {% endif %}
+  <!-- Vote Action Box -->
+  <div class="glass-box card" style="text-align: center;">
+    {% if not session.voted and started %}
+      <a href="{{ url_for('vote') }}">
+        <button style="padding: 10px 24px; font-size: 1rem;">🗳️ Cast Your Vote</button>
+      </a>
+    {% elif not started %}
+      <p style="color: gray; font-weight: 600;">Voting has not started yet.</p>
+    {% else %}
+      <div class="vote-success">
+        <span class="emoji">🎉</span>
+        <p class="message">Thank you for voting!</p>
+      </div>
+    {% endif %}
+  </div>
+
 </div>
+
+<style>
+.dashboard-cards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  justify-content: space-between;
+}
+
+.card {
+  flex: 1 1 300px;
+  padding: 1.5rem;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(10px);
+  color: var(--text);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  min-width: 280px;
+}
+
+.card h3 {
+  margin-top: 0;
+  margin-bottom: 1rem;
+  font-size: 1.2rem;
+  color: #003366;
+}
+
+.vote-success {
+  background: rgba(0, 128, 0, 0.1);
+  border: 2px solid rgba(0, 128, 0, 0.3);
+  border-radius: 12px;
+  padding: 1rem;
+  margin-top: 1rem;
+  text-align: center;
+  color: limegreen;
+  font-weight: 600;
+  font-size: 1.1rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
+}
+
+.vote-success:hover {
+  transform: scale(1.02);
+}
+
+.vote-success .emoji {
+  font-size: 2rem;
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.vote-success .message {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+@media (max-width: 768px) {
+  .dashboard-cards {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+</style>
 
 <script>
   const deadline = new Date("{{ election.deadline }}").getTime();
-
   function updateCountdown() {
     const now = new Date().getTime();
-    const distance = deadline - now;
+    const dist = deadline - now;
+    const el = document.getElementById("countdown");
 
-    if (distance < 0) {
-      document.getElementById("countdown").innerHTML = "Voting has ended.";
+    if (!el) return;
+
+    if (dist < 0) {
+      el.innerHTML = "⏳ Voting has ended.";
       return;
     }
 
-    const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-    const hrs = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-    const mins = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-    const secs = Math.floor((distance % (1000 * 60)) / 1000);
-
-    document.getElementById("countdown").innerHTML =
-      `Time Remaining: ${days}d ${hrs}h ${mins}m ${secs}s`;
+    const d = Math.floor(dist / (1000 * 60 * 60 * 24));
+    const h = Math.floor((dist % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const m = Math.floor((dist % (1000 * 60 * 60)) / (1000 * 60));
+    el.innerHTML = `⏱️ Time Remaining: ${d}d ${h}h ${m}m`;
   }
 
   updateCountdown();
-  setInterval(updateCountdown, 1000);
+  setInterval(updateCountdown, 60000);  // update every minute
 </script>
 
 {% endblock %}

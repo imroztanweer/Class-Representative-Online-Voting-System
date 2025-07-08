@@ -1,59 +1,174 @@
 {% extends "admin_base.html" %}
 {% block admin_content %}
 
-<h1 style="color: black;">Admin Dashboard</h1>
+<div class="glass-container fade-in">
+  <h1>🛠️ Admin Dashboard</h1>
 
-<div class="info-box" style="color: black;">
-  <p><strong>Total Voters:</strong> {{ total }}</p>
-  <p><strong>Voted:</strong> {{ voted }}</p>
+  <div class="info-box">
+    <p><strong>Total Voters:</strong> {{ total }}</p>
+    <p><strong>Voted:</strong> {{ voted }}</p>
+  </div>
+
+  <div class="cta">
+    <a href="{{ url_for('add_student') }}">
+      <button class="btn-add">➕ Add New Voter</button>
+    </a>
+  </div>
+
+  <h3>Voter List</h3>
+  <table class="glass-table voter-table">
+    <thead>
+      <tr>
+        <th>Reg No</th>
+        <th>Name</th>
+        <th>Course</th>
+        <th>Batch</th>
+        <th>Voted</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for s in students %}
+      <tr>
+        <td>{{ s.regno }}</td>
+        <td>{{ s.name }}</td>
+        <td>{{ s.course }}</td>
+        <td>{{ s.batch }}</td>
+        <td>
+          {% if s.voted %}
+            <span style="color: limegreen;">Yes</span>
+          {% else %}
+            <span style="color: crimson;">No</span>
+          {% endif %}
+        </td>
+        <td>
+          {% if s.regno != 'admin' %}
+            <a href="{{ url_for('edit_student', regno=s.regno) }}">
+              <button class="glass-btn btn-edit">✏️ Edit</button>
+            </a>
+            <form method="POST" action="{{ url_for('delete_student', regno=s.regno) }}" style="display:inline;" onsubmit="return confirm('Are you sure you want to delete this student?');">
+              <button type="submit" class="glass-btn btn-delete">🗑️ Delete</button>
+            </form>
+            <form method="POST" action="{{ url_for('reset_vote', regno=s.regno) }}" style="display:inline;" onsubmit="return confirm('Reset vote for this student?');">
+              <button type="submit" class="glass-btn btn-reset">🔄 Reset</button>
+            </form>
+          {% else %}
+            <span style="color: gray;">—</span>
+          {% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
 </div>
 
-<!-- Add Voter Button -->
-<div style="margin-bottom: 1rem;">
-  <a href="{{ url_for('add_student') }}">
-    <button>➕ Add New Voter</button>
-  </a>
-</div>
+<style>
+  .cta {
+    margin: 1.5rem 0;
+  }
 
-<h3 style="color: black;">Voter List:</h3>
-<table style="color: black; width: 100%;">
-  <thead>
-    <tr>
-      <th>Reg No</th>
-      <th>Name</th>
-      <th>Course</th>
-      <th>Batch</th>
-      <th>Voted</th>
-      <th>Actions</th>
-    </tr>
-  </thead>
-  <tbody>
-    {% for s in students %}
-    <tr>
-      <td>{{ s.regno }}</td>
-      <td>{{ s.name }}</td>
-      <td>{{ s.course }}</td>
-      <td>{{ s.batch }}</td>
-      <td>
-        {% if s.voted %}
-          <span style="color:limegreen;">Yes</span>
-        {% else %}
-          <span style="color:crimson;">No</span>
-        {% endif %}
-      </td>
-      <td>
-        {% if s.regno != 'admin' %}
-          <a href="{{ url_for('edit_student', regno=s.regno) }}" class="button" style="padding: 4px 8px; margin-right: 6px;">✏️ Edit</a>
-          <form method="POST" action="{{ url_for('delete_student', regno=s.regno) }}" style="display:inline;" onsubmit="return confirm('Are you sure you want to delete this student?');">
-            <button type="submit" class="button" style="color: red; background: transparent; border: none; cursor: pointer;">🗑️</button>
-          </form>
-        {% else %}
-          <span style="color: gray;">—</span>
-        {% endif %}
-      </td>
-    </tr>
-    {% endfor %}
-  </tbody>
-</table>
+  .btn-add {
+    padding: 10px 20px;
+    font-size: 1rem;
+    background: var(--button-bg);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transition: 0.3s ease;
+  }
+
+  .btn-add:hover {
+    background-color: #3a65b5;
+  }
+
+  .glass-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 8px 28px rgba(0,0,0,0.12);
+    margin-top: 1.5rem;
+  }
+
+  .glass-table thead {
+    background-color: var(--button-bg);
+  }
+
+  .glass-table th {
+    padding: 14px;
+    color: white;
+    font-size: 0.95rem;
+    font-weight: 600;
+    text-align: center;
+  }
+
+  .glass-table td {
+    padding: 12px;
+    font-size: 0.95rem;
+    color: var(--text);
+    text-align: center;
+    background: rgba(255, 255, 255, 0.03);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .glass-table tr:last-child td {
+    border-bottom: none;
+  }
+
+  .glass-btn {
+    padding: 6px 12px;
+    border: none;
+    border-radius: 8px;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    backdrop-filter: blur(6px);
+    transition: background 0.3s ease;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+    font-size: 0.9rem;
+    margin-right: 6px;
+  }
+
+  .btn-edit {
+    background: rgba(0, 123, 255, 0.7);
+  }
+  .btn-edit:hover {
+    background: rgba(0, 123, 255, 0.9);
+  }
+
+  .btn-delete {
+    background: rgba(220, 53, 69, 0.7);
+  }
+  .btn-delete:hover {
+    background: rgba(220, 53, 69, 0.9);
+  }
+
+  .btn-reset {
+    background: rgba(255, 140, 0, 0.7);
+  }
+  .btn-reset:hover {
+    background: rgba(255, 140, 0, 0.9);
+  }
+
+  @media (max-width: 768px) {
+    .glass-table th, .glass-table td {
+      font-size: 0.85rem;
+      padding: 10px;
+    }
+
+    .btn-add {
+      width: 100%;
+    }
+
+    .glass-btn {
+      margin-bottom: 4px;
+    }
+  }
+</style>
 
 {% endblock %}

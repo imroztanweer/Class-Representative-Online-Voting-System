@@ -1,7 +1,8 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="login-container">
-  <h2>Login</h2>
+<div class="login-container fade-in">
+  <h2 class="login-heading">🔐 Login</h2>
+
   <form method="POST" action="{{ url_for('login') }}" class="login-form">
     <div class="form-group">
       <label for="regno">Registration Number</label>
@@ -13,7 +14,71 @@
       <input type="password" id="password" name="password" required />
     </div>
 
-    <button type="submit">Login</button>
+    <button type="submit" class="votex-login-btn">Login</button>
+
+    {% if error %}
+      <div class="error-message">{{ error }}</div>
+    {% endif %}
   </form>
 </div>
+
+<style>
+.login-container {
+  max-width: 420px;
+  margin: 5rem auto;
+  padding: 2.5rem 2rem;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  backdrop-filter: blur(12px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+  color: var(--text);
+}
+
+.login-heading {
+  text-align: center;
+  font-size: 1.8rem;
+  margin-bottom: 1.5rem;
+  color: var(--text);
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+.form-group label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 0.3rem;
+  color: var(--text);
+}
+
+.form-group input {
+  width: 100%;
+  padding: 0.6rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 1rem;
+  background-color: rgba(255, 255, 255, 0.15);
+  color: var(--text);
+  backdrop-filter: blur(5px);
+  transition: border 0.3s ease;
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: var(--button-bg);
+}
+
+.error-message {
+  margin-top: 1rem;
+  color: #ff4d4f;
+  background: rgba(255, 0, 0, 0.05);
+  border-left: 4px solid #ff4d4f;
+  padding: 0.75rem;
+  border-radius: 8px;
+  font-weight: 500;
+}
+</style>
 {% endblock %}

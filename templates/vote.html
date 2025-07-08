@@ -1,23 +1,90 @@
 {% extends "base.html" %}
 {% block content %}
-<h2>Cast Your Vote</h2>
 
-<form method="POST" action="{{ url_for('submit_vote') }}">
-  {% for position, candidates in grouped.items() %}
-    <fieldset style="margin-bottom: 2rem;">
-      <legend><strong>{{ position }}</strong></legend>
+<div class="vote-container glass-box">
+  <h2>🗳️ Cast Your Vote</h2>
+  <form method="POST" action="{{ url_for('submit_vote') }}">
+    {% for position, candidates in grouped.items() %}
+      <fieldset class="vote-fieldset">
+        <legend class="vote-legend">{{ position }}</legend>
 
-      {% for candidate in candidates %}
-        <div class="candidate">
-          <label>
-            <input type="radio" name="position_{{ candidate.position_id }}" value="{{ candidate.id }}" required>
-            {{ candidate.name }}
-          </label>
-        </div>
-      {% endfor %}
-    </fieldset>
-  {% endfor %}
+        {% for candidate in candidates %}
+          <div class="candidate-option">
+            <label>
+              <input type="radio" name="position_{{ candidate.position_id }}" value="{{ candidate.id }}" required>
+              {{ candidate.name }}
+            </label>
+          </div>
+        {% endfor %}
+      </fieldset>
+    {% endfor %}
 
-  <button type="submit">Submit Vote</button>
-</form>
+    <button type="submit" class="vote-submit-btn">✅ Submit Vote</button>
+  </form>
+</div>
+
+<style>
+.vote-container {
+  max-width: 800px;
+  margin: auto;
+  padding: 2rem;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.07);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  color: var(--text);
+}
+
+.vote-container h2 {
+  text-align: center;
+  margin-bottom: 2rem;
+  color: #003366;
+}
+
+.vote-fieldset {
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  padding: 1rem 1.5rem;
+  margin-bottom: 2rem;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.vote-legend {
+  font-weight: 700;
+  color: #003366;
+  padding: 0 0.5rem;
+  font-size: 1.2rem;
+}
+
+.candidate-option {
+  margin: 0.5rem 0;
+  font-weight: 500;
+}
+
+.candidate-option input[type="radio"] {
+  margin-right: 10px;
+  transform: scale(1.1);
+}
+
+.vote-submit-btn {
+  display: block;
+  margin: 2rem auto 0;
+  padding: 12px 30px;
+  font-size: 1rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 30px;
+  background-color: #003366;
+  color: white;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+
+.vote-submit-btn:hover {
+  background-color: #002244;
+  transform: translateY(-2px);
+}
+</style>
+
 {% endblock %}

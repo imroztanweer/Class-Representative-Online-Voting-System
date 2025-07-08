@@ -1,18 +1,28 @@
 {% extends "base.html" %}
 {% block content %}
 <div class="student-dashboard">
-  <nav class="student-sidebar">
+  <nav class="student-sidebar glass-box">
     <button class="hamburger-toggle" onclick="toggleStudentMenu()">☰ Student Menu</button>
     <ul id="studentMenu">
-      <li><a href="{{ url_for('student_dashboard') }}" class="{% if request.endpoint == 'student_dashboard' %}active{% endif %}">Dashboard Home</a></li>
-      <li><a href="{{ url_for('ballot_summary') }}" class="{% if request.endpoint == 'ballot_summary' %}active{% endif %}">View Your Ballot</a></li>
-      <li><a href="{{ url_for('live_vote_count') }}" class="{% if request.endpoint == 'live_vote_count' %}active{% endif %}">Live Vote Count</a></li>
-      <li><a href="{{ url_for('results') }}" class="{% if request.endpoint == 'results' %}active{% endif %}">Live Leaderboard</a></li>
-      <li><a href="{{ url_for('logout') }}">Logout</a></li>
+      <li>
+        <a href="{{ url_for('student_profile') }}" class="{% if request.endpoint == 'student_profile' %}active{% endif %}">Account Settings</a>
+      </li>
+      <li>
+        <a href="{{ url_for('student_dashboard') }}" class="{% if request.endpoint == 'student_dashboard' %}active{% endif %}">Dashboard Home</a>
+      </li>
+      <li>
+        <a href="{{ url_for('ballot_summary') }}" class="{% if request.endpoint == 'ballot_summary' %}active{% endif %}">View Your Ballot</a>
+      </li>
+      <li>
+        <a href="{{ url_for('live_vote_count') }}" class="{% if request.endpoint == 'live_vote_count' %}active{% endif %}">Live Vote Count</a>
+      </li>
+      <li>
+        <a href="{{ url_for('results') }}" class="{% if request.endpoint == 'results' %}active{% endif %}">Live Leaderboard</a>
+      </li>
     </ul>
   </nav>
 
-  <main class="student-main-content">
+  <main class="student-main-content glass-box">
     {% block student_content %}{% endblock %}
   </main>
 </div>
@@ -20,18 +30,21 @@
 <style>
 .student-dashboard {
   display: flex;
+  flex-direction: row;
+  gap: 1rem;
   min-height: 100vh;
-  margin: 0;
+  padding: 1rem;
+  background: var(--bg);
 }
 
 .student-sidebar {
   width: 220px;
-  background-color: #b3d4fc;
   padding: 1rem;
-  border-radius: 0;
-  box-shadow: inset -3px 0 6px rgba(0,0,0,0.1);
-  min-height: 100vh;
-  margin-left: 0;
+  border-radius: 16px;
+  backdrop-filter: blur(10px);
+  background: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  color: var(--text);
 }
 
 .hamburger-toggle {
@@ -43,7 +56,7 @@
   font-size: 1rem;
   width: 100%;
   text-align: left;
-  border-radius: 6px;
+  border-radius: 8px;
   cursor: pointer;
   margin-bottom: 1rem;
   transition: background-color 0.3s;
@@ -73,8 +86,8 @@
   color: #003366;
   display: block;
   padding: 0.5rem 1rem;
-  border-radius: 4px;
-  transition: background-color 0.25s ease;
+  border-radius: 6px;
+  transition: background-color 0.25s ease, color 0.25s ease;
 }
 
 .student-sidebar a.active,
@@ -85,10 +98,12 @@
 
 .student-main-content {
   flex-grow: 1;
-  padding: 1.5rem 2rem;
-  background: var(--bg-color, #f9fbff);
-  box-shadow: 0 0 10px rgba(0,0,0,0.05);
-  border-radius: 0;
+  padding: 2rem;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(8px);
+  color: var(--text);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.08);
 }
 
 /* Responsive sidebar for small screens */
@@ -99,6 +114,7 @@
 
   .student-sidebar {
     width: 100%;
+    margin-bottom: 1rem;
   }
 
   .student-main-content {

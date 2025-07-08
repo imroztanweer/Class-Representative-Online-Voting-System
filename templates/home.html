@@ -1,0 +1,210 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="home-wrapper container fade-in">
+
+  <div class="hero-glass">
+    <h1>Welcome to VoteX</h1>
+    <p class="tagline">Empowering Campus Elections with Simplicity and Trust</p>
+    <div class="countdown" id="countdown">⏳ Voting ends in: calculating...</div>
+  </div>
+
+  <div class="why-vote">
+    <h2>Why Vote?</h2>
+    <p>Your vote shapes your student leadership. Participate to make your voice heard, your concerns counted, and your choices represented.</p>
+  </div>
+
+  <div class="features-grid">
+    <div class="feature-card glass">
+      <div class="icon">📊</div>
+      <h3>Live Results</h3>
+      <p>Track real-time vote counts for each position as voting progresses.</p>
+    </div>
+
+    <div class="feature-card glass">
+      <div class="icon">🗳️</div>
+      <h3>Cast Your Vote</h3>
+      <p>Secure, one-click voting with easy ballot navigation.</p>
+    </div>
+
+    <div class="feature-card glass">
+      <div class="icon">🔒</div>
+      <h3>Audit Trail</h3>
+      <p>Transparent admin logging to ensure fair election processes.</p>
+    </div>
+  </div>
+
+  <div class="cta">
+    <a href="{{ url_for('login') }}" class="votex-login-btn">🔐 Login to Vote</a>
+  </div>
+
+</div>
+
+<script>
+  const deadline = new Date("2025-08-01T23:59:00");
+
+  function updateCountdown() {
+    const now = new Date();
+    const diff = deadline - now;
+
+    if (diff <= 0) {
+      document.getElementById("countdown").innerText = "🗳️ Voting has ended.";
+      return;
+    }
+
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+    const hours = Math.floor(diff / (1000 * 60 * 60)) % 24;
+    const minutes = Math.floor(diff / (1000 * 60)) % 60;
+
+    document.getElementById("countdown").innerText =
+      `⏳ Voting ends in: ${days}d ${hours}h ${minutes}m`;
+  }
+
+  setInterval(updateCountdown, 60000);
+  window.onload = updateCountdown;
+</script>
+
+<style>
+.home-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 3rem 1rem;
+  text-align: center;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.hero-glass {
+  background: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(10px);
+  border-radius: 16px;
+  padding: 2rem 2.5rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+  color: var(--text);
+  max-width: 600px;
+}
+
+.hero-glass h1 {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+.tagline {
+  font-size: 1.1rem;
+  opacity: 0.9;
+  margin-bottom: 1rem;
+}
+
+.countdown {
+  font-weight: 500;
+  font-size: 1rem;
+  opacity: 0.9;
+  color: var(--text);
+  margin-top: 0.5rem;
+}
+
+.why-vote {
+  max-width: 700px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  color: var(--text);
+}
+
+.why-vote h2 {
+  margin-bottom: 0.5rem;
+  font-size: 1.5rem;
+}
+
+.why-vote p {
+  font-size: 1rem;
+  opacity: 0.85;
+  line-height: 1.5;
+}
+
+.features-grid {
+  display: flex;
+  gap: 2rem;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin: 2rem 0;
+}
+
+.feature-card {
+  background: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(10px);
+  border-radius: 16px;
+  padding: 1.5rem;
+  width: 260px;
+  text-align: center;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.1);
+  color: var(--text);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.feature-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 28px rgba(0,0,0,0.15);
+}
+
+.feature-card .icon {
+  font-size: 2rem;
+  margin-bottom: 0.8rem;
+}
+
+.feature-card h3 {
+  margin-bottom: 0.5rem;
+  font-size: 1.2rem;
+}
+
+.feature-card p {
+  font-size: 0.95rem;
+  line-height: 1.4;
+  opacity: 0.85;
+}
+
+.cta {
+  margin-top: 2rem;
+}
+
+.votex-login-btn {
+  background-color: #ffffff;
+  color: #3f2b96;
+  font-weight: 600;
+  padding: 12px 30px;
+  font-size: 1rem;
+  border-radius: 30px;
+  text-decoration: none;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+  transition: 0.3s ease;
+}
+
+.votex-login-btn:hover {
+  background-color: #eeeeee;
+  transform: translateY(-2px);
+}
+
+.fade-in {
+  animation: fadeInUp 0.7s ease both;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 768px) {
+  .feature-card {
+    width: 90%;
+  }
+}
+</style>
+
+{% endblock %}

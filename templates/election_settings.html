@@ -1,23 +1,77 @@
 {% extends "admin_base.html" %}
 {% block admin_content %}
-<h1>Election Settings</h1>
 
-<form method="POST">
-  <div style="margin-bottom: 1rem;">
-    <label for="title"><strong>Election Title:</strong></label><br />
+<div class="glass-container fade-in">
+  <h2>🗳️ Election Settings</h2>
+
+  <form method="POST" class="glass-box">
+    <label for="title">Election Title:</label>
     <input type="text" id="title" name="title" value="{{ election.title }}" required />
-  </div>
 
-  <div style="margin-bottom: 1rem;">
-    <label for="start"><strong>Start Date & Time:</strong></label><br />
+    <label for="start">Start Date & Time:</label>
     <input type="datetime-local" id="start" name="start" value="{{ election.start_date }}" required />
-  </div>
 
-  <div style="margin-bottom: 1rem;">
-    <label for="deadline"><strong>Deadline:</strong></label><br />
+    <label for="deadline">Deadline:</label>
     <input type="datetime-local" id="deadline" name="deadline" value="{{ election.deadline }}" required />
-  </div>
 
-  <button type="submit">Update Election Settings</button>
-</form>
+    <button type="submit" class="btn-update">💾 Update Settings</button>
+  </form>
+</div>
+
+<style>
+  .glass-container {
+    max-width: 600px;
+    margin: auto;
+    padding: 2rem;
+  }
+
+  .glass-box {
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(12px);
+    border-radius: 16px;
+    padding: 2rem;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+    color: var(--text);
+  }
+
+  .glass-box label {
+    display: block;
+    font-weight: 600;
+    margin: 1rem 0 0.3rem;
+  }
+
+  .glass-box input {
+    width: 100%;
+    padding: 0.6rem;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    background: rgba(255, 255, 255, 0.6);
+    font-size: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  html[data-theme='dark'] .glass-box input {
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+    border-color: #666;
+  }
+
+  .btn-update {
+    padding: 10px 20px;
+    font-size: 1rem;
+    background: var(--button-bg);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transition: 0.3s ease;
+  }
+
+  .btn-update:hover {
+    background-color: #3a65b5;
+  }
+</style>
+
 {% endblock %}

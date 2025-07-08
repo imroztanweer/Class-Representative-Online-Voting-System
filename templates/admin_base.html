@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
 <div class="admin-dashboard">
-  <nav class="admin-sidebar">
+  <nav class="admin-sidebar glassy-sidebar">
     <button class="hamburger-toggle" onclick="toggleMenu()">☰ Admin Tools</button>
     <ul id="adminMenu">
       <li><a href="{{ url_for('admin_dashboard') }}" class="{% if request.endpoint == 'admin_dashboard' %}active{% endif %}">Dashboard Home</a></li>
@@ -10,30 +10,33 @@
       <li><a href="{{ url_for('election_settings') }}" class="{% if request.endpoint == 'election_settings' %}active{% endif %}">Election Settings</a></li>
       <li><a href="{{ url_for('audit_log') }}" class="{% if request.endpoint == 'audit_log' %}active{% endif %}">Audit Log</a></li>
       <li><a href="{{ url_for('admin_votes') }}" class="{% if request.endpoint == 'admin_votes' %}active{% endif %}">Live Vote Count</a></li>
-      <li><a href="{{ url_for('logout') }}">Logout</a></li>
     </ul>
   </nav>
 
-  <main class="admin-main-content">
+  <main class="admin-main-content glassy-content">
     {% block admin_content %}{% endblock %}
   </main>
 </div>
 
 <style>
+/* --- Layout Wrapper --- */
 .admin-dashboard {
   display: flex;
   min-height: 100vh;
   margin: 0;
 }
 
-.admin-sidebar {
+/* --- Sidebar Styling --- */
+.admin-sidebar.glassy-sidebar {
   width: 220px;
-  background-color: #b3d4fc;
   padding: 1rem;
-  border-radius: 0;
-  box-shadow: inset -3px 0 6px rgba(0,0,0,0.1);
   min-height: 100vh;
-  margin-left: 0;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  background: rgba(255, 255, 255, 0.25);
+  border-right: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: inset -3px 0 6px rgba(0,0,0,0.05);
+  color: #111;
 }
 
 .hamburger-toggle {
@@ -85,15 +88,31 @@
   color: white;
 }
 
-.admin-main-content {
+/* --- Main Content Styling --- */
+.admin-main-content.glassy-content {
+  position: relative;
   flex-grow: 1;
-  padding: 1.5rem 2rem;
-  background: var(--bg-color, #f9fbff);
-  box-shadow: 0 0 10px rgba(0,0,0,0.05);
-  border-radius: 0;
+  padding: 2rem;
+  margin: 1rem;
+  background: rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-radius: 20px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1), inset 0 0 0 1000px rgba(255,255,255,0.03);
+  color: #111;
 }
 
-/* Responsive sidebar for small screens */
+/* Optional deeper text contrast */
+.admin-main-content h1,
+.admin-main-content h2,
+.admin-main-content h3,
+.admin-main-content th,
+.admin-main-content td,
+.admin-main-content p {
+  color: #111 !important;
+}
+
+/* --- Responsive Sidebar --- */
 @media (max-width: 768px) {
   .admin-dashboard {
     flex-direction: column;
@@ -105,6 +124,8 @@
 
   .admin-main-content {
     width: 100%;
+    margin: 0;
+    border-radius: 0;
   }
 }
 </style>

@@ -1,27 +1,113 @@
-{% extends "base.html" %}
-{% block content %}
-<h2>Student Profile</h2>
+{% extends "student_base.html" %}
+{% block student_content %}
 
-<div>
-  <p><strong>Name:</strong> {{ session.name }}</p>
-  <p><strong>Registration Number:</strong> {{ session.user }}</p>
-  <p><strong>Course:</strong> {{ session.course }}</p>
-  <p><strong>Batch:</strong> {{ session.batch }}</p>
-  <p><strong>Voting Status:</strong> {% if session.voted %}Voted{% else %}Not Voted{% endif %}</p>
+<div class="container fade-in student-profile-wrapper">
+
+  <div class="glass-box card">
+    <h2>👤 Your Profile</h2>
+    <p><strong>Name:</strong> {{ session.name }}</p>
+    <p><strong>Reg No:</strong> {{ session.user }}</p>
+    <p><strong>Course:</strong> {{ session.course }}</p>
+    <p><strong>Batch:</strong> {{ session.batch }}</p>
+    <p>
+      <strong>Voting Status:</strong>
+      {% if session.voted %}
+        <span style="color: limegreen;">Voted ✅</span>
+      {% else %}
+        <span style="color: crimson;">Not Voted ❌</span>
+      {% endif %}
+    </p>
+    <p><strong>Election:</strong> {{ election.title }}</p>
+    <p><strong>Deadline:</strong> {{ election.deadline }}</p>
+  </div>
+
+  <div class="glass-box card">
+    <h2>🔐 Change Password</h2>
+    <form method="POST" action="{{ url_for('change_password') }}">
+      <label>Current Password:</label>
+      <input type="password" name="old_password" required>
+
+      <label>New Password:</label>
+      <input type="password" name="new_password" required minlength="6">
+
+      <label>Confirm New Password:</label>
+      <input type="password" name="confirm_password" required minlength="6">
+
+      <button type="submit">Update Password</button>
+    </form>
+  </div>
+
 </div>
 
-<hr />
+<style>
+.container.fade-in {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+  justify-content: center;
+  animation: fadeIn 0.6s ease-in-out;
+}
 
-<h3>Change Password</h3>
-<form method="POST" action="{{ url_for('change_password') }}">
-  <label for="current_password">Current Password:</label>
-  <input type="password" id="current_password" name="current_password" required />
+.card {
+  flex: 1 1 320px;
+  padding: 1.5rem;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(10px);
+  color: var(--text);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  min-width: 300px;
+}
 
-  <label for="new_password">New Password:</label>
-  <input type="password" id="new_password" name="new_password" required />
+.card h2 {
+  margin-top: 0;
+  color: #003366;
+  margin-bottom: 1rem;
+}
 
-  <button type="submit">Change Password</button>
-</form>
+form label {
+  display: block;
+  margin-top: 1rem;
+  font-weight: bold;
+}
 
-<a href="{{ url_for('vote') }}"><button>Back to Vote Page</button></a>
+form input {
+  width: 100%;
+  padding: 0.6rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  margin-top: 0.4rem;
+  background: rgba(255, 255, 255, 0.15);
+  color: inherit;
+}
+
+form input:focus {
+  outline: none;
+  border-color: #2196f3;
+}
+
+button[type="submit"] {
+  margin-top: 1.5rem;
+  padding: 10px 24px;
+  font-size: 1rem;
+  background-color: #003366;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+button[type="submit"]:hover {
+  background-color: #00509e;
+}
+
+@media (max-width: 768px) {
+  .container.fade-in {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+</style>
+
 {% endblock %}

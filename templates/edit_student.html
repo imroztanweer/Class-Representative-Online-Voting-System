@@ -1,19 +1,102 @@
 {% extends "admin_base.html" %}
 {% block admin_content %}
-<h2>Edit Student - {{ student.regno }}</h2>
 
-<form method="POST" class="glass-box">
-  <label>Name:</label>
-  <input type="text" name="name" value="{{ student.name }}" required>
+<div class="glass-container fade-in">
+  <h2>✏️ Edit Student - {{ student.regno }}</h2>
 
-  <label>Course:</label>
-  <input type="text" name="course" value="{{ student.course }}" required>
+  <form method="POST" class="glass-box">
+    <label for="name">Name:</label>
+    <input type="text" id="name" name="name" value="{{ student.name }}" required>
 
-  <label>Batch:</label>
-  <input type="text" name="batch" value="{{ student.batch }}" required>
+    <label for="course">Course:</label>
+    <input type="text" id="course" name="course" value="{{ student.course }}" required>
 
-  <button type="submit">Update Student</button>
-</form>
+    <label for="batch">Batch:</label>
+    <input type="text" id="batch" name="batch" value="{{ student.batch }}" required>
 
-<p><a href="{{ url_for('admin_dashboard') }}">← Back to Dashboard</a></p>
+    <button type="submit" class="btn-update">💾 Update Student</button>
+  </form>
+
+  <div class="back-link">
+    <a href="{{ url_for('admin_dashboard') }}">← Back to Dashboard</a>
+  </div>
+</div>
+
+<style>
+  .glass-container {
+    max-width: 600px;
+    margin: auto;
+    padding: 2rem;
+  }
+
+  .glass-box {
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(12px);
+    border-radius: 16px;
+    padding: 2rem;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+    color: var(--text);
+  }
+
+  .glass-box label {
+    display: block;
+    font-weight: 600;
+    margin: 1rem 0 0.3rem;
+  }
+
+  .glass-box input {
+    width: 100%;
+    padding: 0.6rem;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    background: rgba(255, 255, 255, 0.6);
+    font-size: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  html[data-theme='dark'] .glass-box input {
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+    border-color: #666;
+  }
+
+  .btn-update {
+    padding: 10px 20px;
+    font-size: 1rem;
+    background: var(--button-bg);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transition: 0.3s ease;
+  }
+
+  .btn-update:hover {
+    background-color: #3a65b5;
+  }
+
+  .back-link {
+    margin-top: 1.5rem;
+    text-align: center;
+  }
+
+  .back-link a {
+    text-decoration: none;
+    color: var(--button-bg);
+    font-weight: 600;
+  }
+
+  .back-link a:hover {
+    text-decoration: underline;
+  }
+
+  @media (max-width: 600px) {
+    .glass-box {
+      padding: 1.5rem;
+    }
+  }
+</style>
+
 {% endblock %}

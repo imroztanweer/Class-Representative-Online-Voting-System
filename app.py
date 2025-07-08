@@ -68,11 +68,30 @@ def log_audit_entry(action, user, details, timestamp):
     db.commit()
     db.close()
 
+from functools import wraps
+from flask import session, redirect, url_for, flash
+
+def student_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'user' not in session or session.get('role') != 'student':
+            flash("Please log in as a student to access this page.")
+            return redirect(url_for('login'))
+        return f(*args, **kwargs)
+    return decorated_function
+
 # ------------------- Routes -------------------
 
-@app.route('/')
-def index():
-    return redirect(url_for('login'))
+
+@app.route('/', endpoint='home')
+def home():
+    if 'user' in session:
+        if session.get('role') == 'admin':
+            return redirect(url_for('admin_dashboard'))
+        else:
+            return redirect(url_for('student_dashboard'))
+    return render_template('home.html')
+
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -100,12 +119,13 @@ def login():
         else:
             error = "Invalid registration number or password"
 
-    return render_template('login.html', error=error)
+    return render_template('login.html', error=error, body_class='login-page')
+
 
 @app.route('/logout')
 def logout():
     session.clear()
-    return redirect(url_for('login'))
+    return redirect(url_for('home'))
 
 # -------- Student Dashboard & Voting --------
 
@@ -421,6 +441,26 @@ def delete_student(regno):
     flash(f"Deleted student: {regno}")
     return redirect(url_for('admin_dashboard'))
 
+@app.route('/reset_vote/<regno>', methods=['POST'])
+@admin_required
+def reset_vote(regno):
+    db = get_db()
+
+    db.execute("DELETE FROM ballots WHERE student_regno = ?", (regno,))
+    db.execute("UPDATE students SET voted = 0 WHERE regno = ?", (regno,))
+    db.commit()
+
+    log_audit_entry(
+        action="Reset Vote",
+        user=session.get("user"),
+        details=f"Vote reset for student: {regno}",
+        timestamp=datetime.now()
+    )
+
+    flash(f"Vote reset for {regno}.")
+    return redirect(url_for('admin_dashboard'))
+
+
 @app.route('/admin/votes')
 @admin_required
 def admin_votes():
@@ -497,6 +537,36 @@ def student_live_vote_count():
 
     return render_template('live_vote_count.html', results=results_by_position)
 
+@app.route('/student/profile')
+@student_required
+def student_profile():
+    election = get_election_info()
+    return render_template('student_profile.html', election=election)
+@app.route('/student/change_password', methods=['POST'])
+@student_required
+def change_password():
+    old = request.form.get('old_password')
+    new = request.form.get('new_password')
+    confirm = request.form.get('confirm_password')
+
+    if new != confirm:
+        flash("New passwords do not match.")
+        return redirect(url_for('student_profile'))
+
+    db = get_db()
+    user = db.execute("SELECT * FROM students WHERE regno = ?", (session['user'],)).fetchone()
+
+    if not check_password_hash(user['password'], old):
+        flash("Current password is incorrect.")
+        return redirect(url_for('student_profile'))
+
+    hashed_new = generate_password_hash(new)
+    db.execute("UPDATE students SET password = ? WHERE regno = ?", (hashed_new, session['user']))
+    db.commit()
+    db.close()
+
+    flash("Password updated successfully.")
+    return redirect(url_for('student_profile'))
 
 # ----------- Main -----------
 

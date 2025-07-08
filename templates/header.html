@@ -1,13 +1,31 @@
-<header>
-    <div class="logo-title">
-        <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo" class="logo">
-        <h1>SASTRA Class Representative Voting</h1>
-    </div>
-    <div class="theme-toggle">
-        <label class="toggle-switch">
-            <input type="checkbox" id="dark-toggle">
-            <span class="slider"></span>
-        </label>
-        <span id="toggle-icon">🌙</span>
-    </div>
+<header class="glass-header">
+  <div class="logo-title">
+    <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo" class="logo">
+    <h1>SASTRA Class Representative Voting</h1>
+  </div>
+
+  <div class="header-controls">
+    <div id="header-clock" class="header-clock"></div>
+
+    <label class="toggle-switch" title="Toggle Dark Mode">
+      <input type="checkbox" id="dark-toggle">
+      <span class="slider"></span>
+    </label>
+    <span id="toggle-icon">🌙</span>
+  </div>
 </header>
+
+<script>
+  function updateHeaderClock() {
+    const now = new Date();
+    const options = {
+      weekday: 'short', year: 'numeric', month: 'short',
+      day: 'numeric', hour: '2-digit', minute: '2-digit'
+    };
+    const clock = document.getElementById('header-clock');
+    if (clock) clock.textContent = now.toLocaleString('en-US', options);
+  }
+
+  setInterval(updateHeaderClock, 1000);
+  window.onload = updateHeaderClock;
+</script>
