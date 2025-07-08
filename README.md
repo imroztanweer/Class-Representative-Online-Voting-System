@@ -2,7 +2,7 @@
 
 
 
-A complete \*\*Class Representative Online Voting System\*\* built, designed and developed by \*\*Imroz Tanweer\*\* as part of a personal academic project. This system allows students to vote online securely and provides administrators with full election management and visualization capabilities.
+A complete \*\*VoteX - Elections made effortless\*\* built, designed and developed by \*\*Imroz Tanweer\*\* as part of a personal academic project. This system allows students to vote online securely and provides administrators with full election management and visualization capabilities.
 
 
 
