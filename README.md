@@ -20,13 +20,13 @@ Admin
 
 Student
 
-\- \*\*uname\*\*: S1001
+\- \*\*uname\*\*: ECE2023_1001
 
-\- \*\*pass\*\*: alice123
+\- \*\*pass\*\*: voter123
 
 ---
 
-\- \*\*uname\*\*: 1001
+\- \*\*uname\*\*: CSE2025_1001
 
 \- \*\*pass\*\*: voter123
 
