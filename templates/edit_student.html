@@ -2,16 +2,16 @@
 {% block admin_content %}
 
 <div class="glass-container fade-in">
-  <h2>✏️ Edit Student - {{ student.regno }}</h2>
+  <h2 style="margin-bottom: 1.5rem;">✏️ Edit Student - {{ student.regno }}</h2>
 
   <form method="POST" class="glass-box">
-    <label for="name">Name:</label>
+    <label for="name">Name</label>
     <input type="text" id="name" name="name" value="{{ student.name }}" required>
 
-    <label for="course">Course:</label>
+    <label for="course">Course</label>
     <input type="text" id="course" name="course" value="{{ student.course }}" required>
 
-    <label for="batch">Batch:</label>
+    <label for="batch">Batch</label>
     <input type="text" id="batch" name="batch" value="{{ student.batch }}" required>
 
     <button type="submit" class="btn-update">💾 Update Student</button>
@@ -30,47 +30,50 @@
   }
 
   .glass-box {
-    background: rgba(255, 255, 255, 0.08);
-    backdrop-filter: blur(12px);
-    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.06);
+    backdrop-filter: blur(14px);
+    border-radius: 20px;
     padding: 2rem;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.08);
     color: var(--text);
   }
 
   .glass-box label {
     display: block;
     font-weight: 600;
-    margin: 1rem 0 0.3rem;
+    margin: 1rem 0 0.4rem;
   }
 
   .glass-box input {
     width: 100%;
-    padding: 0.6rem;
-    border-radius: 8px;
-    border: 1px solid #ccc;
-    background: rgba(255, 255, 255, 0.6);
+    padding: 0.7rem 1rem;
+    border-radius: 10px;
+    border: 1px solid var(--input-border, #ccc);
+    background: rgba(255, 255, 255, 0.65);
     font-size: 1rem;
-    margin-bottom: 1rem;
+    margin-bottom: 1.2rem;
+    transition: 0.3s ease;
+    color: var(--text);
   }
 
   html[data-theme='dark'] .glass-box input {
-    background: rgba(255, 255, 255, 0.1);
-    color: #fff;
-    border-color: #666;
+    background: rgba(255, 255, 255, 0.08);
+    color: #f0f0f0;
+    border-color: #555;
   }
 
   .btn-update {
-    padding: 10px 20px;
+    width: 100%;
+    padding: 12px;
     font-size: 1rem;
     background: var(--button-bg);
     color: white;
     border: none;
-    border-radius: 8px;
+    border-radius: 12px;
     font-weight: 600;
     cursor: pointer;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    transition: 0.3s ease;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
   }
 
   .btn-update:hover {
@@ -78,14 +81,15 @@
   }
 
   .back-link {
-    margin-top: 1.5rem;
+    margin-top: 2rem;
     text-align: center;
   }
 
   .back-link a {
     text-decoration: none;
-    color: var(--button-bg);
     font-weight: 600;
+    color: var(--button-bg);
+    font-size: 0.95rem;
   }
 
   .back-link a:hover {
@@ -95,6 +99,10 @@
   @media (max-width: 600px) {
     .glass-box {
       padding: 1.5rem;
+    }
+
+    .btn-update {
+      font-size: 0.95rem;
     }
   }
 </style>

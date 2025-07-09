@@ -1,22 +1,22 @@
 {% extends "admin_base.html" %}
 {% block admin_content %}
 
-<h1>Manage Positions</h1>
+<h2 class="gradient-heading">🪪 Manage Positions</h2>
 
 <div class="glass-box" style="margin-bottom: 2rem;">
-  <h3>Add New Position</h3>
-  <form method="POST" style="display: flex; gap: 1rem; flex-wrap: wrap;">
+  <h3 class="section-subheading">Add New Position</h3>
+  <form method="POST" class="form-flex">
     <input type="hidden" name="action" value="add">
-    <input type="text" name="name" placeholder="Position Name" required style="flex: 1; min-width: 200px;">
-    <button type="submit">➕ Add</button>
+    <input type="text" name="name" placeholder="Enter Position Name" required class="glass-input">
+    <button type="submit" class="btn-ios btn-primary">➕ Add</button>
   </form>
 </div>
 
 <hr>
 
-<h3>Existing Positions</h3>
-<div class="glass-box" style="overflow-x: auto;">
-  <table class="soft-table">
+<h3 class="section-subheading">📋 Existing Positions</h3>
+<div class="glass-box scroll-table">
+  <table class="ios-table">
     <thead>
       <tr>
         <th>Name</th>
@@ -33,15 +33,15 @@
             <form method="POST" class="action-form">
               <input type="hidden" name="action" value="edit">
               <input type="hidden" name="id" value="{{ pos.id }}">
-              <input type="text" name="name" value="{{ pos.name }}" required>
-              <button type="submit" class="btn-update">✏️ Update</button>
+              <input type="text" name="name" value="{{ pos.name }}" required class="glass-input">
+              <button type="submit" class="btn-ios btn-update">✏️ Update</button>
             </form>
 
             <!-- Delete form -->
-            <form method="POST" onsubmit="return confirm('Are you sure you want to delete this position?')" class="action-form">
+            <form method="POST" onsubmit="return confirm('Delete this position?')" class="action-form">
               <input type="hidden" name="action" value="delete">
               <input type="hidden" name="id" value="{{ pos.id }}">
-              <button type="submit" class="btn-danger">🗑️ Delete</button>
+              <button type="submit" class="btn-ios btn-danger">🗑️ Delete</button>
             </form>
           </div>
         </td>
@@ -52,118 +52,124 @@
 </div>
 
 <style>
-  .soft-table {
-    width: 100%;
-    border-collapse: separate;
-    border-spacing: 0;
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(10px);
-    border-radius: 12px;
-    overflow: hidden;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
-  }
+.gradient-heading {
+  font-size: 1.8rem;
+  background: linear-gradient(to right, #007aff, #5856d6);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
 
-  .soft-table th {
-    background-color: #4a77d4;
-    color: white;
-    padding: 12px;
-    font-weight: 600;
-    text-align: center;
-  }
+.section-subheading {
+  font-size: 1.2rem;
+  margin-bottom: 0.8rem;
+  font-weight: 600;
+  color: var(--text);
+}
 
-  .soft-table td {
-    padding: 12px;
-    text-align: center;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
-  }
+.form-flex {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
 
-  .soft-table thead tr:first-child th:first-child {
-    border-top-left-radius: 12px;
-  }
+.glass-input {
+  flex: 1;
+  min-width: 180px;
+  padding: 10px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(8px);
+  color: var(--text, #000);
+  font-size: 1rem;
+  transition: border 0.2s ease, background 0.2s ease;
+  box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);
+}
 
-  .soft-table thead tr:first-child th:last-child {
-    border-top-right-radius: 12px;
-  }
+.glass-input:focus {
+  outline: none;
+  background: rgba(255, 255, 255, 0.15);
+  border-color: #007aff;
+  box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.2);
+}
 
-  .soft-table tbody tr:last-child td:first-child {
-    border-bottom-left-radius: 12px;
-  }
+.btn-ios {
+  padding: 10px 20px;
+  border-radius: 30px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-width: 120px;
+}
 
-  .soft-table tbody tr:last-child td:last-child {
-    border-bottom-right-radius: 12px;
-  }
+.btn-primary {
+  background-color: #007aff;
+  color: white;
+}
 
-  .action-buttons {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-    justify-content: center;
-  }
+.btn-primary:hover {
+  background-color: #005ecb;
+}
 
-  .action-form {
-    display: flex;
-    gap: 0.5rem;
-    align-items: center;
-  }
+.btn-update {
+  background-color: #28a745;
+  color: white;
+}
 
-  .action-form input[type="text"] {
-    min-width: 150px;
-    max-width: 200px;
-  }
+.btn-update:hover {
+  background-color: #218838;
+}
 
-  button,
-  .btn-update,
-  .btn-danger {
-    padding: 6px 14px;
-    border-radius: 6px;
-    font-weight: 600;
-    cursor: pointer;
-    border: none;
-    min-width: 100px;
-    text-align: center;
-    white-space: nowrap;
-  }
+.btn-danger {
+  background-color: #e74c3c;
+  color: white;
+}
 
-  .btn-update {
-    background-color: #3498db;
-    color: white;
-  }
+.btn-danger:hover {
+  background-color: #c0392b;
+}
 
-  .btn-update:hover {
-    background-color: #2980b9;
-  }
+.ios-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(12px);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+}
 
-  .btn-danger {
-    background-color: #e74c3c;
-    color: white;
-  }
+.ios-table th, .ios-table td {
+  padding: 0.8rem 1rem;
+  text-align: center;
+  color: var(--text);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
 
-  .btn-danger:hover {
-    background-color: #c0392b;
-  }
+.ios-table thead th {
+  background-color: #007aff;
+  color: white;
+  font-weight: bold;
+}
 
-  input[type="text"],
-  input[type="datetime-local"],
-  select {
-    padding: 10px 12px;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 10px;
-    background: rgba(255, 255, 255, 0.08);
-    backdrop-filter: blur(6px);
-    color: var(--text, #000);
-    font-size: 1rem;
-    width: 100%;
-    box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);
-    transition: border 0.2s ease;
-  }
+.action-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: center;
+}
 
-  input[type="text"]:focus,
-  input[type="datetime-local"]:focus,
-  select:focus {
-    outline: none;
-    border: 1px solid #4a77d4;
-    background-color: rgba(255, 255, 255, 0.15);
-  }
+.action-form {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
 </style>
 
 {% endblock %}

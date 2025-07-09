@@ -2,9 +2,9 @@
 {% block admin_content %}
 
 <div class="glass-container fade-in">
-  <h1>🛠️ Admin Dashboard</h1>
+  <h1 style="margin-bottom: 1rem;">🛠️ Admin Dashboard</h1>
 
-  <div class="info-box">
+  <div class="info-box" style="margin-bottom: 1rem;">
     <p><strong>Total Voters:</strong> {{ total }}</p>
     <p><strong>Voted:</strong> {{ voted }}</p>
   </div>
@@ -15,7 +15,7 @@
     </a>
   </div>
 
-  <h3>Voter List</h3>
+  <h3 style="margin-top: 2rem;">Voter List</h3>
   <table class="glass-table voter-table">
     <thead>
       <tr>
@@ -36,9 +36,9 @@
         <td>{{ s.batch }}</td>
         <td>
           {% if s.voted %}
-            <span style="color: limegreen;">Yes</span>
+            <span style="color: limegreen; font-weight: 600;">Yes</span>
           {% else %}
-            <span style="color: crimson;">No</span>
+            <span style="color: crimson; font-weight: 600;">No</span>
           {% endif %}
         </td>
         <td>
@@ -50,7 +50,10 @@
               <button type="submit" class="glass-btn btn-delete">🗑️ Delete</button>
             </form>
             <form method="POST" action="{{ url_for('reset_vote', regno=s.regno) }}" style="display:inline;" onsubmit="return confirm('Reset vote for this student?');">
-              <button type="submit" class="glass-btn btn-reset">🔄 Reset</button>
+              <button type="submit" class="glass-btn btn-reset">🔄 Reset Vote</button>
+            </form>
+            <form method="POST" action="{{ url_for('admin_reset_password', regno=s.regno) }}" style="display:inline;" onsubmit="return confirm('Reset password for this student to default (voter123)?');">
+              <button type="submit" class="glass-btn btn-reset-pass">🔑 Reset PW</button>
             </form>
           {% else %}
             <span style="color: gray;">—</span>
@@ -68,15 +71,15 @@
   }
 
   .btn-add {
-    padding: 10px 20px;
+    padding: 10px 22px;
     font-size: 1rem;
     background: var(--button-bg);
     color: white;
     border: none;
-    border-radius: 8px;
+    border-radius: 12px;
     font-weight: 600;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    transition: 0.3s ease;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+    transition: background 0.3s ease;
   }
 
   .btn-add:hover {
@@ -87,11 +90,11 @@
     width: 100%;
     border-collapse: separate;
     border-spacing: 0;
-    background: rgba(255, 255, 255, 0.05);
-    backdrop-filter: blur(10px);
-    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.04);
+    backdrop-filter: blur(12px);
+    border-radius: 16px;
     overflow: hidden;
-    box-shadow: 0 8px 28px rgba(0,0,0,0.12);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
     margin-top: 1.5rem;
   }
 
@@ -112,7 +115,7 @@
     font-size: 0.95rem;
     color: var(--text);
     text-align: center;
-    background: rgba(255, 255, 255, 0.03);
+    background: rgba(255, 255, 255, 0.02);
     border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   }
 
@@ -129,30 +132,40 @@
     cursor: pointer;
     backdrop-filter: blur(6px);
     transition: background 0.3s ease;
-    box-shadow: 0 3px 8px rgba(0,0,0,0.1);
     font-size: 0.9rem;
-    margin-right: 6px;
+    margin: 3px 4px;
   }
 
   .btn-edit {
-    background: rgba(0, 123, 255, 0.7);
+    background: rgba(0, 123, 255, 0.75);
   }
+
   .btn-edit:hover {
-    background: rgba(0, 123, 255, 0.9);
+    background: rgba(0, 123, 255, 0.95);
   }
 
   .btn-delete {
-    background: rgba(220, 53, 69, 0.7);
+    background: rgba(220, 53, 69, 0.75);
   }
+
   .btn-delete:hover {
-    background: rgba(220, 53, 69, 0.9);
+    background: rgba(220, 53, 69, 0.95);
   }
 
   .btn-reset {
-    background: rgba(255, 140, 0, 0.7);
+    background: rgba(255, 140, 0, 0.75);
   }
+
   .btn-reset:hover {
-    background: rgba(255, 140, 0, 0.9);
+    background: rgba(255, 140, 0, 0.95);
+  }
+
+  .btn-reset-pass {
+    background: rgba(100, 100, 255, 0.75);
+  }
+
+  .btn-reset-pass:hover {
+    background: rgba(100, 100, 255, 0.95);
   }
 
   @media (max-width: 768px) {
@@ -166,7 +179,13 @@
     }
 
     .glass-btn {
-      margin-bottom: 4px;
+      display: block;
+      width: 100%;
+      margin: 4px 0;
+    }
+
+    .voter-table td {
+      word-break: break-word;
     }
   }
 </style>

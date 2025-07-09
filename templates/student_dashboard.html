@@ -2,41 +2,40 @@
 {% block student_content %}
 
 <div class="dashboard-cards">
-
-  <!-- Student Info Box -->
-  <div class="glass-box card">
+  <!-- Student Info -->
+  <div class="dashboard-card">
     <h3>👤 Your Profile</h3>
     <p><strong>Name:</strong> {{ session.name }}</p>
     <p><strong>Reg No:</strong> {{ session.user }}</p>
     <p><strong>Course:</strong> {{ session.course }}</p>
     <p><strong>Batch:</strong> {{ session.batch }}</p>
     <p>
-      <strong>Voting Status:</strong>
+      <strong>Status:</strong>
       {% if session.voted %}
-        <span style="color: limegreen;">Voted ✅</span>
+        <span class="badge voted">Voted ✅</span>
       {% else %}
-        <span style="color: crimson;">Not Voted ❌</span>
+        <span class="badge not-voted">Not Voted ❌</span>
       {% endif %}
     </p>
   </div>
 
-  <!-- Election Info Box -->
-  <div class="glass-box card">
+  <!-- Election Info -->
+  <div class="dashboard-card">
     <h3>📅 Election Info</h3>
     <p><strong>Title:</strong> {{ election.title }}</p>
     <p><strong>Start:</strong> {{ election.start_date }}</p>
     <p><strong>Deadline:</strong> {{ election.deadline }}</p>
-    <p id="countdown" style="font-weight: bold; color: #003366;"></p>
+    <p id="countdown" class="countdown-timer">⏱️ Calculating...</p>
   </div>
 
-  <!-- Vote Action Box -->
-  <div class="glass-box card" style="text-align: center;">
+  <!-- Action Box -->
+  <div class="dashboard-card action-card">
     {% if not session.voted and started %}
       <a href="{{ url_for('vote') }}">
-        <button style="padding: 10px 24px; font-size: 1rem;">🗳️ Cast Your Vote</button>
+        <button class="ios-button">🗳️ Cast Your Vote</button>
       </a>
     {% elif not started %}
-      <p style="color: gray; font-weight: 600;">Voting has not started yet.</p>
+      <p class="vote-msg">Voting has not started yet.</p>
     {% else %}
       <div class="vote-success">
         <span class="emoji">🎉</span>
@@ -44,46 +43,90 @@
       </div>
     {% endif %}
   </div>
-
 </div>
 
 <style>
 .dashboard-cards {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 1.5rem;
-  justify-content: space-between;
 }
 
-.card {
-  flex: 1 1 300px;
+.dashboard-card {
   padding: 1.5rem;
-  border-radius: 16px;
+  border-radius: 20px;
   background: rgba(255, 255, 255, 0.08);
-  backdrop-filter: blur(10px);
+  backdrop-filter: blur(16px);
   color: var(--text);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  min-width: 280px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
 }
 
-.card h3 {
-  margin-top: 0;
-  margin-bottom: 1rem;
-  font-size: 1.2rem;
-  color: #003366;
+.dashboard-card h3 {
+  margin-bottom: 0.6rem;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.badge {
+  padding: 0.3rem 0.8rem;
+  border-radius: 12px;
+  font-weight: 600;
+  display: inline-block;
+  font-size: 0.95rem;
+}
+.voted {
+  background-color: rgba(0, 128, 0, 0.15);
+  color: limegreen;
+}
+.not-voted {
+  background-color: rgba(255, 0, 0, 0.12);
+  color: crimson;
+}
+
+.countdown-timer {
+  font-weight: bold;
+  margin-top: 0.4rem;
+  color: #007aff;
+}
+
+.vote-msg {
+  font-weight: 600;
+  color: gray;
+}
+
+.ios-button {
+  margin-top: 1rem;
+  padding: 12px 24px;
+  font-size: 1rem;
+  font-weight: 600;
+  color: white;
+  background: linear-gradient(135deg, #007aff, #5856d6);
+  border: none;
+  border-radius: 30px;
+  box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+  cursor: pointer;
+  transition: all 0.25s ease-in-out;
+}
+
+.ios-button:hover {
+  transform: scale(1.05);
+  background: linear-gradient(135deg, #005ecb, #4e46c2);
 }
 
 .vote-success {
-  background: rgba(0, 128, 0, 0.1);
-  border: 2px solid rgba(0, 128, 0, 0.3);
-  border-radius: 12px;
+  background: rgba(0, 128, 0, 0.12);
+  border: 2px solid rgba(0, 128, 0, 0.25);
+  border-radius: 16px;
   padding: 1rem;
-  margin-top: 1rem;
   text-align: center;
   color: limegreen;
   font-weight: 600;
-  font-size: 1.1rem;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  font-size: 1.05rem;
   transition: transform 0.3s ease;
 }
 
@@ -93,45 +136,62 @@
 
 .vote-success .emoji {
   font-size: 2rem;
-  display: block;
   margin-bottom: 0.5rem;
+  display: block;
 }
 
-.vote-success .message {
-  margin: 0;
-  font-size: 1.1rem;
+@media (max-width: 600px) {
+  .dashboard-card {
+    padding: 1.2rem;
+  }
+
+  .ios-button {
+    width: 100%;
+  }
 }
 
-@media (max-width: 768px) {
-  .dashboard-cards {
-    flex-direction: column;
-    align-items: stretch;
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+  .dashboard-card {
+    background: rgba(255, 255, 255, 0.06);
+    box-shadow: 0 6px 18px rgba(255, 255, 255, 0.05);
+  }
+
+  .countdown-timer {
+    color: #5ac8fa;
+  }
+
+  .ios-button {
+    background: linear-gradient(135deg, #0a84ff, #5e5ce6);
+  }
+
+  .ios-button:hover {
+    background: linear-gradient(135deg, #0062cc, #4c4ac4);
   }
 }
 </style>
 
 <script>
-  const deadline = new Date("{{ election.deadline }}").getTime();
-  function updateCountdown() {
-    const now = new Date().getTime();
-    const dist = deadline - now;
-    const el = document.getElementById("countdown");
+const deadline = new Date("{{ election.deadline }}").getTime();
+function updateCountdown() {
+  const now = new Date().getTime();
+  const dist = deadline - now;
+  const el = document.getElementById("countdown");
 
-    if (!el) return;
+  if (!el) return;
 
-    if (dist < 0) {
-      el.innerHTML = "⏳ Voting has ended.";
-      return;
-    }
-
-    const d = Math.floor(dist / (1000 * 60 * 60 * 24));
-    const h = Math.floor((dist % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-    const m = Math.floor((dist % (1000 * 60 * 60)) / (1000 * 60));
-    el.innerHTML = `⏱️ Time Remaining: ${d}d ${h}h ${m}m`;
+  if (dist < 0) {
+    el.innerHTML = "⏳ Voting has ended.";
+    return;
   }
 
-  updateCountdown();
-  setInterval(updateCountdown, 60000);  // update every minute
+  const d = Math.floor(dist / (1000 * 60 * 60 * 24));
+  const h = Math.floor((dist % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+  const m = Math.floor((dist % (1000 * 60 * 60)) / (1000 * 60));
+  el.innerHTML = `⏱️ Time Remaining: ${d}d ${h}h ${m}m`;
+}
+updateCountdown();
+setInterval(updateCountdown, 60000);
 </script>
 
 {% endblock %}

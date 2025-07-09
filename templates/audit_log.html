@@ -1,83 +1,37 @@
 {% extends "admin_base.html" %}
 {% block admin_content %}
 
-<h2 style="display: flex; align-items: center; gap: 8px;">
-  📋 Audit Log
-</h2>
+<div class="container fade-in">
+  <h2 style="margin-bottom: 1.5rem; display: flex; align-items: center; gap: 8px;">
+    📋 Audit Log
+  </h2>
 
-{% if logs %}
-  <div class="glass-audit">
-    <table class="glass-table">
-      <thead>
-        <tr>
-          <th>Timestamp</th>
-          <th>User</th>
-          <th>Action</th>
-          <th>Details</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for log in logs %}
-        <tr>
-          <td>{{ log.timestamp }}</td>
-          <td>{{ log.user }}</td>
-          <td>{{ log.action }}</td>
-          <td>{{ log.details }}</td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  </div>
-{% else %}
-  <p class="info-box">No audit log entries found.</p>
-{% endif %}
-
-<style>
-  .glass-audit {
-    background: rgba(255, 255, 255, 0.05);
-    backdrop-filter: blur(12px);
-    border-radius: 12px;
-    padding: 1.5rem;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-    overflow-x: auto;
-  }
-
-  .glass-table {
-    width: 100%;
-    border-collapse: collapse;
-    border-radius: 10px;
-    overflow: hidden;
-  }
-
-  .glass-table th,
-  .glass-table td {
-    padding: 12px 16px;
-    text-align: left;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    color: var(--text);
-  }
-
-  .glass-table th {
-    background-color: var(--button-bg);
-    color: white;
-    font-weight: 600;
-  }
-
-  .glass-table tr:nth-child(even) {
-    background-color: rgba(255, 255, 255, 0.02);
-  }
-
-  .glass-table tr:hover {
-    background-color: rgba(255, 255, 255, 0.08);
-  }
-
-  @media (max-width: 768px) {
-    .glass-table th,
-    .glass-table td {
-      padding: 10px 12px;
-      font-size: 0.9rem;
-    }
-  }
-</style>
+  {% if logs %}
+    <div class="glass-table-wrapper" style="overflow-x: auto;">
+      <table class="glass-table">
+        <thead>
+          <tr>
+            <th>Timestamp</th>
+            <th>User</th>
+            <th>Action</th>
+            <th>Details</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for log in logs %}
+          <tr>
+            <td>{{ log.timestamp }}</td>
+            <td>{{ log.user }}</td>
+            <td>{{ log.action }}</td>
+            <td>{{ log.details }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="info-box" style="margin-top: 2rem;">No audit log entries found.</div>
+  {% endif %}
+</div>
 
 {% endblock %}

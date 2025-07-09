@@ -1,13 +1,13 @@
 {% extends "student_base.html" %}
-
 {% block student_content %}
+
 <div class="container fade-in">
-  <h2>📊 Live Vote Count</h2>
+  <h2 class="page-title">📊 Live Vote Count</h2>
 
   {% if results %}
     <div class="charts-wrapper">
       {% for position, candidates in results.items() %}
-        <section class="chart-container glass">
+        <section class="chart-container ios-glass fade-in-up">
           <h3 class="chart-title">{{ position }}</h3>
           <canvas id="chart-{{ loop.index }}"></canvas>
         </section>
@@ -24,23 +24,13 @@
             label: 'Votes',
             data: [{% for c in candidates %}{{ c.votes }},{% endfor %}],
             backgroundColor: [
-              'rgba(255, 99, 132, 0.5)',
-              'rgba(54, 162, 235, 0.5)',
-              'rgba(255, 206, 86, 0.5)',
-              'rgba(75, 192, 192, 0.5)',
-              'rgba(153, 102, 255, 0.5)',
-              'rgba(255, 159, 64, 0.5)'
+              '#ff4d4f80', '#1890ff80', '#fadb1480', '#52c41a80', '#9254de80', '#fa8c1680'
             ],
             borderColor: [
-              'rgba(255, 99, 132, 1)',
-              'rgba(54, 162, 235, 1)',
-              'rgba(255, 206, 86, 1)',
-              'rgba(75, 192, 192, 1)',
-              'rgba(153, 102, 255, 1)',
-              'rgba(255, 159, 64, 1)'
+              '#ff4d4f', '#1890ff', '#fadb14', '#52c41a', '#9254de', '#fa8c16'
             ],
             borderWidth: 1,
-            borderRadius: 6
+            borderRadius: 8
           }]
         };
         const config{{ loop.index }} = {
@@ -64,7 +54,7 @@
       {% endfor %}
     </script>
   {% else %}
-    <p>No vote data available yet.</p>
+    <p class="no-data-msg">No vote data available yet.</p>
   {% endif %}
 </div>
 
@@ -72,7 +62,19 @@
 .container {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 2rem 1rem;
+  padding: 2.5rem 1rem;
+  position: relative;
+  z-index: 1;
+}
+
+.page-title {
+  text-align: center;
+  font-size: 2rem;
+  font-weight: 700;
+  background: linear-gradient(to right, #007aff, #5856d6);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 2rem;
 }
 
 .charts-wrapper {
@@ -80,7 +82,6 @@
   flex-wrap: wrap;
   justify-content: center;
   gap: 2rem;
-  margin-top: 2rem;
 }
 
 .chart-container {
@@ -88,17 +89,25 @@
   max-width: 45%;
   min-width: 300px;
   padding: 1.5rem;
+}
+
+.ios-glass {
   background: rgba(255, 255, 255, 0.08);
-  border-radius: 16px;
-  backdrop-filter: blur(12px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease;
+  backdrop-filter: blur(18px);
+  border-radius: 18px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+  transition: transform 0.3s ease;
+}
+
+.ios-glass:hover {
+  transform: scale(1.02);
+  box-shadow: 0 12px 36px rgba(0,0,0,0.12);
 }
 
 .chart-title {
   text-align: center;
   margin-bottom: 1rem;
-  font-size: 1.1rem;
+  font-size: 1.15rem;
   font-weight: 600;
   color: var(--text);
 }
@@ -109,6 +118,30 @@ canvas {
   max-height: 300px;
 }
 
+.fade-in-up {
+  animation: fadeInUp 0.6s ease both;
+}
+
+.no-data-msg {
+  text-align: center;
+  font-size: 1rem;
+  color: var(--text);
+  opacity: 0.7;
+  margin-top: 2rem;
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .ios-glass {
+    background: rgba(255, 255, 255, 0.06);
+    box-shadow: 0 6px 20px rgba(255, 255, 255, 0.05);
+  }
+
+  .chart-title {
+    color: #ffffffcc;
+  }
+}
+
 @media (max-width: 768px) {
   .chart-container {
     flex: 1 1 100%;
@@ -117,6 +150,21 @@ canvas {
 
   canvas {
     max-height: 250px;
+  }
+
+  .page-title {
+    font-size: 1.7rem;
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 </style>

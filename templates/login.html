@@ -1,84 +1,269 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="login-container fade-in">
-  <h2 class="login-heading">🔐 Login</h2>
 
-  <form method="POST" action="{{ url_for('login') }}" class="login-form">
-    <div class="form-group">
-      <label for="regno">Registration Number</label>
-      <input type="text" id="regno" name="regno" required />
+<!-- Background animation layers -->
+<div class="emoji-bubbles"></div>
+<canvas id="star-canvas"></canvas>
+
+<div class="login-wrapper">
+  <div class="login-container fade-in">
+    <h2 class="login-heading">🔐 <span class="gradient-text">Login</span></h2>
+
+    <form method="POST" action="{{ url_for('login') }}" class="login-form">
+      <div class="form-group">
+        <label for="regno">Registration Number</label>
+        <input type="text" id="regno" name="regno" required />
+      </div>
+
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" required />
+      </div>
+
+      <button type="submit" class="votex-login-btn login-submit">Login</button>
+
+      {% if error %}
+        <div class="error-message">{{ error }}</div>
+      {% endif %}
+    </form>
+
+    <div class="forgot-wrapper">
+      <a href="#" class="login-forgot" onclick="alert('Please contact your class administrator to reset your password.'); return false;">
+        Forgot Password?
+      </a>
     </div>
-
-    <div class="form-group">
-      <label for="password">Password</label>
-      <input type="password" id="password" name="password" required />
-    </div>
-
-    <button type="submit" class="votex-login-btn">Login</button>
-
-    {% if error %}
-      <div class="error-message">{{ error }}</div>
-    {% endif %}
-  </form>
+  </div>
 </div>
 
+<script>
+  // Emoji Bubbles
+  for (let i = 0; i < 12; i++) {
+    const b = document.createElement('div');
+    b.className = 'bubble';
+    b.textContent = ['🎓', '📚', '📝', '🏫', '📖'][Math.floor(Math.random() * 5)];
+    b.style.left = `${Math.random() * 100}%`;
+    b.style.animationDuration = `${5 + Math.random() * 5}s`;
+    document.querySelector('.emoji-bubbles').appendChild(b);
+  }
+
+  // Starfield canvas
+  const canvas = document.getElementById('star-canvas');
+  const ctx = canvas.getContext('2d');
+  let stars = [];
+  function resizeCanvas() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    stars = Array.from({ length: 80 }, () => [
+      Math.random() * canvas.width,
+      Math.random() * canvas.height,
+      0.5 + Math.random() * 1.5,
+    ]);
+  }
+  function drawStars() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = 'white';
+    for (const [x, y, r] of stars) {
+      ctx.beginPath();
+      ctx.arc(x, y, r, 0, 2 * Math.PI);
+      ctx.fill();
+    }
+  }
+  resizeCanvas();
+  drawStars();
+  setInterval(drawStars, 100);
+  window.addEventListener('resize', resizeCanvas);
+</script>
+
 <style>
+:root {
+  --glass-bg-light: rgba(255, 255, 255, 0.55);
+  --glass-bg-dark: rgba(0, 0, 0, 0.25);
+}
+
+.emoji-bubbles {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: -2;
+}
+.emoji-bubbles .bubble {
+  position: absolute;
+  bottom: -30px;
+  font-size: 1.4rem;
+  animation: floatUp linear infinite;
+  opacity: 0.8;
+}
+@keyframes floatUp {
+  0% { transform: translateY(0) scale(1); opacity: 1; }
+  100% { transform: translateY(-120vh) scale(1.5); opacity: 0; }
+}
+
+#star-canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: -3;
+}
+
+.login-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: calc(100vh - 120px);
+  padding: 2rem 1rem;
+  z-index: 1;
+  position: relative;
+}
+
 .login-container {
   max-width: 420px;
-  margin: 5rem auto;
+  width: 100%;
   padding: 2.5rem 2rem;
-  background: rgba(255, 255, 255, 0.08);
-  border-radius: 16px;
-  backdrop-filter: blur(12px);
-  box-shadow: 0 8px 24px rgba(0,0,0,0.1);
-  color: var(--text);
+  background: var(--glass-bg);
+  border-radius: 24px;
+  backdrop-filter: blur(24px);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.1);
+  color: var(--text, #003366);
+  transition: all 0.3s ease;
+  text-align: center;
+  border: 1px solid rgba(255,255,255,0.2);
+  animation: floatCard 5s ease-in-out infinite alternate;
+}
+
+@keyframes floatCard {
+  0% { transform: translateY(0px); }
+  100% { transform: translateY(-10px); }
 }
 
 .login-heading {
-  text-align: center;
-  font-size: 1.8rem;
+  font-size: 2rem;
+  font-weight: 700;
   margin-bottom: 1.5rem;
   color: var(--text);
+}
+
+.gradient-text {
+  background: linear-gradient(to right, #007aff, #5856d6);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 .login-form {
   display: flex;
   flex-direction: column;
   gap: 1.2rem;
+  text-align: left;
 }
 
 .form-group label {
-  display: block;
   font-weight: 600;
   margin-bottom: 0.3rem;
+  display: block;
   color: var(--text);
 }
 
 .form-group input {
   width: 100%;
-  padding: 0.6rem;
-  border: 1px solid #ccc;
-  border-radius: 8px;
+  padding: 0.6rem 0.8rem;
+  border: 1px solid rgba(180, 180, 180, 0.6);
+  border-radius: 12px;
   font-size: 1rem;
-  background-color: rgba(255, 255, 255, 0.15);
+  background-color: rgba(255, 255, 255, 0.3);
   color: var(--text);
-  backdrop-filter: blur(5px);
-  transition: border 0.3s ease;
+  backdrop-filter: blur(6px);
+  transition: box-shadow 0.3s ease, border 0.3s ease, background 0.3s ease;
 }
 
 .form-group input:focus {
   outline: none;
-  border-color: var(--button-bg);
+  background: rgba(255, 255, 255, 0.4);
+  border-color: #007aff;
+  box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.25);
+}
+
+.votex-login-btn.login-submit {
+  margin-top: 0.8rem;
+  background-color: #007aff;
+  color: white;
+  font-weight: 600;
+  padding: 0.7rem 1.5rem;
+  font-size: 1rem;
+  border: none;
+  border-radius: 30px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+.votex-login-btn.login-submit:hover {
+  background-color: #005ecb;
+  transform: scale(1.03);
 }
 
 .error-message {
-  margin-top: 1rem;
+  margin-top: 1.2rem;
   color: #ff4d4f;
   background: rgba(255, 0, 0, 0.05);
   border-left: 4px solid #ff4d4f;
-  padding: 0.75rem;
-  border-radius: 8px;
+  padding: 0.8rem 1rem;
+  border-radius: 10px;
+  font-weight: 500;
+  font-size: 0.95rem;
+}
+
+.forgot-wrapper {
+  text-align: center;
+  margin-top: 1rem;
+}
+.login-forgot {
+  font-size: 0.95rem;
+  color: #007aff;
+  text-decoration: none;
   font-weight: 500;
 }
+.login-forgot:hover {
+  text-decoration: underline;
+}
+
+@media (prefers-color-scheme: dark) {
+  .login-container {
+    background: var(--glass-bg-dark);
+    color: #fff;
+  }
+  .form-group label {
+    color: #fff;
+  }
+  .form-group input {
+    background-color: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(200, 200, 200, 0.3);
+    color: #fff;
+  }
+  .form-group input:focus {
+    background: rgba(255, 255, 255, 0.18);
+    border-color: #5ac8fa;
+    box-shadow: 0 0 0 3px rgba(90, 200, 250, 0.35);
+  }
+  .error-message {
+    background: rgba(255, 0, 0, 0.08);
+  }
+}
+
+@media (max-width: 480px) {
+  .login-wrapper {
+    padding: 3rem 1rem;
+  }
+  .login-container {
+    padding: 2rem 1.2rem;
+  }
+  .login-heading {
+    font-size: 1.6rem;
+  }
+}
 </style>
+
 {% endblock %}

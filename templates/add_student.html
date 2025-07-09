@@ -1,23 +1,29 @@
 {% extends "admin_base.html" %}
 {% block admin_content %}
 <div class="container fade-in">
-  <h2>➕ Add New Student</h2>
+  <h2 style="margin-bottom: 1.5rem;">➕ Add New Student</h2>
 
-  <form method="POST" class="glass-box">
-    <label>Name:</label>
-    <input type="text" name="name" required>
+  <form method="POST" class="login-form glass-box">
+    <div class="form-group">
+      <label for="name">Name</label>
+      <input type="text" name="name" id="name" required placeholder="Full Name">
+    </div>
 
-    <label>Course:</label>
-    <input type="text" name="course" placeholder="e.g., CSE" required>
+    <div class="form-group">
+      <label for="course">Course</label>
+      <input type="text" name="course" id="course" required placeholder="e.g., CSE">
+    </div>
 
-    <label>Batch:</label>
-    <input type="text" name="batch" placeholder="e.g., 2025" required>
+    <div class="form-group">
+      <label for="batch">Batch</label>
+      <input type="text" name="batch" id="batch" required placeholder="e.g., 2025">
+    </div>
 
-    <button type="submit">Add Student</button>
+    <button type="submit" class="glass-btn">Add Student</button>
   </form>
 
-  <p style="margin-top: 1.5rem;">
-    <a href="{{ url_for('admin_dashboard') }}" class="nav-link">← Back to Dashboard</a>
+  <p style="margin-top: 2rem; text-align: center;">
+    <a href="{{ url_for('admin_dashboard') }}" class="nav-link" style="text-decoration: underline;">← Back to Dashboard</a>
   </p>
 </div>
 {% endblock %}

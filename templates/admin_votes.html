@@ -2,36 +2,30 @@
 {% block admin_content %}
 
 <div class="container fade-in">
-  <h2>📊 Live Vote Count</h2>
+  <h2 style="margin-bottom: 2rem;">📊 Live Vote Count</h2>
 
   {% if vote_data %}
-  {% set ns = namespace(grouped={}) %}
-  {% for item in vote_data %}
-    {% set pos = item.position %}
-    {% if pos not in ns.grouped %}
-      {% set _ = ns.grouped.update({ pos: [] }) %}
-    {% endif %}
-    {% set _ = ns.grouped[pos].append(item) %}
-  {% endfor %}
+    {% set ns = namespace(grouped={}) %}
+    {% for item in vote_data %}
+      {% set pos = item.position %}
+      {% if pos not in ns.grouped %}
+        {% set _ = ns.grouped.update({ pos: [] }) %}
+      {% endif %}
+      {% set _ = ns.grouped[pos].append(item) %}
+    {% endfor %}
 
-    <!-- chart logic & style exactly as before -->
-    <!-- (unchanged JS + CSS chart logic) -->
-
-    <div class="charts-wrapper">
+    <div class="charts-wrapper" style="display: flex; flex-direction: column; gap: 2rem;">
       {% for pos, items in ns.grouped.items() %}
-        <div class="chart-block">
-          <h3 class="chart-title">{{ pos }}</h3>
-          <div class="chart-container">
-            <canvas id="chart-{{ loop.index }}"></canvas>
+        <div class="chart-block glass-table" style="padding: 1.5rem;">
+          <h3 style="margin-bottom: 1rem;">📌 {{ pos }}</h3>
+          <div class="chart-container" style="position: relative; height: 320px; width: 100%;">
+            <canvas id="chart-{{ loop.index }}" style="width: 100%; height: 100%;"></canvas>
           </div>
         </div>
       {% endfor %}
     </div>
 
-    <!-- Include Chart.js again if not loaded globally -->
     <script src="{{ url_for('static', filename='chart.min.js') }}"></script>
-
-    <!-- Chart scripts remain the same -->
     <script>
       {% for pos, items in ns.grouped.items() %}
         const ctx{{ loop.index }} = document.getElementById('chart-{{ loop.index }}').getContext('2d');
@@ -79,41 +73,44 @@
       {% endfor %}
     </script>
   {% else %}
-    <p>No vote data available yet.</p>
+    <p style="margin-bottom: 2rem;">No vote data available yet.</p>
   {% endif %}
 
-  <hr>
+  <hr style="margin: 2.5rem 0;">
 
-  <h3>🗳️ All Ballots</h3>
-  <table class="glass-table">
-    <thead>
-      <tr>
-        <th>Vote ID</th>
-        <th>Student Reg No</th>
-        <th>Candidate</th>
-        <th>Position</th>
-        <th>Timestamp</th>
-        <th>Action</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for vote in ballots %}
-      <tr>
-        <td>{{ vote.id }}</td>
-        <td>{{ vote.student_regno }}</td>
-        <td>{{ vote.candidate }}</td>
-        <td>{{ vote.position }}</td>
-        <td>{{ vote.timestamp }}</td>
-        <td>
-          <form action="{{ url_for('admin_delete_vote', vote_id=vote.id) }}" method="POST" onsubmit="return confirmDelete(this);">
-            <input type="text" name="remark" placeholder="Reason" required class="remark-input">
-            <button type="submit" class="btn-danger">Delete</button>
-          </form>
-        </td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
+  <h3 style="margin-bottom: 1rem;">🗳️ All Ballots</h3>
+
+  <div class="glass-table-wrapper" style="overflow-x: auto;">
+    <table class="glass-table">
+      <thead>
+        <tr>
+          <th>Vote ID</th>
+          <th>Student Reg No</th>
+          <th>Candidate</th>
+          <th>Position</th>
+          <th>Timestamp</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for vote in ballots %}
+        <tr>
+          <td>{{ vote.id }}</td>
+          <td>{{ vote.student_regno }}</td>
+          <td>{{ vote.candidate }}</td>
+          <td>{{ vote.position }}</td>
+          <td>{{ vote.timestamp }}</td>
+          <td>
+            <form action="{{ url_for('admin_delete_vote', vote_id=vote.id) }}" method="POST" onsubmit="return confirmDelete(this);">
+              <input type="text" name="remark" placeholder="Reason" required class="remark-input" style="margin-bottom: 6px;">
+              <button type="submit" class="btn-danger">Delete</button>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
 </div>
 
 <script>

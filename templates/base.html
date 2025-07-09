@@ -6,194 +6,13 @@
   <title>{{ title if title else "VoteX - Elections Made Effortless" }}</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <style>
-    * {
-      box-sizing: border-box;
-    }
-
-    html, body {
-      margin: 0;
-      padding: 0;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      font-family: 'Segoe UI', sans-serif;
-      overflow-x: hidden;
-    }
-
-    .navbar {
-      width: 100%;
-      padding: 0.75rem 1.5rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      background: rgba(0, 51, 102, 0.4);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-      color: white;
-      position: relative;
-      z-index: 999;
-    }
-
-    .nav-left {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .nav-left img.logo {
-      height: 40px;
-    }
-
-    .nav-title {
-      font-size: 1.2rem;
-      font-weight: bold;
-    }
-
-    .nav-right {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-    }
-
-    .nav-user {
-      font-weight: bold;
-    }
-
-    .nav-link {
-      color: white;
-      text-decoration: none;
-      font-weight: 500;
-    }
-
-    #header-clock {
-      font-size: 0.9rem;
-      font-weight: 500;
-      color: #fff;
-      opacity: 0.85;
-    }
-
-    .switch {
-      position: relative;
-      display: inline-block;
-      width: 52px;
-      height: 28px;
-    }
-
-    .switch input {
-      opacity: 0;
-      width: 0;
-      height: 0;
-    }
-
-    .slider {
-      position: absolute;
-      cursor: pointer;
-      background-color: #ccc;
-      border-radius: 34px;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      transition: 0.4s;
-    }
-
-    .slider:before {
-      content: "🌙";
-      position: absolute;
-      height: 22px;
-      width: 22px;
-      left: 4px;
-      bottom: 3px;
-      background-color: white;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 14px;
-      transition: 0.4s;
-      color: #333;
-    }
-
-    input:checked + .slider {
-      background-color: #2196F3;
-    }
-
-    input:checked + .slider:before {
-      transform: translateX(24px);
-      content: "☀️";
-    }
-
-    main {
-      flex: 1;
-      width: 100%;
-      max-width: 1400px;
-      margin: 0 auto;
-      padding: 2rem;
-      overflow-x: auto;
-    }
-
-    footer {
-      width: 100%;
-      background: rgba(0, 51, 102, 0.8);
-      color: white;
-      text-align: center;
-      padding: 1rem;
-      font-size: 0.9rem;
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-      border-top: 1px solid rgba(255, 255, 255, 0.1);
-    }
-
-    .flash-messages {
-      list-style: none;
-      padding: 0;
-      margin: 1rem 0;
-      color: #d8000c;
-      background-color: #ffdddd;
-      border: 1px solid #d8000c;
-      border-radius: 4px;
-    }
-
-    .flash-messages li {
-      padding: 0.5rem 1rem;
-    }
-
-    .votex-login-btn.small {
-      background-color: #ffffff;
-      color: #003366;
-      font-weight: 600;
-      padding: 6px 16px;
-      font-size: 0.9rem;
-      border-radius: 20px;
-      text-decoration: none;
-      box-shadow: 0 3px 12px rgba(0,0,0,0.15);
-      transition: all 0.3s ease;
-    }
-
-    .votex-login-btn.small:hover {
-      background-color: #eeeeee;
-      transform: translateY(-1px);
-    }
-
-    @media screen and (max-width: 768px) {
-      .navbar {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 0.5rem;
-      }
-
-      main {
-        padding: 1rem;
-      }
-    }
-  </style>
 </head>
 
 <body class="{{ body_class if body_class else 'votex-home' }}">
+  <!-- Page Loader -->
+  <div id="loader" class="page-loader"></div>
+
+  <!-- Navigation Bar -->
   <nav class="navbar glass-nav">
     <div class="nav-left">
       <div class="logo-box">
@@ -214,14 +33,17 @@
         {% endif %}
       {% endif %}
 
-      <label class="switch" title="Toggle Dark Mode">
-        <input type="checkbox" id="theme-toggle" />
-        <span class="slider round"></span>
-      </label>
+      <div class="theme-toggle">
+        <label class="switch" title="Toggle Dark Mode">
+          <input type="checkbox" id="theme-toggle" />
+          <span class="slider"></span>
+        </label>
+      </div>
     </div>
   </nav>
 
-  <main>
+  <!-- Main Content -->
+  <main class="page-enter page-enter-active">
     {% with messages = get_flashed_messages() %}
       {% if messages %}
         <ul class="flash-messages">
@@ -235,10 +57,12 @@
     {% block content %}{% endblock %}
   </main>
 
+  <!-- Footer -->
   <footer>
-    Designed by Imroz for SASTRA Project
+    Designed by Imroz Tanweer | SASTRA University | Information System Development Lab
   </footer>
 
+  <!-- THEME TOGGLE SCRIPT -->
   <script>
     const toggleCheckbox = document.getElementById('theme-toggle');
     const htmlEl = document.documentElement;
@@ -250,7 +74,7 @@
     }
 
     const savedTheme = localStorage.getItem('theme');
-    const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
     setTheme(savedTheme || (prefersDark ? 'dark' : 'light'));
 
     toggleCheckbox.addEventListener('change', () => {
@@ -259,16 +83,13 @@
     });
   </script>
 
+  <!-- HEADER CLOCK SCRIPT -->
   <script>
     function updateClockHeader() {
       const now = new Date();
       const options = {
-        weekday: 'short',
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit'
+        weekday: 'short', year: 'numeric', month: 'short',
+        day: 'numeric', hour: '2-digit', minute: '2-digit'
       };
       const clock = document.getElementById('header-clock');
       if (clock) clock.innerText = now.toLocaleString('en-US', options);
@@ -276,6 +97,18 @@
 
     setInterval(updateClockHeader, 1000);
     window.onload = updateClockHeader;
+  </script>
+
+  <!-- LOADER HIDE SCRIPT -->
+  <script>
+    window.addEventListener('load', () => {
+      const loader = document.getElementById('loader');
+      if (loader) {
+        loader.style.opacity = '0';
+        loader.style.pointerEvents = 'none';
+        setTimeout(() => loader.remove(), 400); // Ensures animation completes
+      }
+    });
   </script>
 </body>
 </html>

@@ -1,10 +1,12 @@
 {% extends "student_base.html" %}
 {% block student_content %}
 
-<div class="container fade-in student-profile-wrapper">
-
-  <div class="glass-box card">
+<div class="profile-container fade-in">
+  <!-- Profile Info -->
+  <div class="glass-card">
     <h2>👤 Your Profile</h2>
+    <img src="{{ url_for('static', filename='uploads/avatars/' + session.get('avatar', 'avatar.png')) }}"
+         alt="Avatar" class="profile-avatar">
     <p><strong>Name:</strong> {{ session.name }}</p>
     <p><strong>Reg No:</strong> {{ session.user }}</p>
     <p><strong>Course:</strong> {{ session.course }}</p>
@@ -12,98 +14,170 @@
     <p>
       <strong>Voting Status:</strong>
       {% if session.voted %}
-        <span style="color: limegreen;">Voted ✅</span>
+        <span class="badge voted">Voted ✅</span>
       {% else %}
-        <span style="color: crimson;">Not Voted ❌</span>
+        <span class="badge not-voted">Not Voted ❌</span>
       {% endif %}
     </p>
     <p><strong>Election:</strong> {{ election.title }}</p>
     <p><strong>Deadline:</strong> {{ election.deadline }}</p>
   </div>
 
-  <div class="glass-box card">
-    <h2>🔐 Change Password</h2>
-    <form method="POST" action="{{ url_for('change_password') }}">
-      <label>Current Password:</label>
-      <input type="password" name="old_password" required>
+  <!-- Change Password + Avatar Upload -->
+  <div class="glass-card">
+    <h2>🔐 Update Account</h2>
+    <form method="POST" action="{{ url_for('change_password') }}" enctype="multipart/form-data" class="form-ios">
+      <label for="avatar">Upload New Avatar</label>
+      <input type="file" name="avatar" id="avatar" accept="image/*">
 
-      <label>New Password:</label>
-      <input type="password" name="new_password" required minlength="6">
+      <label for="old_password">Current Password</label>
+      <input type="password" id="old_password" name="old_password" required>
 
-      <label>Confirm New Password:</label>
-      <input type="password" name="confirm_password" required minlength="6">
+      <label for="new_password">New Password</label>
+      <input type="password" id="new_password" name="new_password" required minlength="6">
 
-      <button type="submit">Update Password</button>
+      <label for="confirm_password">Confirm New Password</label>
+      <input type="password" id="confirm_password" name="confirm_password" required minlength="6">
+
+      <button type="submit" class="ios-button">Update</button>
     </form>
   </div>
-
 </div>
 
 <style>
-.container.fade-in {
+.profile-container {
   display: flex;
   flex-wrap: wrap;
   gap: 2rem;
   justify-content: center;
-  animation: fadeIn 0.6s ease-in-out;
+  padding: 1rem;
 }
 
-.card {
+.glass-card {
   flex: 1 1 320px;
-  padding: 1.5rem;
-  border-radius: 16px;
+  min-width: 300px;
+  padding: 1.6rem;
+  border-radius: 20px;
   background: rgba(255, 255, 255, 0.08);
-  backdrop-filter: blur(10px);
+  backdrop-filter: blur(14px);
   color: var(--text);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
-  min-width: 300px;
+  transition: all 0.3s ease;
 }
 
-.card h2 {
+.glass-card h2 {
   margin-top: 0;
-  color: #003366;
+  margin-bottom: 1.2rem;
+  font-size: 1.4rem;
+  color: var(--text);
+}
+
+.profile-avatar {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 50%;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   margin-bottom: 1rem;
 }
 
-form label {
-  display: block;
-  margin-top: 1rem;
-  font-weight: bold;
+.badge {
+  padding: 0.4rem 0.9rem;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  display: inline-block;
 }
 
-form input {
-  width: 100%;
-  padding: 0.6rem;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  margin-top: 0.4rem;
+.voted {
+  background-color: rgba(0, 128, 0, 0.1);
+  color: limegreen;
+}
+
+.not-voted {
+  background-color: rgba(255, 0, 0, 0.1);
+  color: crimson;
+}
+
+.form-ios {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.form-ios label {
+  font-weight: 600;
+  color: var(--text);
+}
+
+.form-ios input[type="file"],
+.form-ios input[type="password"] {
+  padding: 0.7rem;
+  border-radius: 12px;
+  border: 1px solid rgba(200, 200, 200, 0.4);
   background: rgba(255, 255, 255, 0.15);
-  color: inherit;
-}
-
-form input:focus {
-  outline: none;
-  border-color: #2196f3;
-}
-
-button[type="submit"] {
-  margin-top: 1.5rem;
-  padding: 10px 24px;
+  color: var(--text);
   font-size: 1rem;
-  background-color: #003366;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
+  backdrop-filter: blur(6px);
+  transition: border 0.3s ease;
 }
 
-button[type="submit"]:hover {
-  background-color: #00509e;
+.form-ios input:focus {
+  outline: none;
+  border-color: #007aff;
+  background-color: rgba(255, 255, 255, 0.2);
+  box-shadow: 0 0 0 2px rgba(0, 122, 255, 0.3);
+}
+
+.ios-button {
+  margin-top: 1rem;
+  padding: 12px 20px;
+  font-size: 1rem;
+  font-weight: 600;
+  color: white;
+  background: linear-gradient(to right, #007aff, #5856d6);
+  border: none;
+  border-radius: 30px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.15);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.ios-button:hover {
+  transform: scale(1.03);
+  background: linear-gradient(to right, #005ecb, #4a44c0);
+}
+
+/* Dark mode */
+@media (prefers-color-scheme: dark) {
+  .glass-card {
+    background: rgba(255, 255, 255, 0.06);
+    box-shadow: 0 6px 18px rgba(255, 255, 255, 0.05);
+  }
+
+  .form-ios input {
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+    border: 1px solid rgba(200, 200, 200, 0.3);
+  }
+
+  .form-ios input:focus {
+    border-color: #5ac8fa;
+    background-color: rgba(255, 255, 255, 0.18);
+    box-shadow: 0 0 0 3px rgba(90, 200, 250, 0.35);
+  }
+
+  .ios-button {
+    background: linear-gradient(to right, #0a84ff, #5e5ce6);
+  }
+
+  .ios-button:hover {
+    background: linear-gradient(to right, #0066cc, #4a44c0);
+  }
 }
 
 @media (max-width: 768px) {
-  .container.fade-in {
+  .profile-container {
     flex-direction: column;
     align-items: stretch;
   }

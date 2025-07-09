@@ -39,7 +39,7 @@
           <td>{{ c.name }}</td>
           <td>{{ c.position }}</td>
           <td>
-            <form method="POST" action="{{ url_for('manage_candidates') }}" style="display:inline-block;">
+            <form method="POST" action="{{ url_for('manage_candidates') }}" class="inline-form">
               <input type="hidden" name="action" value="edit">
               <input type="hidden" name="id" value="{{ c.id }}">
               <input type="text" name="name" value="{{ c.name }}" required>
@@ -50,7 +50,7 @@
               </select>
               <button type="submit" class="btn-update">Update</button>
             </form>
-            <form method="POST" action="{{ url_for('manage_candidates') }}" style="display:inline-block;">
+            <form method="POST" action="{{ url_for('manage_candidates') }}" class="inline-form">
               <input type="hidden" name="action" value="delete">
               <input type="hidden" name="id" value="{{ c.id }}">
               <button type="submit" class="btn-danger" onclick="return confirm('Delete this candidate?')">Delete</button>
@@ -65,50 +65,61 @@
 
 <style>
 .glass-box {
-  background: rgba(255, 255, 255, 0.08);
-  backdrop-filter: blur(10px);
+  background: var(--glass-bg, rgba(255, 255, 255, 0.08));
+  backdrop-filter: blur(14px);
   padding: 1.5rem;
-  border-radius: 16px;
+  border-radius: 20px;
   margin-bottom: 2rem;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+  box-shadow: 0 12px 32px rgba(0,0,0,0.1);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .glass-box input[type="text"],
 .glass-box select {
   width: 100%;
-  padding: 0.6rem;
+  padding: 0.75rem;
   margin-top: 0.4rem;
   margin-bottom: 1rem;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(0,0,0,0.1);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.2);
   color: var(--text);
-  backdrop-filter: blur(5px);
+  backdrop-filter: blur(6px);
+  font-size: 1rem;
 }
 
 .btn-add {
-  background-color: #2980b9;
+  background: linear-gradient(to right, #1d8cf8, #3358f4);
   color: #fff;
-  padding: 10px 20px;
-  font-weight: bold;
+  padding: 12px 24px;
+  font-weight: 600;
   border: none;
-  border-radius: 8px;
+  border-radius: 12px;
   cursor: pointer;
+  font-size: 1rem;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  transition: all 0.3s ease;
 }
 
 .btn-add:hover {
-  background-color: #1c5986;
+  background: linear-gradient(to right, #1266dd, #254de4);
+  transform: translateY(-1px);
+}
+
+.btn-update,
+.btn-danger {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 6px;
+  font-size: 0.9rem;
 }
 
 .btn-update {
   background-color: #2ecc71;
-  color: white;
-  padding: 6px 14px;
-  border: none;
-  border-radius: 6px;
-  font-weight: bold;
-  margin-top: 6px;
-  cursor: pointer;
+  color: #fff;
 }
 
 .btn-update:hover {
@@ -117,13 +128,7 @@
 
 .btn-danger {
   background-color: #e74c3c;
-  color: white;
-  padding: 6px 14px;
-  border: none;
-  border-radius: 6px;
-  font-weight: bold;
-  margin-top: 6px;
-  cursor: pointer;
+  color: #fff;
 }
 
 .btn-danger:hover {
@@ -137,37 +142,25 @@
 .glass-table {
   width: 100%;
   border-collapse: collapse;
-  background: rgba(255, 255, 255, 0.08);
-  backdrop-filter: blur(10px);
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(14px);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.1);
   border-radius: 16px;
   overflow: hidden;
 }
 
 .glass-table th, .glass-table td {
-  padding: 0.75rem;
+  padding: 1rem;
   text-align: center;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
   color: var(--text);
+  font-size: 0.95rem;
 }
 
-input[type="text"][name="name"],
-select[name="position_id"] {
-  padding: 6px 10px;
-  border-radius: 8px;
-  border: 1px solid #ccc;
-  background: rgba(255, 255, 255, 0.2);
-  color: var(--text);
-  backdrop-filter: blur(5px);
-  transition: 0.2s ease;
+.inline-form {
+  display: inline-block;
+  margin: 0 5px;
 }
-
-input[type="text"][name="name"]:focus,
-select[name="position_id"]:focus {
-  outline: none;
-  border-color: #3f2b96;
-}
-
 </style>
 
 {% endblock %}

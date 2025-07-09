@@ -2,17 +2,20 @@
 {% block admin_content %}
 
 <div class="glass-container fade-in">
-  <h2>🗳️ Election Settings</h2>
+  <h2 style="margin-bottom: 1.5rem;">🗳️ Election Settings</h2>
 
-  <form method="POST" class="glass-box">
-    <label for="title">Election Title:</label>
+  <form method="POST" class="glass-box" onsubmit="return validateDeadline()">
+    <label for="title">Election Title</label>
     <input type="text" id="title" name="title" value="{{ election.title }}" required />
 
-    <label for="start">Start Date & Time:</label>
+    <label for="start">Start Date & Time</label>
     <input type="datetime-local" id="start" name="start" value="{{ election.start_date }}" required />
 
-    <label for="deadline">Deadline:</label>
-    <input type="datetime-local" id="deadline" name="deadline" value="{{ election.deadline }}" required />
+    <label for="deadline">Deadline</label>
+    <input type="datetime-local" id="deadline" name="deadline" value="{{ election.deadline }}" required oninput="updateCountdown()" />
+
+    <div id="deadline-warning" style="color: red; font-size: 0.9rem; display: none;">⚠️ Deadline cannot be in the past!</div>
+    <div id="countdown" style="margin-top: 0.5rem; font-size: 0.9rem; color: var(--text);"></div>
 
     <button type="submit" class="btn-update">💾 Update Settings</button>
   </form>
@@ -26,52 +29,115 @@
   }
 
   .glass-box {
-    background: rgba(255, 255, 255, 0.08);
-    backdrop-filter: blur(12px);
-    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.06);
+    backdrop-filter: blur(14px);
+    border-radius: 20px;
     padding: 2rem;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
     color: var(--text);
   }
 
   .glass-box label {
     display: block;
     font-weight: 600;
-    margin: 1rem 0 0.3rem;
+    margin: 1rem 0 0.4rem;
   }
 
   .glass-box input {
     width: 100%;
-    padding: 0.6rem;
-    border-radius: 8px;
-    border: 1px solid #ccc;
-    background: rgba(255, 255, 255, 0.6);
+    padding: 0.7rem 1rem;
     font-size: 1rem;
+    border-radius: 12px;
+    border: 1px solid var(--input-border, #ccc);
+    background: rgba(255, 255, 255, 0.65);
+    color: var(--text);
+    transition: all 0.3s ease;
     margin-bottom: 1rem;
   }
 
   html[data-theme='dark'] .glass-box input {
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.08);
     color: #fff;
-    border-color: #666;
+    border-color: #555;
   }
 
   .btn-update {
-    padding: 10px 20px;
+    width: 100%;
+    padding: 12px;
     font-size: 1rem;
     background: var(--button-bg);
     color: white;
     border: none;
-    border-radius: 8px;
+    border-radius: 12px;
     font-weight: 600;
     cursor: pointer;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    transition: 0.3s ease;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    margin-top: 1rem;
   }
 
   .btn-update:hover {
     background-color: #3a65b5;
   }
+
+  @media (max-width: 600px) {
+    .glass-box {
+      padding: 1.5rem;
+    }
+
+    .btn-update {
+      font-size: 0.95rem;
+    }
+  }
 </style>
+
+<script>
+  function updateCountdown() {
+    const deadlineInput = document.getElementById("deadline");
+    const countdownEl = document.getElementById("countdown");
+    const warningEl = document.getElementById("deadline-warning");
+
+    const deadline = new Date(deadlineInput.value);
+    const now = new Date();
+
+    if (isNaN(deadline)) {
+      countdownEl.textContent = "";
+      return;
+    }
+
+    if (deadline < now) {
+      warningEl.style.display = "block";
+    } else {
+      warningEl.style.display = "none";
+    }
+
+    const diff = deadline - now;
+
+    if (diff > 0) {
+      const hours = Math.floor(diff / (1000 * 60 * 60));
+      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+      countdownEl.textContent = `⏳ Time left: ${hours}h ${minutes}m ${seconds}s`;
+    } else {
+      countdownEl.textContent = "⏰ Deadline has passed.";
+    }
+  }
+
+  function validateDeadline() {
+    const deadlineInput = document.getElementById("deadline");
+    const deadline = new Date(deadlineInput.value);
+    const now = new Date();
+
+    if (deadline < now) {
+      alert("❗ Deadline must be in the future.");
+      return false;
+    }
+    return true;
+  }
+
+  updateCountdown();
+  setInterval(updateCountdown, 1000);
+</script>
 
 {% endblock %}

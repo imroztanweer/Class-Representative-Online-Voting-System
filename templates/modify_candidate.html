@@ -1,27 +1,29 @@
 {% extends "base.html" %}
 {% block content %}
 
-<h2>Manage Candidates</h2>
+<h2 class="page-heading">🎯 Modify Candidates</h2>
 
-<div class="glass-box" style="margin-bottom: 2rem;">
-  <form method="POST" action="{{ url_for('manage_candidates') }}" style="display: flex; flex-wrap: wrap; gap: 1rem;">
+<!-- Add Candidate Form -->
+<div class="glass-box">
+  <form method="POST" action="{{ url_for('manage_candidates') }}" class="flex-form">
     <input type="hidden" name="action" value="add">
-    <input type="text" name="name" placeholder="Candidate Name" required style="flex: 1; min-width: 180px;">
-    <select name="position_id" required style="flex: 1; min-width: 180px;">
+    <input type="text" name="name" placeholder="Candidate Name" required>
+    <select name="position_id" required>
       <option value="" disabled selected>Select Position</option>
       {% for pos in positions %}
         <option value="{{ pos.id }}">{{ pos.name }}</option>
       {% endfor %}
     </select>
-    <button type="submit">➕ Add Candidate</button>
+    <button type="submit" class="btn-add">➕ Add Candidate</button>
   </form>
 </div>
 
 <hr>
 
-<h3>Existing Candidates</h3>
-<div class="glass-box" style="overflow-x:auto;">
-  <table>
+<!-- Existing Candidates -->
+<h3 class="section-heading">📋 Existing Candidates</h3>
+<div class="glass-box scroll-table">
+  <table class="glass-table">
     <thead>
       <tr>
         <th>Name</th>
@@ -33,21 +35,21 @@
       {% for c in candidates %}
       <tr>
         <td>{{ c.name }}</td>
-        <td>{{ c.position }}</td>
-        <td style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
-          <form method="POST" action="{{ url_for('manage_candidates') }}">
-            <input type="hidden" name="action" value="edit">
-            <input type="hidden" name="id" value="{{ c.id }}">
-            <input type="text" name="name" value="{{ c.name }}" required style="min-width: 140px;">
-            <select name="position_id" required style="min-width: 140px;">
-              {% for pos in positions %}
-                <option value="{{ pos.id }}" {% if pos.name == c.position %}selected{% endif %}>{{ pos.name }}</option>
-              {% endfor %}
-            </select>
-            <button type="submit">✏️ Update</button>
-          </form>
-
-          <form method="POST" action="{{ url_for('manage_candidates') }}" onsubmit="return confirm('Delete this candidate?')">
+        <td>
+          {% set icon = {
+            'President': '🎓',
+            'Secretary': '🗒️',
+            'Treasurer': '💰',
+            'Cultural Head': '🎭',
+            'Sports Captain': '🏅',
+            'Vice President': '🧑‍💼',
+            'Tech Lead': '💻'
+          }[c.position] %}
+          {{ icon }} {{ c.position }}
+        </td>
+        <td>
+          <button class="btn-update" onclick="openEditModal('{{ c.id }}', '{{ c.name }}', '{{ c.position }}')">✏️ Edit</button>
+          <form method="POST" action="{{ url_for('manage_candidates') }}" onsubmit="return confirm('Delete this candidate?')" style="display:inline-block;">
             <input type="hidden" name="action" value="delete">
             <input type="hidden" name="id" value="{{ c.id }}">
             <button type="submit" class="btn-danger">🗑️ Delete</button>
@@ -59,10 +61,113 @@
   </table>
 </div>
 
-<div style="margin-top: 2rem;">
-  <a href="{{ url_for('admin_dashboard') }}">
-    <button style="padding: 10px 20px;">← Back to Dashboard</button>
-  </a>
+<!-- Modal for Editing -->
+<div id="edit-modal" class="modal">
+  <div class="modal-content glass-box">
+    <span class="modal-close" onclick="closeEditModal()">&times;</span>
+    <h3>Edit Candidate</h3>
+    <form method="POST" action="{{ url_for('manage_candidates') }}" id="edit-form">
+      <input type="hidden" name="action" value="edit">
+      <input type="hidden" name="id" id="edit-id">
+      <label>Name</label>
+      <input type="text" name="name" id="edit-name" required>
+      <label>Position</label>
+      <select name="position_id" id="edit-position" required>
+        {% for pos in positions %}
+          <option value="{{ pos.id }}">{{ pos.name }}</option>
+        {% endfor %}
+      </select>
+      <button type="submit" class="btn-update">✅ Save Changes</button>
+    </form>
+  </div>
 </div>
+
+<a href="{{ url_for('admin_dashboard') }}" class="votex-login-btn" style="margin-top: 2rem; display: inline-block;">← Back to Dashboard</a>
+
+<style>
+.flex-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: center;
+}
+.flex-form input,
+.flex-form select,
+.flex-form button {
+  min-width: 180px;
+  flex: 1;
+}
+
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 999;
+  left: 0; top: 0;
+  width: 100%; height: 100%;
+  overflow: auto;
+  background-color: rgba(0,0,0,0.4);
+  backdrop-filter: blur(6px);
+  padding-top: 60px;
+}
+
+.modal-content {
+  background: rgba(255,255,255,0.12);
+  margin: auto;
+  padding: 2rem;
+  border: 1px solid #ccc;
+  width: 90%;
+  max-width: 500px;
+  border-radius: 16px;
+  color: var(--text);
+}
+
+.modal-close {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+  cursor: pointer;
+}
+.modal-close:hover {
+  color: #000;
+}
+.modal input,
+.modal select {
+  width: 100%;
+  padding: 0.6rem;
+  margin: 0.5rem 0 1rem;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  background: rgba(255,255,255,0.1);
+  color: var(--text);
+}
+</style>
+
+<script>
+function openEditModal(id, name, position) {
+  document.getElementById('edit-id').value = id;
+  document.getElementById('edit-name').value = name;
+
+  const select = document.getElementById('edit-position');
+  for (let option of select.options) {
+    if (option.textContent === position) {
+      option.selected = true;
+      break;
+    }
+  }
+
+  document.getElementById('edit-modal').style.display = 'block';
+}
+
+function closeEditModal() {
+  document.getElementById('edit-modal').style.display = 'none';
+}
+window.onclick = function(event) {
+  const modal = document.getElementById('edit-modal');
+  if (event.target === modal) {
+    closeEditModal();
+  }
+}
+</script>
 
 {% endblock %}

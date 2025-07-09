@@ -568,6 +568,20 @@ def change_password():
     flash("Password updated successfully.")
     return redirect(url_for('student_profile'))
 
+@app.route('/admin/reset_password/<regno>', methods=['POST'])
+@admin_required
+def admin_reset_password(regno):
+    from werkzeug.security import generate_password_hash
+
+    db = get_db()
+    db.execute("UPDATE students SET password = ? WHERE regno = ?", (generate_password_hash("voter123"), regno))
+    db.commit()
+    db.close()
+
+    flash(f"Password for {regno} has been reset to default ('voter123').")
+    return redirect(url_for('admin_dashboard'))
+
+
 # ----------- Main -----------
 
 if __name__ == '__main__':
