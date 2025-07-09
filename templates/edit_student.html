@@ -9,10 +9,23 @@
     <input type="text" id="name" name="name" value="{{ student.name }}" required>
 
     <label for="course">Course</label>
-    <input type="text" id="course" name="course" value="{{ student.course }}" required>
+    <select id="course" name="course" required class="edit-select">
+      {% set courses = [
+        "B.Tech CSE", "B.Tech ECE", "B.Tech IT", "B.Tech AI-DS",
+        "B.Tech EEE", "B.Tech CIVIL", "BCA", "B.Sc", "MCA",
+        "MBA", "M.Tech", "PhD"
+      ] %}
+      {% for c in courses %}
+        <option value="{{ c }}" {% if student.course == c %}selected{% endif %}>{{ c }}</option>
+      {% endfor %}
+    </select>
 
     <label for="batch">Batch</label>
-    <input type="text" id="batch" name="batch" value="{{ student.batch }}" required>
+    <select id="batch" name="batch" required class="edit-select">
+      {% for year in range(2015, 2030) %}
+        <option value="{{ year }}" {% if student.batch|string == year|string %}selected{% endif %}>{{ year }}</option>
+      {% endfor %}
+    </select>
 
     <button type="submit" class="btn-update">💾 Update Student</button>
   </form>
@@ -44,7 +57,8 @@
     margin: 1rem 0 0.4rem;
   }
 
-  .glass-box input {
+  .glass-box input,
+  .edit-select {
     width: 100%;
     padding: 0.7rem 1rem;
     border-radius: 10px;
@@ -56,7 +70,8 @@
     color: var(--text);
   }
 
-  html[data-theme='dark'] .glass-box input {
+  html[data-theme='dark'] .glass-box input,
+  html[data-theme='dark'] .edit-select {
     background: rgba(255, 255, 255, 0.08);
     color: #f0f0f0;
     border-color: #555;

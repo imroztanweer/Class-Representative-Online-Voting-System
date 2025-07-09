@@ -1,18 +1,14 @@
 {% extends "base.html" %}
 {% block content %}
 
-<!-- Background animation layers -->
-<div class="emoji-bubbles"></div>
-<canvas id="star-canvas"></canvas>
-
 <div class="login-wrapper">
-  <div class="login-container fade-in">
+  <div class="login-container fade-in {% if error %}shake{% endif %}">
     <h2 class="login-heading">🔐 <span class="gradient-text">Login</span></h2>
 
     <form method="POST" action="{{ url_for('login') }}" class="login-form">
       <div class="form-group">
         <label for="regno">Registration Number</label>
-        <input type="text" id="regno" name="regno" required />
+        <input type="text" id="regno" name="regno" required autofocus />
       </div>
 
       <div class="form-group">
@@ -35,80 +31,17 @@
   </div>
 </div>
 
-<script>
-  // Emoji Bubbles
-  for (let i = 0; i < 12; i++) {
-    const b = document.createElement('div');
-    b.className = 'bubble';
-    b.textContent = ['🎓', '📚', '📝', '🏫', '📖'][Math.floor(Math.random() * 5)];
-    b.style.left = `${Math.random() * 100}%`;
-    b.style.animationDuration = `${5 + Math.random() * 5}s`;
-    document.querySelector('.emoji-bubbles').appendChild(b);
-  }
-
-  // Starfield canvas
-  const canvas = document.getElementById('star-canvas');
-  const ctx = canvas.getContext('2d');
-  let stars = [];
-  function resizeCanvas() {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-    stars = Array.from({ length: 80 }, () => [
-      Math.random() * canvas.width,
-      Math.random() * canvas.height,
-      0.5 + Math.random() * 1.5,
-    ]);
-  }
-  function drawStars() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.fillStyle = 'white';
-    for (const [x, y, r] of stars) {
-      ctx.beginPath();
-      ctx.arc(x, y, r, 0, 2 * Math.PI);
-      ctx.fill();
-    }
-  }
-  resizeCanvas();
-  drawStars();
-  setInterval(drawStars, 100);
-  window.addEventListener('resize', resizeCanvas);
-</script>
-
 <style>
 :root {
-  --glass-bg-light: rgba(255, 255, 255, 0.55);
-  --glass-bg-dark: rgba(0, 0, 0, 0.25);
+  --glass-bg: rgba(255, 255, 255, 0.55);
+  --text: #1e1e1e;
 }
 
-.emoji-bubbles {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  z-index: -2;
-}
-.emoji-bubbles .bubble {
-  position: absolute;
-  bottom: -30px;
-  font-size: 1.4rem;
-  animation: floatUp linear infinite;
-  opacity: 0.8;
-}
-@keyframes floatUp {
-  0% { transform: translateY(0) scale(1); opacity: 1; }
-  100% { transform: translateY(-120vh) scale(1.5); opacity: 0; }
-}
-
-#star-canvas {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  z-index: -3;
+@media (prefers-color-scheme: dark) {
+  :root {
+    --glass-bg: rgba(0, 0, 0, 0.25);
+    --text: #ffffff;
+  }
 }
 
 .login-wrapper {
@@ -129,7 +62,7 @@
   border-radius: 24px;
   backdrop-filter: blur(24px);
   box-shadow: 0 20px 50px rgba(0, 0, 0, 0.1);
-  color: var(--text, #003366);
+  color: var(--text);
   transition: all 0.3s ease;
   text-align: center;
   border: 1px solid rgba(255,255,255,0.2);
@@ -139,6 +72,16 @@
 @keyframes floatCard {
   0% { transform: translateY(0px); }
   100% { transform: translateY(-10px); }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-10px); }
+  40%, 80% { transform: translateX(10px); }
+}
+
+.login-container.shake {
+  animation: shake 0.4s ease-in-out;
 }
 
 .login-heading {
@@ -165,7 +108,7 @@
   font-weight: 600;
   margin-bottom: 0.3rem;
   display: block;
-  color: var(--text);
+  color: var(--text); /* ✅ fixed */
 }
 
 .form-group input {
@@ -174,15 +117,16 @@
   border: 1px solid rgba(180, 180, 180, 0.6);
   border-radius: 12px;
   font-size: 1rem;
-  background-color: rgba(255, 255, 255, 0.3);
+  background-color: rgba(255, 255, 255, 0.7);
   color: var(--text);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
   backdrop-filter: blur(6px);
   transition: box-shadow 0.3s ease, border 0.3s ease, background 0.3s ease;
 }
 
 .form-group input:focus {
   outline: none;
-  background: rgba(255, 255, 255, 0.4);
+  background: #fefefe;
   border-color: #007aff;
   box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.25);
 }
@@ -228,29 +172,6 @@
 }
 .login-forgot:hover {
   text-decoration: underline;
-}
-
-@media (prefers-color-scheme: dark) {
-  .login-container {
-    background: var(--glass-bg-dark);
-    color: #fff;
-  }
-  .form-group label {
-    color: #fff;
-  }
-  .form-group input {
-    background-color: rgba(255, 255, 255, 0.12);
-    border: 1px solid rgba(200, 200, 200, 0.3);
-    color: #fff;
-  }
-  .form-group input:focus {
-    background: rgba(255, 255, 255, 0.18);
-    border-color: #5ac8fa;
-    box-shadow: 0 0 0 3px rgba(90, 200, 250, 0.35);
-  }
-  .error-message {
-    background: rgba(255, 0, 0, 0.08);
-  }
 }
 
 @media (max-width: 480px) {

@@ -2,12 +2,10 @@
 {% block admin_content %}
 
 <div class="container fade-in">
-  <h2 style="margin-bottom: 1.5rem; display: flex; align-items: center; gap: 8px;">
-    📋 Audit Log
-  </h2>
+  <h2 class="section-title">📋 Audit Log</h2>
 
   {% if logs %}
-    <div class="glass-table-wrapper" style="overflow-x: auto;">
+    <div class="glass-table-wrapper">
       <table class="glass-table">
         <thead>
           <tr>
@@ -30,8 +28,64 @@
       </table>
     </div>
   {% else %}
-    <div class="info-box" style="margin-top: 2rem;">No audit log entries found.</div>
+    <div class="info-box no-logs">No audit log entries found.</div>
   {% endif %}
 </div>
+
+<style>
+.section-title {
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.glass-table-wrapper {
+  overflow-x: auto;
+}
+
+.glass-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.glass-table th,
+.glass-table td {
+  padding: 0.75rem 1rem;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.glass-table th {
+  background-color: var(--glass-bg);
+  color: var(--text);
+  font-weight: 700;
+}
+
+.glass-table td {
+  color: var(--text);
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.no-logs {
+  margin-top: 2rem;
+  font-style: italic;
+  color: var(--text-muted, #888);
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  text-align: center;
+}
+
+/* Mobile tweaks */
+@media (max-width: 768px) {
+  .glass-table th,
+  .glass-table td {
+    padding: 0.6rem 0.75rem;
+    font-size: 0.85rem;
+    white-space: normal;
+  }
+}
+</style>
 
 {% endblock %}

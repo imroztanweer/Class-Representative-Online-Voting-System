@@ -19,9 +19,7 @@
           {% for c in candidates %}
             <tr class="{% if c.votes == top_votes and c.votes > 0 %}winner{% endif %}">
               <td>{{ c.candidate or 'N/A' }}</td>
-              <td>
-                <span class="vote-count" data-final="{{ c.votes }}">0</span>
-              </td>
+              <td><span class="vote-count" data-final="{{ c.votes }}">0</span></td>
             </tr>
           {% endfor %}
         </tbody>
@@ -108,7 +106,6 @@
   border-bottom: none;
 }
 
-/* Winner row */
 .winner {
   background: linear-gradient(to right, rgba(0, 122, 255, 0.2), rgba(88, 86, 214, 0.2));
   font-weight: 700;
@@ -125,5 +122,4 @@
   transition: color 0.3s ease;
 }
 </style>
-
 {% endblock %}

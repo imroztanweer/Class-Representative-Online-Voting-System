@@ -1,29 +1,83 @@
 {% extends "admin_base.html" %}
 {% block admin_content %}
 <div class="container fade-in">
-  <h2 style="margin-bottom: 1.5rem;">➕ Add New Student</h2>
+  <h2 class="page-title">➕ Add New Student</h2>
 
-  <form method="POST" class="login-form glass-box">
+  <form method="POST" class="glass-box login-form">
     <div class="form-group">
-      <label for="name">Name</label>
-      <input type="text" name="name" id="name" required placeholder="Full Name">
+      <label for="name">Full Name</label>
+      <input type="text" name="name" id="name" required placeholder="e.g., John Doe">
     </div>
 
     <div class="form-group">
-      <label for="course">Course</label>
-      <input type="text" name="course" id="course" required placeholder="e.g., CSE">
+      <label for="course">Course Code (e.g., CSE)</label>
+      <input type="text" name="course" id="course" required 
+             pattern="[A-Za-z]{2,10}" 
+             title="Only alphabets (2-10 letters)" 
+             placeholder="CSE, ECE, IT...">
     </div>
 
     <div class="form-group">
-      <label for="batch">Batch</label>
-      <input type="text" name="batch" id="batch" required placeholder="e.g., 2025">
+      <label for="batch">Batch Year (e.g., 2025)</label>
+      <input type="text" name="batch" id="batch" required 
+             pattern="\d{4}" 
+             title="Enter a valid 4-digit year" 
+             placeholder="2025">
     </div>
 
-    <button type="submit" class="glass-btn">Add Student</button>
+    <div id="regno-preview" class="regno-preview" style="display: none;">
+      Reg. No. will be like: <strong><span id="regno-value">CSE2025_100X</span></strong>
+    </div>
+
+    <button type="submit" class="glass-btn">➕ Add Student</button>
   </form>
 
-  <p style="margin-top: 2rem; text-align: center;">
-    <a href="{{ url_for('admin_dashboard') }}" class="nav-link" style="text-decoration: underline;">← Back to Dashboard</a>
-  </p>
+  <div style="margin-top: 2rem; text-align: center;">
+    <a href="{{ url_for('admin_dashboard') }}" class="nav-link underline">← Back to Dashboard</a>
+  </div>
 </div>
+
+<style>
+  .regno-preview {
+    margin-top: 0.5rem;
+    font-size: 0.95rem;
+    color: var(--text);
+    background: rgba(255, 255, 255, 0.2);
+    padding: 0.5rem 1rem;
+    border-radius: 12px;
+    border-left: 4px solid #007aff;
+    font-weight: 500;
+  }
+
+  .underline {
+    text-decoration: underline;
+  }
+
+  @media (max-width: 480px) {
+    .form-group input {
+      font-size: 1rem;
+    }
+  }
+</style>
+
+<script>
+  const courseEl = document.getElementById('course');
+  const batchEl = document.getElementById('batch');
+  const previewBox = document.getElementById('regno-preview');
+  const regnoSpan = document.getElementById('regno-value');
+
+  function updatePreview() {
+    const course = courseEl.value.toUpperCase().trim();
+    const batch = batchEl.value.trim();
+    if (course && /^\d{4}$/.test(batch)) {
+      regnoSpan.textContent = `${course}${batch}_100X`;
+      previewBox.style.display = 'block';
+    } else {
+      previewBox.style.display = 'none';
+    }
+  }
+
+  courseEl.addEventListener('input', updatePreview);
+  batchEl.addEventListener('input', updatePreview);
+</script>
 {% endblock %}

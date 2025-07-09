@@ -2,7 +2,10 @@
 
 {% block student_content %}
 <div class="container fade-in">
-  <h2 style="margin-bottom: 1.5rem;">🧾 Your Ballot Summary</h2>
+  <h2 style="margin-bottom: 0.5rem;">🧾 Your Ballot Summary</h2>
+  <p class="subtext" style="margin-bottom: 1.5rem; color: var(--muted-text);">
+    Below is a summary of your submitted votes.
+  </p>
 
   {% if summary %}
     <div class="glass-table-wrapper" style="overflow-x: auto;">
@@ -27,9 +30,11 @@
     <div class="info-box" style="margin-top: 2rem;">
       You have not voted yet.
     </div>
-    <a href="{{ url_for('vote') }}">
-      <button class="glass-btn" style="margin-top: 1rem;">Cast Your Vote</button>
-    </a>
+    <div style="display: flex; justify-content: center; margin-top: 1.5rem;">
+      <a href="{{ url_for('vote') }}">
+        <button class="glass-btn">🗳️ Cast Your Vote</button>
+      </a>
+    </div>
   {% endif %}
 </div>
 {% endblock %}

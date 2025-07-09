@@ -4,6 +4,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 import sqlite3
 from datetime import datetime
 from functools import wraps
+from werkzeug.utils import secure_filename
 
 DATABASE = 'database.db'
 
@@ -314,13 +315,14 @@ def election_settings():
 def results():
     db = get_db()
     data = db.execute("""
-        SELECT p.name as position, c.name as candidate, COUNT(b.id) as votes
-        FROM positions p
-        LEFT JOIN candidates c ON p.id = c.position_id
-        LEFT JOIN ballots b ON c.id = b.candidate_id AND b.position_id = p.id
-        GROUP BY p.id, c.id
-        ORDER BY p.id, votes DESC
-    """).fetchall()
+    SELECT p.name as position, c.name as candidate, COUNT(b.id) as votes
+    FROM positions p
+    JOIN candidates c ON p.id = c.position_id
+    LEFT JOIN ballots b ON c.id = b.candidate_id AND b.position_id = p.id
+    GROUP BY p.id, c.id
+    ORDER BY p.id, votes DESC
+""").fetchall()
+
 
     db.close()
 
@@ -469,10 +471,12 @@ def admin_votes():
     # Fetch vote count per candidate
     vote_data = db.execute("""
         SELECT c.name AS candidate, COUNT(b.id) as votes
-        FROM candidates c
-        LEFT JOIN ballots b ON c.id = b.candidate_id
-        GROUP BY c.id
-        ORDER BY votes DESC
+FROM candidates c
+LEFT JOIN ballots b ON c.id = b.candidate_id
+GROUP BY c.id
+ORDER BY votes DESC
+
+
     """).fetchall()
 
     # Fetch individual ballots
@@ -480,6 +484,7 @@ def admin_votes():
         SELECT b.id, b.student_regno, c.name as candidate, p.name as position, b.timestamp
         FROM ballots b
         JOIN candidates c ON b.candidate_id = c.id
+
         JOIN positions p ON b.position_id = p.id
         ORDER BY b.timestamp DESC
     """).fetchall()
@@ -492,18 +497,16 @@ def admin_votes():
 @login_required
 def live_vote_count():
     db = get_db()
-    # Get vote counts grouped by candidate and position, descending by votes
     data = db.execute("""
         SELECT p.name as position, c.name as candidate, COUNT(b.id) as votes
         FROM positions p
-        LEFT JOIN candidates c ON p.id = c.position_id
+        JOIN candidates c ON p.id = c.position_id
         LEFT JOIN ballots b ON c.id = b.candidate_id AND b.position_id = p.id
         GROUP BY p.id, c.id
         ORDER BY p.id, votes DESC
     """).fetchall()
     db.close()
 
-    # Organize data by position for template use
     results_by_position = {}
     for row in data:
         pos = row['position']
@@ -580,6 +583,20 @@ def admin_reset_password(regno):
 
     flash(f"Password for {regno} has been reset to default ('voter123').")
     return redirect(url_for('admin_dashboard'))
+@app.route('/upload_avatar', methods=['POST'])
+def upload_avatar():
+    if 'avatar' in request.files:
+        file = request.files['avatar']
+        filename = secure_filename(file.filename)
+        # Save file logic (e.g., uploads/avatars/user123.jpg)
+        filepath = os.path.join('static/uploads/avatars', filename)
+        file.save(filepath)
+
+        # Update session (and DB if needed)
+        session['avatar'] = f'uploads/avatars/{filename}'
+
+        flash('Avatar updated successfully.')
+    return redirect(url_for('student_profile'))
 
 
 # ----------- Main -----------

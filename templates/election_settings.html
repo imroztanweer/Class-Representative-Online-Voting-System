@@ -33,7 +33,7 @@
     backdrop-filter: blur(14px);
     border-radius: 20px;
     padding: 2rem;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.08);
     color: var(--text);
   }
 
@@ -43,8 +43,15 @@
     margin: 1rem 0 0.4rem;
   }
 
-  .glass-box input {
+  .glass-box input,
+  .glass-box select,
+  .btn-update {
     width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+  .glass-box input {
     padding: 0.7rem 1rem;
     font-size: 1rem;
     border-radius: 12px;
@@ -62,7 +69,6 @@
   }
 
   .btn-update {
-    width: 100%;
     padding: 12px;
     font-size: 1rem;
     background: var(--button-bg);

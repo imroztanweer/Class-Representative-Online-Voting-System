@@ -1,6 +1,8 @@
 {% extends "student_base.html" %}
 {% block student_content %}
 
+<h2 class="gradient-heading">🏠 Dashboard Home</h2>
+
 <div class="dashboard-cards">
   <!-- Student Info -->
   <div class="dashboard-card">
@@ -46,6 +48,15 @@
 </div>
 
 <style>
+.gradient-heading {
+  font-size: 1.8rem;
+  font-weight: 700;
+  background: linear-gradient(to right, #007aff, #5856d6);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 2rem;
+}
+
 .dashboard-cards {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -69,7 +80,6 @@
   margin-bottom: 0.6rem;
   font-size: 1.25rem;
   font-weight: 700;
-  color: var(--text);
 }
 
 .badge {
@@ -111,6 +121,7 @@
   box-shadow: 0 8px 16px rgba(0,0,0,0.2);
   cursor: pointer;
   transition: all 0.25s ease-in-out;
+  width: 100%;
 }
 
 .ios-button:hover {
@@ -146,11 +157,10 @@
   }
 
   .ios-button {
-    width: 100%;
+    font-size: 0.95rem;
   }
 }
 
-/* Dark Mode Support */
 @media (prefers-color-scheme: dark) {
   .dashboard-card {
     background: rgba(255, 255, 255, 0.06);

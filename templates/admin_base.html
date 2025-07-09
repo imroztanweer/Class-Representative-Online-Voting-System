@@ -4,12 +4,36 @@
   <nav class="admin-sidebar glassy-sidebar">
     <button class="hamburger-toggle" onclick="toggleMenu()">☰ Admin Tools</button>
     <ul id="adminMenu">
-      <li><a href="{{ url_for('admin_dashboard') }}" class="{% if request.endpoint == 'admin_dashboard' %}active{% endif %}">Dashboard Home</a></li>
-      <li><a href="{{ url_for('manage_positions') }}" class="{% if request.endpoint == 'manage_positions' %}active{% endif %}">Manage Positions</a></li>
-      <li><a href="{{ url_for('manage_candidates') }}" class="{% if request.endpoint == 'manage_candidates' %}active{% endif %}">Manage Candidates</a></li>
-      <li><a href="{{ url_for('election_settings') }}" class="{% if request.endpoint == 'election_settings' %}active{% endif %}">Election Settings</a></li>
-      <li><a href="{{ url_for('audit_log') }}" class="{% if request.endpoint == 'audit_log' %}active{% endif %}">Audit Log</a></li>
-      <li><a href="{{ url_for('admin_votes') }}" class="{% if request.endpoint == 'admin_votes' %}active{% endif %}">Live Vote Count</a></li>
+      <li>
+        <a href="{{ url_for('admin_dashboard') }}" class="{% if request.endpoint == 'admin_dashboard' %}active{% endif %}">
+          🏠 Dashboard Home
+        </a>
+      </li>
+      <li>
+        <a href="{{ url_for('manage_positions') }}" class="{% if request.endpoint == 'manage_positions' %}active{% endif %}">
+          📌 Manage Positions
+        </a>
+      </li>
+      <li>
+        <a href="{{ url_for('manage_candidates') }}" class="{% if request.endpoint == 'manage_candidates' %}active{% endif %}">
+          👤 Manage Candidates
+        </a>
+      </li>
+      <li>
+        <a href="{{ url_for('election_settings') }}" class="{% if request.endpoint == 'election_settings' %}active{% endif %}">
+          ⚙️ Election Settings
+        </a>
+      </li>
+      <li>
+        <a href="{{ url_for('audit_log') }}" class="{% if request.endpoint == 'audit_log' %}active{% endif %}">
+          📄 Audit Log
+        </a>
+      </li>
+      <li>
+        <a href="{{ url_for('admin_votes') }}" class="{% if request.endpoint == 'admin_votes' %}active{% endif %}">
+          📊 Live Vote Count
+        </a>
+      </li>
     </ul>
   </nav>
 
@@ -25,13 +49,13 @@
   background: var(--bg);
 }
 
+/* Updated sidebar width */
 .admin-sidebar.glassy-sidebar {
-  width: 240px;
+  width: 280px;
   padding: 1.2rem;
   min-height: 100vh;
   background: var(--glass-bg);
   backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
   border-right: 1px solid rgba(255, 255, 255, 0.15);
   box-shadow: inset -2px 0 4px rgba(0,0,0,0.05);
   border-radius: 0 20px 20px 0;
@@ -75,9 +99,14 @@
   text-decoration: none;
   font-weight: 600;
   color: var(--text);
-  display: block;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
   padding: 0.55rem 1rem;
   border-radius: 12px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
   transition: all 0.25s ease;
 }
 
@@ -87,7 +116,6 @@
   color: white;
 }
 
-/* Main Content */
 .admin-main-content.glassy-content {
   flex-grow: 1;
   padding: 2rem;
@@ -99,7 +127,6 @@
   color: var(--text);
 }
 
-/* Force color override for clarity */
 .admin-main-content h1,
 .admin-main-content h2,
 .admin-main-content h3,
@@ -109,7 +136,7 @@
   color: var(--text);
 }
 
-/* Mobile Optimizations */
+/* Responsive fix */
 @media (max-width: 768px) {
   .admin-dashboard {
     flex-direction: column;

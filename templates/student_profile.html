@@ -5,8 +5,8 @@
   <!-- Profile Info -->
   <div class="glass-card">
     <h2>👤 Your Profile</h2>
-    <img src="{{ url_for('static', filename='uploads/avatars/' + session.get('avatar', 'avatar.png')) }}"
-         alt="Avatar" class="profile-avatar">
+    <img src="{{ url_for('static', filename=session.get('avatar', 'avatar.png') if session.get('avatar') else 'avatar.png') }}"
+         alt="Avatar" class="profile-avatar" id="avatarPreview">
     <p><strong>Name:</strong> {{ session.name }}</p>
     <p><strong>Reg No:</strong> {{ session.user }}</p>
     <p><strong>Course:</strong> {{ session.course }}</p>
@@ -23,13 +23,20 @@
     <p><strong>Deadline:</strong> {{ election.deadline }}</p>
   </div>
 
-  <!-- Change Password + Avatar Upload -->
+  <!-- Update Avatar Form -->
   <div class="glass-card">
-    <h2>🔐 Update Account</h2>
-    <form method="POST" action="{{ url_for('change_password') }}" enctype="multipart/form-data" class="form-ios">
-      <label for="avatar">Upload New Avatar</label>
-      <input type="file" name="avatar" id="avatar" accept="image/*">
+    <h2>🖼️ Update Avatar</h2>
+    <form method="POST" action="{{ url_for('upload_avatar') }}" enctype="multipart/form-data" class="form-ios">
+      <label for="avatar">Choose New Avatar</label>
+      <input type="file" name="avatar" id="avatar" accept="image/*" required>
+      <button type="submit" class="ios-button">Upload Avatar</button>
+    </form>
+  </div>
 
+  <!-- Update Password Form -->
+  <div class="glass-card">
+    <h2>🔐 Change Password</h2>
+    <form method="POST" action="{{ url_for('change_password') }}" class="form-ios">
       <label for="old_password">Current Password</label>
       <input type="password" id="old_password" name="old_password" required>
 
@@ -39,7 +46,7 @@
       <label for="confirm_password">Confirm New Password</label>
       <input type="password" id="confirm_password" name="confirm_password" required minlength="6">
 
-      <button type="submit" class="ios-button">Update</button>
+      <button type="submit" class="ios-button">Update Password</button>
     </form>
   </div>
 </div>

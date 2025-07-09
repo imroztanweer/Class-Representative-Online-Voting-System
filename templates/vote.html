@@ -1,8 +1,9 @@
-{% extends "admin_base.html" %}
-{% block content %}
+{% extends "student_base.html" %}
+{% block student_content %}
 
-<div class="container fade-in"> <!-- Use layout-friendly container -->
+<div class="container fade-in">
 
+  <!-- Voting Form -->
   <div class="vote-glass-card" id="voteFormCard">
     <h2>🗳️ Cast Your Vote</h2>
     <form method="POST" action="{{ url_for('submit_vote') }}" id="voteForm" class="vote-form-ios">
@@ -13,16 +14,21 @@
             <label class="candidate-ios">
               <input type="radio" name="position_{{ candidate.position_id }}" value="{{ candidate.id }}" required>
               <span class="radio-custom"></span>
-              <img src="{{ url_for('static', filename='avatar.png') }}" alt="avatar" class="candidate-avatar">
+              <img src="{{ url_for('static', filename='uploads/avatars/' ~ (candidate.avatar or 'avatar.png')) }}"
+                   alt="avatar" class="candidate-avatar">
               {{ candidate.name }}
             </label>
           {% endfor %}
         </fieldset>
       {% endfor %}
-      <button type="button" onclick="confirmVote()" class="ios-button full-width">✅ Submit Vote</button>
+      <button type="button" onclick="confirmVote()" id="submitButton" class="ios-button full-width">
+        ✅ Submit Vote
+      </button>
+      <p id="voteError" class="error-message hidden">⚠️ Please select one candidate for every position.</p>
     </form>
   </div>
 
+  <!-- Confirmation Box -->
   <div class="confirmation-box glass-card hidden" id="confirmationBox">
     <h3>🔐 Confirm Your Vote</h3>
     <p>Please make sure you’ve selected your choices correctly.</p>
@@ -32,6 +38,7 @@
     </div>
   </div>
 
+  <!-- Success Message -->
   <div class="vote-success hidden" id="voteSuccess">
     <div class="emoji">🎉</div>
     <p class="message">Thank you! Your vote has been submitted.</p>
@@ -39,20 +46,182 @@
 
 </div>
 
+<style>
+.vote-glass-card {
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(14px);
+  padding: 2rem;
+  border-radius: 20px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+  margin-bottom: 2rem;
+}
+
+.vote-form-ios {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.fieldset-ios {
+  border: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.fieldset-ios legend {
+  font-weight: 700;
+  font-size: 1.2rem;
+  color: var(--text);
+  margin-bottom: 0.4rem;
+}
+
+.candidate-ios {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.7rem 1rem;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 14px;
+  border: 2px solid transparent;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.candidate-ios input[type="radio"] {
+  display: none;
+}
+
+.candidate-ios .radio-custom {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 2px solid #ccc;
+  position: relative;
+}
+
+.candidate-ios input:checked + .radio-custom {
+  border-color: #007aff;
+  background-color: #007aff;
+}
+
+.candidate-ios input:checked ~ img,
+.candidate-ios input:checked ~ span,
+.candidate-ios input:checked ~ strong {
+  filter: brightness(1.2);
+  color: #007aff;
+}
+
+.candidate-ios:hover {
+  background-color: rgba(255, 255, 255, 0.08);
+  border-color: #007aff;
+}
+
+.candidate-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.confirmation-box {
+  padding: 2rem;
+  border-radius: 20px;
+  background: rgba(255,255,255,0.06);
+  backdrop-filter: blur(12px);
+  text-align: center;
+}
+
+.confirm-actions {
+  margin-top: 1.2rem;
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+}
+
+.ios-button.secondary {
+  background: #ccc;
+  color: #333;
+}
+
+.vote-success {
+  text-align: center;
+  background: rgba(0, 128, 0, 0.08);
+  padding: 2rem;
+  border-radius: 20px;
+  color: limegreen;
+}
+
+.vote-success .emoji {
+  font-size: 2.5rem;
+}
+
+.error-message {
+  margin-top: 1rem;
+  padding: 0.75rem 1rem;
+  background-color: rgba(255, 0, 0, 0.12);
+  color: crimson;
+  border-radius: 12px;
+  font-weight: 600;
+  text-align: center;
+  transition: all 0.2s ease;
+}
+
+.hidden {
+  display: none;
+}
+
+.full-width {
+  width: 100%;
+}
+
+@media (max-width: 600px) {
+  .confirm-actions {
+    flex-direction: column;
+  }
+}
+</style>
+
 <script>
 function confirmVote() {
+  const voteForm = document.getElementById("voteForm");
+  const errorBox = document.getElementById("voteError");
+  const positionNames = Array.from(new Set([...voteForm.querySelectorAll("input[type=radio]")].map(i => i.name)));
+  const allSelected = positionNames.every(name =>
+    voteForm.querySelector(`input[name="${name}"]:checked`)
+  );
+
+  if (!allSelected) {
+    errorBox.classList.remove("hidden");
+    return;
+  }
+
+  errorBox.classList.add("hidden");
   document.getElementById("voteFormCard").classList.add("hidden");
   document.getElementById("confirmationBox").classList.remove("hidden");
 }
+
 function editVote() {
   document.getElementById("confirmationBox").classList.add("hidden");
   document.getElementById("voteFormCard").classList.remove("hidden");
 }
+
 function submitFinalVote() {
-  document.getElementById("voteForm").submit();
   document.getElementById("confirmationBox").classList.add("hidden");
   document.getElementById("voteSuccess").classList.remove("hidden");
+  setTimeout(() => {
+    document.getElementById("voteForm").submit();
+  }, 800);
 }
+
+// Hide error on any change
+document.addEventListener("DOMContentLoaded", () => {
+  document.getElementById("voteForm").addEventListener("change", () => {
+    document.getElementById("voteError").classList.add("hidden");
+  });
+});
 </script>
 
 {% endblock %}

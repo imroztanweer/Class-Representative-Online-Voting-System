@@ -3,16 +3,36 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#007aff" />
   <title>{{ title if title else "VoteX - Elections Made Effortless" }}</title>
+
+  <!-- Google Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
+
+  <!-- Main Styles -->
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+
+  <!-- Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
-<body class="{{ body_class if body_class else 'votex-home' }}">
+<body class="{{ body_class if body_class else 'votex-home' }}" style="font-family: 'Inter', sans-serif;">
+
   <!-- Page Loader -->
   <div id="loader" class="page-loader"></div>
 
-  <!-- Navigation Bar -->
+  <!-- Starfield Background -->
+  <canvas id="starfield"></canvas>
+
+  <!-- Emoji Rain -->
+  <div class="emoji-rain">
+    <div>🎉</div><div>✨</div><div>🎈</div><div>🎊</div><div>🌟</div>
+  </div>
+
+  <!-- Custom Cursor -->
+  <div class="custom-cursor" id="customCursor"></div>
+
+  <!-- Navigation -->
   <nav class="navbar glass-nav">
     <div class="nav-left">
       <div class="logo-box">
@@ -23,7 +43,6 @@
 
     <div class="nav-right">
       <div id="header-clock" class="nav-clock"></div>
-
       {% if session.get('user') %}
         <span class="nav-user">Hello, {{ session.get('name', session.get('user')) }}</span>
         <a href="{{ url_for('logout') }}" class="votex-login-btn small">Logout</a>
@@ -42,27 +61,27 @@
     </div>
   </nav>
 
-  <!-- Main Content -->
-  <main class="page-enter page-enter-active">
+  <!-- Flash Messages -->
+  <div class="toast-container">
     {% with messages = get_flashed_messages() %}
       {% if messages %}
-        <ul class="flash-messages">
-          {% for msg in messages %}
-            <li>{{ msg }}</li>
-          {% endfor %}
-        </ul>
+        {% for msg in messages %}
+          <div class="toast">{{ msg }}</div>
+        {% endfor %}
       {% endif %}
     {% endwith %}
+  </div>
 
+  <!-- Main Content -->
+  <main class="page-enter page-enter-active">
     {% block content %}{% endblock %}
   </main>
 
-  <!-- Footer -->
   <footer>
     Designed by Imroz Tanweer | SASTRA University | Information System Development Lab
   </footer>
 
-  <!-- THEME TOGGLE SCRIPT -->
+  <!-- THEME TOGGLE -->
   <script>
     const toggleCheckbox = document.getElementById('theme-toggle');
     const htmlEl = document.documentElement;
@@ -78,37 +97,198 @@
     setTheme(savedTheme || (prefersDark ? 'dark' : 'light'));
 
     toggleCheckbox.addEventListener('change', () => {
-      const theme = toggleCheckbox.checked ? 'dark' : 'light';
-      setTheme(theme);
+      setTheme(toggleCheckbox.checked ? 'dark' : 'light');
     });
   </script>
 
-  <!-- HEADER CLOCK SCRIPT -->
+  <!-- CLOCK -->
   <script>
     function updateClockHeader() {
       const now = new Date();
-      const options = {
-        weekday: 'short', year: 'numeric', month: 'short',
-        day: 'numeric', hour: '2-digit', minute: '2-digit'
-      };
+      const options = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' };
       const clock = document.getElementById('header-clock');
       if (clock) clock.innerText = now.toLocaleString('en-US', options);
     }
-
     setInterval(updateClockHeader, 1000);
     window.onload = updateClockHeader;
   </script>
 
-  <!-- LOADER HIDE SCRIPT -->
+  <!-- PAGE LOADER -->
   <script>
     window.addEventListener('load', () => {
       const loader = document.getElementById('loader');
       if (loader) {
         loader.style.opacity = '0';
         loader.style.pointerEvents = 'none';
-        setTimeout(() => loader.remove(), 400); // Ensures animation completes
+        setTimeout(() => loader.remove(), 400);
       }
     });
   </script>
+
+  <!-- TOAST AUTO-DISMISS -->
+  <script>
+    document.querySelectorAll('.toast').forEach(toast => {
+      setTimeout(() => toast.style.opacity = '0', 4000);
+    });
+  </script>
+
+  <!-- STARFIELD SCRIPT -->
+  <script>
+    const canvas = document.getElementById("starfield");
+    const ctx = canvas.getContext("2d");
+    let stars = [];
+
+    function initStars(count) {
+      stars = [];
+      for (let i = 0; i < count; i++) {
+        stars.push({
+          x: Math.random() * window.innerWidth,
+          y: Math.random() * window.innerHeight,
+          radius: Math.random() * 1.5 + 0.5,
+          speed: Math.random() * 0.5 + 0.2,
+        });
+      }
+    }
+
+    function animateStars() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      ctx.fillStyle = isDark ? 'white' : 'black';
+
+      stars.forEach(star => {
+        star.y += star.speed;
+        if (star.y > canvas.height) star.y = 0;
+        ctx.beginPath();
+        ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
+        ctx.fill();
+      });
+
+      requestAnimationFrame(animateStars);
+    }
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      initStars(150);
+    }
+
+    window.addEventListener("resize", resizeCanvas);
+    resizeCanvas();
+    animateStars();
+  </script>
+
+  <!-- EMOJI RAIN -->
+  <script>
+    document.querySelectorAll(".emoji-rain div").forEach(el => {
+      el.style.left = Math.random() * 100 + "vw";
+      el.style.animationDuration = (Math.random() * 2 + 3) + "s";
+      el.style.fontSize = (Math.random() * 10 + 14) + "px";
+    });
+  </script>
+
+  <!-- CUSTOM CURSOR -->
+  <script>
+    const cursor = document.getElementById("customCursor");
+    document.addEventListener("mousemove", e => {
+      cursor.style.left = e.clientX + "px";
+      cursor.style.top = e.clientY + "px";
+    });
+  </script>
+
+  <!-- PAGE STYLES -->
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      overflow-x: hidden;
+    }
+
+    #loader.page-loader {
+      position: fixed;
+      width: 100vw;
+      height: 100vh;
+      background: #fff;
+      z-index: 10000;
+      transition: opacity 0.4s ease;
+    }
+
+    canvas#starfield {
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: -2;
+      pointer-events: none;
+    }
+
+    .emoji-rain {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .emoji-rain div {
+      position: absolute;
+      animation-name: emojiFall;
+      animation-timing-function: linear;
+      animation-iteration-count: infinite;
+      opacity: 0.25;
+    }
+
+    @keyframes emojiFall {
+      0% { top: -5%; opacity: 0; }
+      20% { opacity: 1; }
+      100% { top: 105%; opacity: 0; }
+    }
+
+    .custom-cursor {
+      width: 12px;
+      height: 12px;
+      background: #007aff;
+      border-radius: 50%;
+      position: fixed;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+      z-index: 9999;
+      transition: transform 0.08s ease;
+    }
+
+    .page-enter {
+      animation: fadeInUp 0.5s ease-in-out both;
+    }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(15px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .toast-container {
+      position: fixed;
+      top: 1rem;
+      right: 1rem;
+      z-index: 10001;
+    }
+
+    .toast {
+      background: #007aff;
+      color: white;
+      padding: 12px 20px;
+      margin-bottom: 10px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      transition: opacity 0.5s ease;
+    }
+
+    footer {
+      text-align: center;
+      padding: 1rem;
+      font-size: 0.9rem;
+      color: var(--text);
+    }
+  </style>
+
 </body>
 </html>

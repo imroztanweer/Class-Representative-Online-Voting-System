@@ -48,8 +48,12 @@
           {{ icon }} {{ c.position }}
         </td>
         <td>
-          <button class="btn-update" onclick="openEditModal('{{ c.id }}', '{{ c.name }}', '{{ c.position }}')">✏️ Edit</button>
-          <form method="POST" action="{{ url_for('manage_candidates') }}" onsubmit="return confirm('Delete this candidate?')" style="display:inline-block;">
+          <button class="btn-update"
+            onclick="openEditModal('{{ c.id }}', '{{ c.name | e }}', '{{ c.position_id }}')">
+            ✏️ Edit
+          </button>
+          <form method="POST" action="{{ url_for('manage_candidates') }}"
+            onsubmit="return confirm('Delete this candidate?')" style="display:inline-block;">
             <input type="hidden" name="action" value="delete">
             <input type="hidden" name="id" value="{{ c.id }}">
             <button type="submit" class="btn-danger">🗑️ Delete</button>
@@ -108,6 +112,7 @@
   background-color: rgba(0,0,0,0.4);
   backdrop-filter: blur(6px);
   padding-top: 60px;
+  transition: opacity 0.3s ease;
 }
 
 .modal-content {
@@ -144,16 +149,13 @@
 </style>
 
 <script>
-function openEditModal(id, name, position) {
+function openEditModal(id, name, positionId) {
   document.getElementById('edit-id').value = id;
   document.getElementById('edit-name').value = name;
 
   const select = document.getElementById('edit-position');
   for (let option of select.options) {
-    if (option.textContent === position) {
-      option.selected = true;
-      break;
-    }
+    option.selected = option.value === positionId;
   }
 
   document.getElementById('edit-modal').style.display = 'block';
@@ -162,6 +164,7 @@ function openEditModal(id, name, position) {
 function closeEditModal() {
   document.getElementById('edit-modal').style.display = 'none';
 }
+
 window.onclick = function(event) {
   const modal = document.getElementById('edit-modal');
   if (event.target === modal) {

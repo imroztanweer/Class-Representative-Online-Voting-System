@@ -29,8 +29,9 @@
             borderColor: [
               '#ff4d4f', '#1890ff', '#fadb14', '#52c41a', '#9254de', '#fa8c16'
             ],
-            borderWidth: 1,
-            borderRadius: 8
+            borderWidth: 1.5,
+            borderRadius: 10,
+            hoverOffset: 12
           }]
         };
         const config{{ loop.index }} = {
@@ -46,7 +47,12 @@
               }
             },
             plugins: {
-              legend: { display: false }
+              legend: { display: false },
+              tooltip: {
+                backgroundColor: '#333',
+                titleColor: '#fff',
+                bodyColor: '#fff'
+              }
             }
           }
         };
@@ -57,6 +63,12 @@
     <p class="no-data-msg">No vote data available yet.</p>
   {% endif %}
 </div>
+
+<noscript>
+  <div style="text-align:center; padding: 2rem; color: var(--text);">
+    ❗ JavaScript is required to view live charts.
+  </div>
+</noscript>
 
 <style>
 .container {
@@ -89,6 +101,8 @@
   max-width: 45%;
   min-width: 300px;
   padding: 1.5rem;
+  position: relative;
+  transition: transform 0.3s ease;
 }
 
 .ios-glass {
@@ -96,7 +110,6 @@
   backdrop-filter: blur(18px);
   border-radius: 18px;
   box-shadow: 0 8px 24px rgba(0,0,0,0.08);
-  transition: transform 0.3s ease;
 }
 
 .ios-glass:hover {
@@ -114,7 +127,7 @@
 
 canvas {
   width: 100% !important;
-  height: auto !important;
+  height: 300px !important;
   max-height: 300px;
 }
 
@@ -131,15 +144,13 @@ canvas {
 }
 
 /* Dark mode support */
-@media (prefers-color-scheme: dark) {
-  .ios-glass {
-    background: rgba(255, 255, 255, 0.06);
-    box-shadow: 0 6px 20px rgba(255, 255, 255, 0.05);
-  }
+html[data-theme='dark'] .ios-glass {
+  background: rgba(255, 255, 255, 0.06);
+  box-shadow: 0 6px 20px rgba(255, 255, 255, 0.05);
+}
 
-  .chart-title {
-    color: #ffffffcc;
-  }
+html[data-theme='dark'] .chart-title {
+  color: #ffffffcc;
 }
 
 @media (max-width: 768px) {
