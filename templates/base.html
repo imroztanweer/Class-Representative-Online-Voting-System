@@ -6,137 +6,223 @@
   <meta name="theme-color" content="#007aff" />
   <title>{{ title if title else "VoteX - Elections Made Effortless" }}</title>
 
-  <!-- Google Font -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
-
-  <!-- Main Styles -->
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+  <style>
+    #starfield {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: -1;
+    }
 
-  <!-- Chart.js -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    .hamburger div {
+      background: #000;
+      transition: background 0.3s;
+    }
+
+    html[data-theme="dark"] .hamburger div {
+      background: #fff;
+    }
+
+    .theme-toggle-icon {
+      background: transparent !important;
+      border: none;
+      padding: 0.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: transform 0.3s ease;
+    }
+
+    .theme-toggle-icon img {
+      width: 24px;
+      height: 24px;
+    }
+
+    html[data-theme="dark"] .theme-toggle-icon img {
+      filter: invert(1);
+    }
+
+    .spin-once {
+      animation: spin 0.6s ease-in-out;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .mobile-menu .mobile-actions {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+  </style>
 </head>
 
-<body class="{{ body_class if body_class else 'votex-home' }}" style="font-family: 'Inter', sans-serif;">
-
-  <!-- Page Loader -->
-  <div id="loader" class="page-loader"></div>
-
-  <!-- Starfield Background -->
+<body>
   <canvas id="starfield"></canvas>
+  <div class="floating-shape shape1"></div>
+  <div class="floating-shape shape2"></div>
+  <div class="floating-shape shape3"></div>
+  <div id="drawer-overlay" class="drawer-overlay"></div>
 
-  <!-- Emoji Rain -->
-  <div class="emoji-rain">
-    <div>🎉</div><div>✨</div><div>🎈</div><div>🎊</div><div>🌟</div>
-  </div>
-
-  <!-- Custom Cursor -->
-  <div class="custom-cursor" id="customCursor"></div>
-
-  <!-- Navigation -->
-  <nav class="navbar glass-nav">
-    <div class="nav-left">
-      <div class="logo-box">
-        <img src="{{ url_for('static', filename='logo.png') }}" alt="SASTRA Logo" class="logo" />
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="nav-container" style="display: flex; align-items: center; width: 100%;">
+      <!-- Logo -->
+      <div class="logo-box" onclick="handleLogoClick()" style="cursor: pointer; display: flex; align-items: center;">
+        <img id="nav-logo" src="{{ url_for('static', filename='lightLogo.png') }}" alt="VoteX Logo" class="logo" />
+        <span class="nav-title">Elections made Effortless</span>
       </div>
-      <span class="nav-title">VoteX - Elections Made Effortless</span>
+
+      <!-- Hamburger -->
+      <div class="hamburger" onclick="toggleMobileMenu()" aria-label="Toggle mobile menu">
+        <div></div><div></div><div></div>
+      </div>
+
+      <!-- Actions -->
+      <div class="nav-actions" id="nav-actions" style="margin-left: auto; display: flex; align-items: center; gap: 1rem;">
+        <div id="header-clock" class="nav-clock"></div>
+        {% if session.get('user') %}
+          <a href="{{ url_for('logout') }}" class="nav-btn">Logout</a>
+        {% else %}
+          {% if request.path != url_for('login') %}
+            <a href="{{ url_for('login') }}" class="nav-btn">Login</a>
+          {% endif %}
+        {% endif %}
+        <button class="theme-toggle-icon" id="theme-toggle-btn" title="Toggle Theme">
+          <img id="theme-icon" src="{{ url_for('static', filename='icons/moon.svg') }}" alt="Toggle Theme" />
+        </button>
+      </div>
     </div>
 
-    <div class="nav-right">
-      <div id="header-clock" class="nav-clock"></div>
-      {% if session.get('user') %}
-        <span class="nav-user">Hello, {{ session.get('name', session.get('user')) }}</span>
-        <a href="{{ url_for('logout') }}" class="votex-login-btn small">Logout</a>
-      {% else %}
-        {% if request.path != url_for('login') %}
-          <a href="{{ url_for('login') }}" class="votex-login-btn small">Login</a>
+    <!-- Mobile Menu -->
+    <div class="mobile-menu" id="mobile-menu">
+      <div class="mobile-actions">
+        {% if session.get('user') %}
+          <a href="{{ url_for('logout') }}" class="nav-btn">Logout</a>
+        {% else %}
+          {% if request.path != url_for('login') %}
+            <a href="{{ url_for('login') }}" class="nav-btn">Login</a>
+          {% endif %}
         {% endif %}
-      {% endif %}
-
-      <div class="theme-toggle">
-        <label class="switch" title="Toggle Dark Mode">
-          <input type="checkbox" id="theme-toggle" />
-          <span class="slider"></span>
-        </label>
+        <button class="theme-toggle-icon" id="theme-toggle-btn-mobile" title="Toggle Theme">
+          <img id="theme-icon-mobile" src="{{ url_for('static', filename='icons/moon.svg') }}" alt="Toggle Theme" />
+        </button>
       </div>
     </div>
   </nav>
 
-  <!-- Flash Messages -->
-  <div class="toast-container">
-    {% with messages = get_flashed_messages() %}
-      {% if messages %}
-        {% for msg in messages %}
-          <div class="toast">{{ msg }}</div>
-        {% endfor %}
-      {% endif %}
-    {% endwith %}
-  </div>
+  <!-- Main -->
+  <main>{% block content %}{% endblock %}</main>
 
-  <!-- Main Content -->
-  <main class="page-enter page-enter-active">
-    {% block content %}{% endblock %}
-  </main>
-
+  <!-- Footer -->
   <footer>
-    Designed by Imroz Tanweer | SASTRA University | Information System Development Lab
+    <div class="footer-container">
+      <div class="footer-credit">Designed by Imroz Tanweer</div>
+      <div>
+        <a href="https://github.com/imroztanweer" target="_blank"><img src="{{ url_for('static', filename='icons/github.svg') }}" class="social-icon" /></a>
+        <a href="https://www.linkedin.com/in/imroztanweer" target="_blank"><img src="{{ url_for('static', filename='icons/linkedin.svg') }}" class="social-icon" /></a>
+        <a href="https://www.instagram.com/imroz.tanweer" target="_blank"><img src="{{ url_for('static', filename='icons/instagram.svg') }}" class="social-icon" /></a>
+        <a href="mailto:imroztaneer@gmail.com"><img src="{{ url_for('static', filename='icons/email.svg') }}" class="social-icon" /></a>
+      </div>
+    </div>
   </footer>
 
-  <!-- THEME TOGGLE -->
+  <!-- Scripts -->
   <script>
-    const toggleCheckbox = document.getElementById('theme-toggle');
+    function handleLogoClick() {
+      const isLoggedIn = {{ 'true' if session.get('user') else 'false' }};
+      const isAdmin = {{ 'true' if session.get('role') == 'admin' else 'false' }};
+      window.location.href = isLoggedIn
+        ? (isAdmin ? "{{ url_for('admin_dashboard') }}" : "{{ url_for('student_dashboard') }}")
+        : "{{ url_for('home') }}";
+    }
+
     const htmlEl = document.documentElement;
+    const logoEl = document.getElementById('nav-logo');
+    const themeIcon = document.getElementById('theme-icon');
+    const themeIconMobile = document.getElementById('theme-icon-mobile');
+    const themeToggleBtn = document.getElementById('theme-toggle-btn');
+    const themeToggleBtnMobile = document.getElementById('theme-toggle-btn-mobile');
 
     function setTheme(theme) {
       htmlEl.setAttribute('data-theme', theme);
-      toggleCheckbox.checked = theme === 'dark';
       localStorage.setItem('theme', theme);
+
+      logoEl.src = theme === 'dark'
+        ? "{{ url_for('static', filename='logo-dark-nobg.png') }}"
+        : "{{ url_for('static', filename='logo-light-nobg.png') }}";
+
+      const iconSrc = theme === 'dark'
+        ? "{{ url_for('static', filename='icons/sun.svg') }}"
+        : "{{ url_for('static', filename='icons/moon.svg') }}";
+      themeIcon.src = iconSrc;
+      themeIconMobile.src = iconSrc;
     }
+
+    [themeToggleBtn, themeToggleBtnMobile].forEach(btn => {
+      btn.addEventListener('click', () => {
+        const currentTheme = htmlEl.getAttribute('data-theme');
+        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+        setTheme(newTheme);
+        btn.classList.add('spin-once');
+        setTimeout(() => btn.classList.remove('spin-once'), 600);
+      });
+    });
 
     const savedTheme = localStorage.getItem('theme');
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    setTheme(savedTheme || (prefersDark ? 'dark' : 'light'));
+    const initialTheme = savedTheme || (prefersDark ? 'dark' : 'light');
+    setTheme(initialTheme);
 
-    toggleCheckbox.addEventListener('change', () => {
-      setTheme(toggleCheckbox.checked ? 'dark' : 'light');
-    });
-  </script>
-
-  <!-- CLOCK -->
-  <script>
-    function updateClockHeader() {
+    function updateClock() {
       const now = new Date();
-      const options = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' };
-      const clock = document.getElementById('header-clock');
-      if (clock) clock.innerText = now.toLocaleString('en-US', options);
+      const options = {
+        weekday: 'short', year: 'numeric', month: 'short',
+        day: 'numeric', hour: '2-digit', minute: '2-digit'
+      };
+      const str = now.toLocaleString('en-US', options);
+      document.getElementById('header-clock').innerText = str;
     }
-    setInterval(updateClockHeader, 1000);
-    window.onload = updateClockHeader;
-  </script>
 
-  <!-- PAGE LOADER -->
-  <script>
-    window.addEventListener('load', () => {
-      const loader = document.getElementById('loader');
-      if (loader) {
-        loader.style.opacity = '0';
-        loader.style.pointerEvents = 'none';
-        setTimeout(() => loader.remove(), 400);
+    setInterval(updateClock, 1000);
+    updateClock();
+
+    function toggleMobileMenu(forceClose = false) {
+      const menu = document.getElementById('mobile-menu');
+      const overlay = document.getElementById('drawer-overlay');
+      if (forceClose) {
+        menu.classList.remove('mobile-visible');
+        overlay.classList.remove('visible');
+      } else {
+        menu.classList.toggle('mobile-visible');
+        overlay.classList.toggle('visible');
       }
-    });
-  </script>
+    }
 
-  <!-- TOAST AUTO-DISMISS -->
-  <script>
-    document.querySelectorAll('.toast').forEach(toast => {
-      setTimeout(() => toast.style.opacity = '0', 4000);
+    document.addEventListener("DOMContentLoaded", () => {
+      document.querySelectorAll('#mobile-menu a, #theme-toggle-btn-mobile').forEach(el => {
+        el.addEventListener('click', () => toggleMobileMenu(true));
+      });
     });
-  </script>
 
-  <!-- STARFIELD SCRIPT -->
-  <script>
+    document.getElementById('drawer-overlay').addEventListener('click', () => toggleMobileMenu(true));
+
+    // Starfield with parallax
     const canvas = document.getElementById("starfield");
     const ctx = canvas.getContext("2d");
     let stars = [];
+    let scrollOffset = 0;
+
+    window.addEventListener('scroll', () => {
+      scrollOffset = window.scrollY * 0.2;
+    });
 
     function initStars(count) {
       stars = [];
@@ -144,7 +230,7 @@
         stars.push({
           x: Math.random() * window.innerWidth,
           y: Math.random() * window.innerHeight,
-          radius: Math.random() * 1.5 + 0.5,
+          r: Math.random() * 1.5 + 0.5,
           speed: Math.random() * 0.5 + 0.2,
         });
       }
@@ -152,143 +238,37 @@
 
     function animateStars() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-      ctx.fillStyle = isDark ? 'white' : 'black';
-
+      ctx.fillStyle = htmlEl.getAttribute("data-theme") === "dark" ? "white" : "black";
       stars.forEach(star => {
         star.y += star.speed;
         if (star.y > canvas.height) star.y = 0;
+
+        const parallaxY = star.y + scrollOffset;
         ctx.beginPath();
-        ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
+        ctx.arc(star.x, parallaxY % canvas.height, star.r, 0, 2 * Math.PI);
         ctx.fill();
       });
-
       requestAnimationFrame(animateStars);
     }
 
     function resizeCanvas() {
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
-      initStars(150);
+      initStars(160);
     }
 
     window.addEventListener("resize", resizeCanvas);
     resizeCanvas();
     animateStars();
-  </script>
 
-  <!-- EMOJI RAIN -->
-  <script>
-    document.querySelectorAll(".emoji-rain div").forEach(el => {
-      el.style.left = Math.random() * 100 + "vw";
-      el.style.animationDuration = (Math.random() * 2 + 3) + "s";
-      el.style.fontSize = (Math.random() * 10 + 14) + "px";
+    // Floating shapes interaction
+    document.addEventListener("mousemove", (e) => {
+      const x = (e.clientX / window.innerWidth - 0.5) * 30;
+      const y = (e.clientY / window.innerHeight - 0.5) * 30;
+      document.querySelectorAll(".floating-shape").forEach(shape => {
+        shape.style.transform = `translate(${x}px, ${y}px)`;
+      });
     });
   </script>
-
-  <!-- CUSTOM CURSOR -->
-  <script>
-    const cursor = document.getElementById("customCursor");
-    document.addEventListener("mousemove", e => {
-      cursor.style.left = e.clientX + "px";
-      cursor.style.top = e.clientY + "px";
-    });
-  </script>
-
-  <!-- PAGE STYLES -->
-  <style>
-    html, body {
-      margin: 0;
-      padding: 0;
-      overflow-x: hidden;
-    }
-
-    #loader.page-loader {
-      position: fixed;
-      width: 100vw;
-      height: 100vh;
-      background: #fff;
-      z-index: 10000;
-      transition: opacity 0.4s ease;
-    }
-
-    canvas#starfield {
-      position: fixed;
-      top: 0;
-      left: 0;
-      z-index: -2;
-      pointer-events: none;
-    }
-
-    .emoji-rain {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      z-index: 0;
-      pointer-events: none;
-    }
-
-    .emoji-rain div {
-      position: absolute;
-      animation-name: emojiFall;
-      animation-timing-function: linear;
-      animation-iteration-count: infinite;
-      opacity: 0.25;
-    }
-
-    @keyframes emojiFall {
-      0% { top: -5%; opacity: 0; }
-      20% { opacity: 1; }
-      100% { top: 105%; opacity: 0; }
-    }
-
-    .custom-cursor {
-      width: 12px;
-      height: 12px;
-      background: #007aff;
-      border-radius: 50%;
-      position: fixed;
-      transform: translate(-50%, -50%);
-      pointer-events: none;
-      z-index: 9999;
-      transition: transform 0.08s ease;
-    }
-
-    .page-enter {
-      animation: fadeInUp 0.5s ease-in-out both;
-    }
-
-    @keyframes fadeInUp {
-      from { opacity: 0; transform: translateY(15px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    .toast-container {
-      position: fixed;
-      top: 1rem;
-      right: 1rem;
-      z-index: 10001;
-    }
-
-    .toast {
-      background: #007aff;
-      color: white;
-      padding: 12px 20px;
-      margin-bottom: 10px;
-      border-radius: 8px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-      transition: opacity 0.5s ease;
-    }
-
-    footer {
-      text-align: center;
-      padding: 1rem;
-      font-size: 0.9rem;
-      color: var(--text);
-    }
-  </style>
-
 </body>
 </html>

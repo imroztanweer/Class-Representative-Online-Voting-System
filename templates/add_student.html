@@ -1,12 +1,15 @@
 {% extends "admin_base.html" %}
 {% block admin_content %}
-<div class="container fade-in">
-  <h2 class="page-title">➕ Add New Student</h2>
+<div class="form-container fade-in">
+  <div class="form-header">
+    <img src="{{ url_for('static', filename='icons/plus.svg') }}" alt="Add Icon" class="icon-img" />
+    <h2>Add New Student</h2>
+  </div>
 
-  <form method="POST" class="glass-box login-form">
+  <form method="POST" class="glass-form">
     <div class="form-group">
       <label for="name">Full Name</label>
-      <input type="text" name="name" id="name" required placeholder="e.g., John Doe">
+      <input type="text" name="name" id="name" required placeholder="e.g., John Doe" />
     </div>
 
     <div class="form-group">
@@ -14,7 +17,7 @@
       <input type="text" name="course" id="course" required 
              pattern="[A-Za-z]{2,10}" 
              title="Only alphabets (2-10 letters)" 
-             placeholder="CSE, ECE, IT...">
+             placeholder="CSE, ECE, IT..." />
     </div>
 
     <div class="form-group">
@@ -22,40 +25,161 @@
       <input type="text" name="batch" id="batch" required 
              pattern="\d{4}" 
              title="Enter a valid 4-digit year" 
-             placeholder="2025">
+             placeholder="2025" />
     </div>
 
     <div id="regno-preview" class="regno-preview" style="display: none;">
       Reg. No. will be like: <strong><span id="regno-value">CSE2025_100X</span></strong>
     </div>
 
-    <button type="submit" class="glass-btn">➕ Add Student</button>
+    <button type="submit" class="votex-login-btn submit-btn">
+      <img src="{{ url_for('static', filename='icons/plus.svg') }}" alt="Add" class="icon-img" />
+      Add Student
+    </button>
   </form>
 
-  <div style="margin-top: 2rem; text-align: center;">
-    <a href="{{ url_for('admin_dashboard') }}" class="nav-link underline">← Back to Dashboard</a>
+  <div class="back-link">
+    <a href="{{ url_for('admin_dashboard') }}" class="login-forgot">← Back to Dashboard</a>
   </div>
 </div>
 
 <style>
-  .regno-preview {
-    margin-top: 0.5rem;
-    font-size: 0.95rem;
+  .form-container {
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem 2rem;
+    background: var(--glass-bg);
+    backdrop-filter: blur(24px);
+    border-radius: 16px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
     color: var(--text);
-    background: rgba(255, 255, 255, 0.2);
-    padding: 0.5rem 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.8rem;
+  }
+
+  .form-header {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--text);
+  }
+
+  .icon-img {
+    width: 24px;
+    height: 24px;
+    filter: invert(0);
+    transition: filter 0.3s ease;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .icon-img {
+      filter: invert(1);
+    }
+  }
+
+  .glass-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.4rem;
+  }
+
+  .form-group label {
+    font-weight: 600;
+    margin-bottom: 0.3rem;
+    display: block;
+  }
+
+  .form-group input {
+    width: 100%;
+    padding: 0.75rem 1rem;
     border-radius: 12px;
+    border: 1px solid rgba(180, 180, 180, 0.5);
+    background: rgba(255, 255, 255, 0.15);
+    color: var(--text);
+    backdrop-filter: blur(4px);
+    font-size: 1rem;
+  }
+
+  .form-group input:focus {
+    outline: none;
+    border-color: #007aff;
+    background: #fff;
+    box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.25);
+  }
+
+  .regno-preview {
+    font-size: 0.95rem;
+    background: rgba(255, 255, 255, 0.2);
+    padding: 0.6rem 1rem;
+    border-radius: 10px;
     border-left: 4px solid #007aff;
+    color: var(--text);
     font-weight: 500;
   }
 
-  .underline {
+  .submit-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    justify-content: center;
+    background-color: #007aff;
+    color: white;
+    font-weight: 600;
+    padding: 0.75rem 1.6rem;
+    font-size: 1.05rem;
+    border: none;
+    border-radius: 30px;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+    transition: all 0.3s ease;
+    cursor: pointer;
+  }
+
+  .submit-btn:hover {
+    background-color: #005ecb;
+    transform: scale(1.04);
+  }
+
+  .back-link {
+    text-align: center;
+    margin-top: 1rem;
+  }
+
+  .login-forgot {
+    color: #007aff;
+    text-decoration: none;
+    font-weight: 500;
+  }
+
+  .login-forgot:hover {
     text-decoration: underline;
   }
 
-  @media (max-width: 480px) {
-    .form-group input {
-      font-size: 1rem;
+  @media (min-width: 1024px) {
+    .form-container {
+      margin-left: auto;
+      margin-right: auto;
+      width: 100%;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .form-container {
+      padding: 1.5rem 1rem;
+      border-radius: 0;
+      box-shadow: none;
+    }
+
+    .form-header {
+      justify-content: center;
+      font-size: 1.3rem;
+    }
+
+    .submit-btn {
+      width: 100%;
     }
   }
 </style>

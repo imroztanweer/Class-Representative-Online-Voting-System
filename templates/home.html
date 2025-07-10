@@ -1,236 +1,284 @@
 {% extends "base.html" %}
 {% block content %}
 
-<!-- Layered Backgrounds -->
-
-<!-- Main Content -->
-<div class="home-wrapper container fade-in">
-  <div class="hero-glass ios-card">
-    <h1>Welcome to <span class="gradient-text">VoteX</span></h1>
-    <p class="tagline">Empowering Campus Elections with Simplicity and Trust</p>
-    <div class="countdown-badge" id="countdown">⏳ Calculating...</div>
-    <noscript><div class="countdown-badge">🕒 Deadline unavailable (enable JS)</div></noscript>
-    <div class="scroll-indicator">⬇️</div>
-  </div>
-
-  <div class="why-vote fade-in-delayed">
-    <h2>Why Vote?</h2>
-    <p>Your vote shapes your student leadership. Participate to make your voice heard, your concerns counted, and your choices represented.</p>
-  </div>
-
-  <div class="features-grid fade-in-delayed">
-    <div class="feature-card ios-card">
-      <div class="icon">📊</div>
-      <h3>Live Results</h3>
-      <p>Track real-time vote counts for each position as voting progresses.</p>
-    </div>
-    <div class="feature-card ios-card">
-      <div class="icon">🗳️</div>
-      <h3>Cast Your Vote</h3>
-      <p>Secure, one-click voting with easy ballot navigation.</p>
-    </div>
-    <div class="feature-card ios-card">
-      <div class="icon">🔒</div>
-      <h3>Audit Trail</h3>
-      <p>Transparent admin logging to ensure fair election processes.</p>
-    </div>
-  </div>
-
-  <div class="cta fade-in-delayed">
-    <a href="{{ url_for('login') }}" class="votex-login-btn-glow" aria-label="Login to Vote">🔐 Login to Vote</a>
-  </div>
+<!-- Hero Section -->
+<div class="hero-section fade-in">
+  <h1>Welcome to <span class="gradient-text">VoteX</span></h1>
+  <p class="tagline">Empowering Campus Elections with Simplicity and Trust</p>
+  <div class="countdown-badge" id="countdown">⏳ Loading...</div>
+  <noscript><div class="countdown-badge">🕒 Enable JS for countdown</div></noscript>
 </div>
 
-<!-- JavaScript -->
+<!-- Why Vote Section -->
+<div class="glass-section fade-in-delayed">
+  <h2 class="section-heading" style="margin-top: 0;">Why Vote?</h2>
+  <p>Your vote shapes leadership. Let your voice be heard, your concerns counted, and your views represented.</p>
+</div>
+
+<!-- Features -->
+<section class="features fade-in-delayed">
+  <h2 class="section-heading">Key Features</h2>
+  <div class="features-grid">
+    {% for title, icon_path, desc in [
+      ("Live Results", "icons/bar.svg", "See vote counts in real-time as elections progress."),
+      ("One-Click Voting", "icons/vote.svg", "Submit your ballot securely with a single click."),
+      ("Transparent Logs", "icons/lock.svg", "Track admin logs to ensure election integrity."),
+      ("Auto-Registration", "icons/inbox.svg", "All students are automatically enrolled—no hassle!"),
+      ("Mobile Friendly", "icons/phone.svg", "Vote on any device with app-like experience."),
+      ("Instant Updates", "icons/zap.svg", "Stay updated with live changes across the system.")
+    ] %}
+    <div class="feature-box" tabindex="0">
+      <div class="corner top-left"></div>
+      <div class="corner top-right"></div>
+      <div class="corner bottom-left"></div>
+      <div class="corner bottom-right"></div>
+      
+      <div class="feature-inner">
+        <h3>
+          <img src="{{ url_for('static', filename=icon_path) }}" alt="{{ title }} icon" class="feature-icon" />
+          {{ title }}
+        </h3>
+        <p>{{ desc }}</p>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+
+<!-- About Section -->
+<div class="glass-section fade-in-delayed" style="margin: 1.5rem auto 2rem; padding: 2rem;">
+  <h2 class="section-heading" style="margin-top: 0;">About VoteX</h2>
+  <p>
+    VoteX is a secure, student‑focused campus election platform developed by Imroz Tanweer.<br>Our goal: smooth, transparent and mobile-first elections for every campus.
+  </p>
+</div>
+
+<!-- Login CTA -->
+<div class="cta fade-in-delayed">
+  <a href="{{ url_for('login') }}" class="votex-login-btn-glow">
+    <img src="{{ url_for('static', filename='icons/login.svg') }}" alt="Login icon" class="login-icon" />
+    Login to Vote
+  </a>
+</div>
+
+<!-- Countdown Script -->
 <script>
   const deadline = new Date("2025-08-01T23:59:00");
+  function formatTime(ms) {
+    const d = Math.floor(ms / 86400000);
+    const h = Math.floor(ms / 3600000) % 24;
+    const m = Math.floor(ms / 60000) % 60;
+    const s = Math.floor(ms / 1000) % 60;
+    return `⏳ Ends in: ${d}d ${h}h ${m}m ${s}s`;
+  }
   function updateCountdown() {
     const now = new Date();
     const diff = deadline - now;
-    const countdown = document.getElementById("countdown");
-    if (diff <= 0) {
-      countdown.innerText = "🗳️ Voting has ended.";
-      return;
-    }
-    const d = Math.floor(diff / (1000 * 60 * 60 * 24));
-    const h = Math.floor(diff / (1000 * 60 * 60)) % 24;
-    const m = Math.floor(diff / (1000 * 60)) % 60;
-    countdown.innerText = `⏳ Ends in: ${d}d ${h}h ${m}m`;
+    const el = document.getElementById("countdown");
+    if (!el) return;
+    el.innerText = diff <= 0
+      ? "🗳️ Voting has ended."
+      : formatTime(diff);
   }
-  setInterval(updateCountdown, 60000);
-  window.onload = updateCountdown;
+  const timer = setInterval(updateCountdown, 1000);
+  window.addEventListener("DOMContentLoaded", updateCountdown);
+</script>
 
-  // Emoji bubbles
-  for (let i = 0; i < 15; i++) {
-    const b = document.createElement('div');
-    b.className = 'bubble';
-    b.textContent = ['🎓','📚','📝','🏫','📖'][Math.floor(Math.random() * 5)];
-    b.style.left = `${Math.random() * 100}%`;
-    b.style.animationDuration = `${5 + Math.random() * 5}s`;
-    document.querySelector('.emoji-bubbles').appendChild(b);
-  }
-
-  </script>
-
-<!-- CSS -->
+<!-- Styles -->
 <style>
-  :root {
-    --blue: #007aff;
-    --purple: #5856d6;
-  }
-
-  .home-bg-gradient {
-    position: fixed;
-    top: 0; left: 0; right: 0; bottom: 0;
-    background: linear-gradient(135deg, #ffffff0a, #0000000a);
-    animation: gradientShift 15s ease infinite alternate;
-    z-index: -6;
-  }
-
-  @keyframes gradientShift {
-    0% { filter: hue-rotate(0deg); }
-    100% { filter: hue-rotate(360deg); }
-  }
-
-  #star-canvas, #trail-cursor {
-    position: fixed;
-    top: 0; left: 0;
-    width: 100vw;
-    height: 100vh;
-    pointer-events: none;
-    z-index: -3;
-  }
-
-  .emoji-bubbles {
-    position: fixed;
-    width: 100%; height: 100%;
-    pointer-events: none;
-    z-index: -4;
-  }
-
-  .emoji-bubbles .bubble {
-    position: absolute;
-    bottom: -30px;
-    font-size: 1.5rem;
-    animation: floatUp linear infinite;
-    opacity: 0.8;
-  }
-
-  @keyframes floatUp {
-    0% { transform: translateY(0) scale(1); opacity: 1; }
-    100% { transform: translateY(-120vh) scale(1.5); opacity: 0; }
-  }
-
-  .gradient-text {
-    background: linear-gradient(to right, var(--blue), var(--purple));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    font-weight: 800;
-  }
-
-  html[data-theme='dark'] .gradient-text {
-    filter: brightness(1.3);
-  }
-
-  .ios-card {
-    background: rgba(255, 255, 255, 0.12);
-    backdrop-filter: blur(18px);
-    border-radius: 22px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-    color: var(--text);
-    transition: all 0.3s ease-in-out;
-  }
-
   .home-wrapper {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 3rem 1rem;
+    text-align: center;
+  }
+
+  .hero-section {
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 3rem 1rem;
+    justify-content: center;
     text-align: center;
-    max-width: 1000px;
-    margin: 0 auto;
-    position: relative;
-    z-index: 1;
+    padding: 0.5rem 1rem;
+    min-height: 15vh;
   }
 
-  .hero-glass {
-    padding: 2.8rem;
-    margin-bottom: 2rem;
-    max-width: 600px;
-  }
-
-  .hero-glass h1 {
+  .hero-section h1 {
     font-size: 2.4rem;
     margin-bottom: 0.5rem;
   }
 
   .tagline {
-    font-size: 1.15rem;
+    font-size: 1.1rem;
     opacity: 0.9;
+    margin-bottom: 1rem;
   }
 
   .countdown-badge {
     margin-top: 1rem;
     display: inline-block;
-    background: rgba(0,0,0,0.15);
+    background: rgba(0, 0, 0, 0.75);
     backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
     border-radius: 999px;
     padding: 0.6rem 1.2rem;
     font-size: 0.95rem;
-    font-weight: 500;
     color: white;
+    font-weight: 500;
+    border: 1px solid rgba(255, 255, 255, 0.15);
   }
 
-  .scroll-indicator {
-    font-size: 1.2rem;
-    margin-top: 1rem;
-    opacity: 0.6;
-    animation: bounce 1.8s infinite;
+  .gradient-text {
+    background: linear-gradient(to right, #007aff, #5856d6);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: 800;
   }
 
-  @keyframes bounce {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(6px); }
+  .section-heading {
+    font-size: 1.6rem;
+    font-weight: 700;
+    margin: 1.5rem 0 1rem;
+    text-align: center;
   }
 
-  .why-vote {
-    max-width: 700px;
-    padding: 1.5rem;
-    margin-bottom: 2rem;
+  .glass-section {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(16px) saturate(180%);
+    -webkit-backdrop-filter: blur(16px) saturate(180%);
+    border-radius: 20px;
+    padding: 2rem;
+    margin: 2rem auto;
+    max-width: 800px;
+    color: inherit;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  }
+
+  .features {
+    padding: 1rem 0;
+    margin: 0 auto;
+    max-width: 1000px;
   }
 
   .features-grid {
-    display: flex;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
     gap: 2rem;
-    flex-wrap: wrap;
-    justify-content: center;
-    margin: 2rem 0;
+    padding: 0 1rem;
   }
 
-  .feature-card {
-    padding: 1.6rem;
-    width: 260px;
-    text-align: center;
-    transform: perspective(1000px);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  .feature-box {
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    outline: none;
   }
 
-  .feature-card:hover {
-    transform: translateY(-6px) rotateX(3deg);
-    box-shadow: 0 14px 28px rgba(0,0,0,0.15);
+  .feature-inner {
+    position: relative;
+    padding: 1.5rem 1rem;
+    text-align: left;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(16px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    z-index: 1;
   }
 
-  .feature-card .icon {
-    font-size: 2rem;
-    margin-bottom: 0.8rem;
+  /* Pseudo element for animated transparent gradient */
+  .feature-box::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: linear-gradient(
+      270deg,
+      rgba(0, 122, 255, 0.25),
+      rgba(88, 86, 214, 0.25),
+      rgba(0, 198, 255, 0.25),
+      rgba(0, 122, 255, 0.25)
+    );
+    background-size: 800% 800%;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+    pointer-events: none;
+    z-index: 0;
   }
+
+  /* Animate gradient shift on hover/focus */
+  .feature-box:hover::before,
+  .feature-box:focus::before {
+    opacity: 1;
+    animation: gradientShift 20s ease infinite;
+  }
+
+  @keyframes gradientShift {
+    0% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+    100% {
+      background-position: 0% 50%;
+    }
+  }
+
+  .feature-box h3 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .feature-box p {
+    font-size: 0.95rem;
+    opacity: 0.85;
+    line-height: 1.5;
+  }
+
+  .feature-icon {
+    width: 20px;
+    height: 20px;
+    vertical-align: middle;
+    filter: drop-shadow(0 0 3px black);
+    transition: filter 0.3s ease, transform 0.3s ease;
+    position: relative;
+    z-index: 2;
+  }
+
+  html[data-theme="dark"] .feature-icon {
+    filter: invert(1) drop-shadow(0 0 3px white);
+  }
+
+  .feature-box:hover .feature-icon,
+  .feature-box:focus .feature-icon {
+    transform: scale(1.15);
+  }
+
+  .corner {
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    border: 2px solid black;
+    pointer-events: none;
+    z-index: 999;
+  }
+
+  .top-left    { top: 0; left: 0; border-right: none; border-bottom: none; }
+  .top-right   { top: 0; right: 0; border-left: none; border-bottom: none; }
+  .bottom-left { bottom: 0; left: 0; border-right: none; border-top: none; }
+  .bottom-right{ bottom: 0; right: 0; border-left: none; border-top: none; }
 
   .cta {
-    margin-top: 2rem;
+    margin: 1rem auto 2rem;
+    text-align: center;
   }
 
   .votex-login-btn-glow {
-    background: var(--blue);
+    background: var(--button-bg, #007aff);
     color: white;
     padding: 12px 30px;
     font-size: 1rem;
@@ -239,7 +287,10 @@
     text-decoration: none;
     box-shadow: 0 6px 16px rgba(0, 122, 255, 0.3);
     transition: all 0.3s ease;
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 1rem;
   }
 
   .votex-login-btn-glow:hover {
@@ -248,48 +299,27 @@
     box-shadow: 0 8px 24px rgba(0, 122, 255, 0.45);
   }
 
-  .fade-in {
-    animation: fadeInUp 0.7s ease both;
+  .login-icon {
+    width: 20px;
+    height: 20px;
+    vertical-align: middle;
+    filter: drop-shadow(0 0 3px black);
+    transition: filter 0.3s ease;
   }
 
-  .fade-in-delayed {
-    animation: fadeInUp 0.8s ease both;
-    animation-delay: 0.3s;
-  }
-
-  @keyframes fadeInUp {
-    from {
-      opacity: 0;
-      transform: translateY(20px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
+  html[data-theme="dark"] .login-icon {
+    filter: invert(1) drop-shadow(0 0 3px white);
   }
 
   @media (max-width: 768px) {
-    .feature-card {
-      width: 90%;
+    .hero-section h1 {
+      font-size: 1.9rem;
     }
-
-    .hero-glass {
-      padding: 2rem;
+    .feature-box {
+      padding: 1rem;
     }
-
-    .hero-glass h1 {
-      font-size: 1.85rem;
-    }
-
-    .tagline {
-      font-size: 1rem;
-    }
-  }
-
-  @media (max-width: 400px) {
-    .votex-login-btn-glow {
-      font-size: 0.9rem;
-      padding: 10px 24px;
+    .section-heading {
+      font-size: 1.4rem;
     }
   }
 </style>

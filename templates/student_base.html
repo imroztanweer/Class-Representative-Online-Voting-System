@@ -1,100 +1,158 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="admin-dashboard">  <!-- Shared layout class -->
 
-  <!-- Sidebar -->
-  <nav class="admin-sidebar glassy-sidebar">
+<!-- Sidebar state handler -->
+<script>
+  (function () {
+    const collapsed = localStorage.getItem("studentSidebarCollapsed");
+    const isMobile = window.matchMedia('(max-width: 768px)').matches;
+    if (collapsed === "true" || (collapsed === null && isMobile)) {
+      document.documentElement.classList.add("sidebar-collapsed");
+    }
+  })();
+</script>
+
+<div class="admin-dashboard">
+  <nav class="admin-sidebar glassy-sidebar" id="studentSidebar">
     <div class="sidebar-header">
       <img src="{{ url_for('static', filename='avatar.png') }}" alt="Avatar" class="student-avatar" />
       <div class="student-name">{{ session.name or "Student" }}</div>
     </div>
 
-    <button class="hamburger-toggle" onclick="toggleStudentMenu()">☰ Student Menu</button>
+    <button class="hamburger-toggle" onclick="toggleStudentMenu()" aria-label="Toggle Student Menu">
+      <img src="{{ url_for('static', filename='icons/menu.svg') }}" alt="Menu Icon" class="icon-img menu-icon" />
+      <span class="label">Student Menu</span>
+    </button>
 
-    <ul id="studentMenu">
-      <li><a href="{{ url_for('student_dashboard') }}" class="{% if request.endpoint == 'student_dashboard' %}active{% endif %}">🏠 Dashboard Home</a></li>
-      <li><a href="{{ url_for('student_profile') }}" class="{% if request.endpoint == 'student_profile' %}active{% endif %}">👤 Account Settings</a></li>
-      <li><a href="{{ url_for('ballot_summary') }}" class="{% if request.endpoint == 'ballot_summary' %}active{% endif %}">🗳️ View Your Ballot</a></li>
-      <li><a href="{{ url_for('live_vote_count') }}" class="{% if request.endpoint == 'live_vote_count' %}active{% endif %}">📈 Live Vote Count</a></li>
-      <li><a href="{{ url_for('results') }}" class="{% if request.endpoint == 'results' %}active{% endif %}">🏆 Live Leaderboard</a></li>
+    <ul id="studentMenu" role="menu">
+      <li>
+        <a href="{{ url_for('student_dashboard') }}" class="{% if request.endpoint == 'student_dashboard' %}active{% endif %}" data-title="Dashboard Home">
+          <img src="{{ url_for('static', filename='icons/home.svg') }}" alt="Home" class="icon-img" />
+          <span class="label">Dashboard Home</span>
+        </a>
+      </li>
+      <li>
+        <a href="{{ url_for('student_profile') }}" class="{% if request.endpoint == 'student_profile' %}active{% endif %}" data-title="Account Settings">
+          <img src="{{ url_for('static', filename='icons/user.svg') }}" alt="User" class="icon-img" />
+          <span class="label">Account Settings</span>
+        </a>
+      </li>
+      <li>
+        <a href="{{ url_for('ballot_summary') }}" class="{% if request.endpoint == 'ballot_summary' %}active{% endif %}" data-title="View Your Ballot">
+          <img src="{{ url_for('static', filename='icons/inbox.svg') }}" alt="Inbox" class="icon-img" />
+          <span class="label">View Your Ballot</span>
+        </a>
+      </li>
+      <li>
+        <a href="{{ url_for('live_vote_count') }}" class="{% if request.endpoint == 'live_vote_count' %}active{% endif %}" data-title="Live Vote Count">
+          <img src="{{ url_for('static', filename='icons/bar.svg') }}" alt="Bar" class="icon-img" />
+          <span class="label">Live Vote Count</span>
+        </a>
+      </li>
+      <li>
+        <a href="{{ url_for('results') }}" class="{% if request.endpoint == 'results' %}active{% endif %}" data-title="Live Leaderboard">
+          <img src="{{ url_for('static', filename='icons/award.svg') }}" alt="Award" class="icon-img" />
+          <span class="label">Live Leaderboard</span>
+        </a>
+      </li>
     </ul>
   </nav>
 
-  <!-- Main Content -->
   <main class="admin-main-content glassy-content fade-in">
     {% block student_content %}{% endblock %}
   </main>
 </div>
 
 <style>
+:root {
+  --text: #111;
+  --glass-bg: rgba(255, 255, 255, 0.12);
+  --sidebar-bg: rgba(255, 255, 255, 0.4);
+  --hover-bg: rgba(0, 0, 0, 0.08);
+  --active-bg: #111;
+  --active-text: #fff;
+  --active-icon: invert(1);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --text: #eee;
+    --glass-bg: rgba(0, 0, 0, 0.3);
+    --sidebar-bg: rgba(0, 0, 0, 0.2);
+    --hover-bg: rgba(255, 255, 255, 0.08);
+    --active-bg: #fff;
+    --active-text: #000;
+    --active-icon: invert(0);
+  }
+}
+
 .admin-dashboard {
   display: flex;
   min-height: 100vh;
   background: var(--bg);
 }
 
-/* Consistent with admin */
 .admin-sidebar.glassy-sidebar {
   width: 280px;
   padding: 1.2rem;
-  min-height: 100vh;
-  background: var(--glass-bg);
+  background: var(--sidebar-bg);
   backdrop-filter: blur(20px);
   border-right: 1px solid rgba(255, 255, 255, 0.15);
   box-shadow: inset -2px 0 4px rgba(0,0,0,0.05);
-  border-radius: 0 20px 20px 0;
-  transition: all 0.3s ease;
+  transition: width 0.3s ease, padding 0.3s ease;
+  overflow-x: hidden;
+}
+
+.sidebar-collapsed .admin-sidebar.glassy-sidebar {
+  width: 80px;
+  padding: 1.2rem 0.6rem;
 }
 
 .hamburger-toggle {
-  background-color: var(--button-bg);
-  color: white;
+  background: none;
   border: none;
   padding: 0.6rem 1rem;
   font-weight: 600;
   font-size: 1rem;
   width: 100%;
-  border-radius: 10px;
+  text-align: left;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  color: var(--text);
+  border-radius: 0;
   margin-bottom: 1.5rem;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  transition: background 0.25s ease, border-radius 0.25s ease;
 }
 
 .hamburger-toggle:hover {
-  background-color: #0056b3;
+  background-color: var(--hover-bg);
+  border-radius: 12px;
 }
 
-.sidebar-header {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-bottom: 1rem;
+.sidebar-collapsed .hamburger-toggle {
+  justify-content: center;
+  padding: 0.6rem;
 }
 
-.student-avatar {
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
-  object-fit: cover;
-  margin-bottom: 0.6rem;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+.icon-img {
+  width: 20px;
+  height: 20px;
+  filter: invert(0);
+  transition: filter 0.3s ease;
 }
 
-.student-name {
-  font-weight: 600;
-  font-size: 1rem;
-  color: var(--text);
-  text-align: center;
+@media (prefers-color-scheme: dark) {
+  .icon-img {
+    filter: invert(1);
+  }
 }
 
 .admin-sidebar ul {
   list-style: none;
   padding-left: 0;
   margin: 0;
-}
-
-.admin-sidebar ul.collapsed {
-  display: none;
 }
 
 .admin-sidebar li {
@@ -110,16 +168,96 @@
   gap: 0.6rem;
   padding: 0.55rem 1rem;
   border-radius: 12px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
   transition: all 0.25s ease;
+  position: relative;
 }
 
 .admin-sidebar a.active,
 .admin-sidebar a:hover {
-  background-color: var(--button-bg);
-  color: white;
+  background-color: var(--active-bg);
+  color: var(--active-text);
+}
+
+.admin-sidebar a.active .icon-img {
+  filter: var(--active-icon);
+}
+
+.sidebar-collapsed .admin-sidebar a {
+  justify-content: center;
+  padding: 0.6rem;
+}
+
+.sidebar-collapsed .admin-sidebar .label {
+  display: none;
+}
+
+.sidebar-collapsed .admin-sidebar a:hover::after {
+  content: attr(data-title);
+  position: absolute;
+  left: 100%;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(0, 0, 0, 0.85);
+  color: #fff;
+  padding: 4px 10px;
+  font-size: 0.75rem;
+  border-radius: 6px;
+  white-space: nowrap;
+  z-index: 1000;
+  margin-left: 10px;
+  pointer-events: none;
+  opacity: 0;
+  animation: fadeIn 0.2s forwards;
+}
+
+@keyframes fadeIn {
+  to {
+    opacity: 1;
+    pointer-events: auto;
+  }
+}
+
+.sidebar-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 1rem;
+  transition: all 0.3s ease;
+}
+
+.student-avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-bottom: 0.6rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transition: all 0.3s ease;
+}
+
+.student-name {
+  font-weight: 600;
+  font-size: 1rem;
+  color: var(--text);
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+.sidebar-collapsed .student-avatar {
+  width: 36px;
+  height: 36px;
+  margin-bottom: 0;
+}
+
+.sidebar-collapsed .student-name {
+  display: none;
+}
+
+.sidebar-collapsed .sidebar-header {
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  margin-bottom: 1.5rem;
 }
 
 .admin-main-content.glassy-content {
@@ -128,28 +266,25 @@
   margin: 1rem;
   background: var(--glass-bg);
   backdrop-filter: blur(24px);
-  border-radius: 24px;
+  border-radius: 0;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
   color: var(--text);
 }
 
-/* Mobile Optimizations */
+/* Mobile adjustments */
 @media (max-width: 768px) {
   .admin-dashboard {
     flex-direction: column;
   }
 
   .admin-sidebar {
-    width: 100%;
-    border-radius: 0;
-    padding: 1rem;
+    width: 100% !important;
+    padding: 1rem !important;
   }
 
-  .admin-main-content {
-    width: 100%;
-    margin: 0;
-    border-radius: 0;
-    padding: 1.5rem 1rem;
+  .sidebar-collapsed .admin-sidebar {
+    width: 80px !important;
+    padding: 1rem 0.5rem !important;
   }
 
   .sidebar-header {
@@ -163,22 +298,22 @@
     width: 50px;
     height: 50px;
   }
+
+  .admin-main-content {
+    width: 100%;
+    margin: 0;
+    border-radius: 0;
+    padding: 1.5rem 1rem;
+  }
 }
 </style>
 
 <script>
 function toggleStudentMenu() {
-  const menu = document.getElementById("studentMenu");
-  const isCollapsed = menu.classList.toggle("collapsed");
-  localStorage.setItem("studentMenuCollapsed", isCollapsed);
+  const html = document.documentElement;
+  const collapsed = html.classList.toggle("sidebar-collapsed");
+  localStorage.setItem("studentSidebarCollapsed", collapsed);
 }
-
-document.addEventListener("DOMContentLoaded", function () {
-  const menu = document.getElementById("studentMenu");
-  const isCollapsed = localStorage.getItem("studentMenuCollapsed") === "true";
-  if (isCollapsed) {
-    menu.classList.add("collapsed");
-  }
-});
 </script>
+
 {% endblock %}
