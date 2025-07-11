@@ -1,23 +1,29 @@
 {% extends "admin_base.html" %}
 {% block admin_content %}
 
-<h2 class="gradient-heading">🪪 Manage Positions</h2>
+<h1 class="page-heading flex-heading">
+  <img src="{{ url_for('static', filename='icons/edit.svg') }}" alt="Manage Positions" class="heading-icon-lg" />
+  Manage Positions
+</h1>
 
 <!-- Add New Position Form -->
 <div class="glass-box" style="margin-bottom: 2rem;">
   <h3 class="section-subheading">Add New Position</h3>
   <form method="POST" class="form-flex">
-    <input type="hidden" name="action" value="add">
-    <input type="text" name="name" placeholder="Enter Position Name" required class="glass-input">
-    <button type="submit" class="btn-ios btn-primary">➕ Add</button>
+    <input type="hidden" name="action" value="add" />
+    <input type="text" name="name" placeholder="Enter Position Name" required class="glass-input" />
+    <button type="submit" class="glass-btn btn-primary">
+      <img src="{{ url_for('static', filename='icons/plus.svg') }}" alt="Add" class="btn-icon" />
+      Add
+    </button>
   </form>
 </div>
 
-<hr>
+<hr />
 
-<h3 class="section-subheading">📋 Existing Positions</h3>
+<h3 class="section-subheading">Existing Positions</h3>
 <div class="glass-box scroll-table">
-  <table class="ios-table">
+  <table class="glass-table" role="grid" aria-label="Positions List">
     <thead>
       <tr>
         <th>Name</th>
@@ -27,22 +33,26 @@
     <tbody>
       {% for pos in positions %}
       <tr>
-        <td>{{ pos.name }}</td>
-        <td>
+        <td data-label="Name">{{ pos.name }}</td>
+        <td data-label="Actions">
           <div class="action-buttons">
-            <!-- Edit form -->
             <form method="POST" class="action-form">
-              <input type="hidden" name="action" value="edit">
-              <input type="hidden" name="id" value="{{ pos.id }}">
-              <input type="text" name="name" value="{{ pos.name }}" required class="glass-input">
-              <button type="submit" class="btn-ios btn-update">✏️ Update</button>
+              <input type="hidden" name="action" value="edit" />
+              <input type="hidden" name="id" value="{{ pos.id }}" />
+              <input type="text" name="name" value="{{ pos.name }}" required class="glass-input" />
+              <button type="submit" class="glass-btn btn-primary">
+                <img src="{{ url_for('static', filename='icons/edit.svg') }}" alt="Update" class="btn-icon" />
+                Update
+              </button>
             </form>
 
-            <!-- Delete form -->
             <form method="POST" onsubmit="return confirm('Delete this position?')" class="action-form">
-              <input type="hidden" name="action" value="delete">
-              <input type="hidden" name="id" value="{{ pos.id }}">
-              <button type="submit" class="btn-ios btn-danger">🗑️ Delete</button>
+              <input type="hidden" name="action" value="delete" />
+              <input type="hidden" name="id" value="{{ pos.id }}" />
+              <button type="submit" class="glass-btn btn-delete">
+                <img src="{{ url_for('static', filename='icons/trash.svg') }}" alt="Delete" class="btn-icon" />
+                Delete
+              </button>
             </form>
           </div>
         </td>
@@ -53,19 +63,53 @@
 </div>
 
 <style>
-.gradient-heading {
-  font-size: 1.8rem;
+:root {
+  --button-bg: #007aff;
+  --text: #1e1e1e;
+  --glass-bg: rgba(255, 255, 255, 0.1);
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --button-bg: #3a65b5;
+    --text: #ddd;
+    --glass-bg: rgba(0, 0, 0, 0.3);
+  }
+}
+
+.page-heading {
+  font-size: 2.8rem;
+  font-weight: 900;
+  margin-bottom: 1rem;
   background: linear-gradient(to right, #007aff, #5856d6);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  font-weight: 700;
-  margin-bottom: 1rem;
+  user-select: none;
+}
+
+.flex-heading {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.heading-icon-lg {
+  width: 2.8rem;
+  height: 2.8rem;
 }
 
 .section-subheading {
   font-size: 1.2rem;
   margin-bottom: 0.8rem;
   font-weight: 600;
+  color: var(--text);
+}
+
+.glass-box {
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(18px);
+  border-radius: 16px;
+  padding: 2rem;
+  box-shadow: 0 14px 32px rgba(0, 0, 0, 0.07);
   color: var(--text);
 }
 
@@ -80,81 +124,95 @@
   flex: 1;
   min-width: 180px;
   padding: 10px 12px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 12px;
-  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  background: var(--glass-bg);
   backdrop-filter: blur(8px);
-  color: var(--text, #000);
+  color: var(--text);
   font-size: 1rem;
-  transition: border 0.2s ease, background 0.2s ease;
-  box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);
+  transition: border 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
 .glass-input:focus {
   outline: none;
   background: rgba(255, 255, 255, 0.15);
-  border-color: #007aff;
+  border-color: var(--button-bg);
   box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.2);
 }
 
-.btn-ios {
+/* Buttons */
+.glass-btn {
   padding: 10px 20px;
-  border-radius: 30px;
-  font-weight: 600;
-  font-size: 0.95rem;
   border: none;
+  border-radius: 12px;
+  color: white;
+  font-weight: 700;
   cursor: pointer;
-  transition: all 0.3s ease;
-  min-width: 120px;
+  backdrop-filter: blur(6px);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.95rem;
+  transition: all 0.25s ease;
+  user-select: none;
+}
+
+.glass-btn:hover {
+  filter: brightness(1.1);
+  transform: scale(1.05);
 }
 
 .btn-primary {
-  background-color: #007aff;
-  color: white;
+  background-color: var(--button-bg);
 }
 
 .btn-primary:hover {
   background-color: #005ecb;
 }
 
-.btn-update {
-  background-color: #28a745;
-  color: white;
+.btn-delete {
+  background-color: rgba(220, 53, 69, 0.85);
 }
 
-.btn-update:hover {
-  background-color: #218838;
+.btn-delete:hover {
+  background-color: rgba(220, 53, 69, 1);
 }
 
-.btn-danger {
-  background-color: #e74c3c;
-  color: white;
+.btn-icon {
+  width: 16px;
+  height: 16px;
+  vertical-align: middle;
 }
 
-.btn-danger:hover {
-  background-color: #c0392b;
+@media (prefers-color-scheme: dark) {
+  .btn-icon {
+    filter: invert(1) drop-shadow(0 0 2px white);
+  }
 }
 
-.ios-table {
+/* Tables */
+.glass-table {
   width: 100%;
   border-collapse: separate;
   border-spacing: 0;
   background: rgba(255, 255, 255, 0.06);
-  backdrop-filter: blur(12px);
+  backdrop-filter: blur(18px);
   border-radius: 16px;
   overflow: hidden;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 14px 32px rgba(0, 0, 0, 0.07);
 }
 
-.ios-table th, .ios-table td {
+.glass-table th,
+.glass-table td {
   padding: 0.8rem 1rem;
   text-align: center;
   color: var(--text);
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.ios-table thead th {
-  background-color: #007aff;
+.glass-table thead th {
+  background-color: var(--button-bg);
   color: white;
   font-weight: bold;
 }
@@ -170,6 +228,48 @@
   display: flex;
   gap: 0.5rem;
   align-items: center;
+}
+
+/* Responsive */
+@media screen and (max-width: 768px) {
+  .glass-table thead {
+    display: none;
+  }
+  .glass-table, .glass-table tbody, .glass-table tr, .glass-table td {
+    display: block;
+    width: 100%;
+    text-align: left;
+  }
+  .glass-table tr {
+    margin-bottom: 1rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    background: var(--glass-bg);
+    padding: 1rem;
+  }
+  .glass-table td {
+    padding: 0.75rem 1rem;
+    border-bottom: none;
+    position: relative;
+    font-size: 0.95rem;
+    color: var(--text);
+  }
+  .glass-table td::before {
+    content: attr(data-label);
+    font-weight: 600;
+    display: block;
+    margin-bottom: 6px;
+    color: var(--text);
+    opacity: 0.75;
+  }
+  .action-buttons {
+    justify-content: flex-start;
+    gap: 0.75rem;
+  }
+  .action-form {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
 }
 </style>
 

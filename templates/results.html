@@ -1,33 +1,39 @@
 {% extends "student_base.html" %}
 
 {% block student_content %}
-<h2 class="gradient-heading">📊 Live Leaderboard</h2>
+
+<h1 class="page-heading flex-heading">
+  <img src="{{ url_for('static', filename='icons/bar.svg') }}" alt="Live Leaderboard" class="heading-icon-lg svg-glow" />
+  Live Leaderboard
+</h1>
 
 {% if results %}
   {% for position, candidates in results.items() %}
     {% set top_votes = candidates[0].votes if candidates else 0 %}
-    <div class="glass-box leaderboard-box">
-      <h3 class="position-title">{{ position }}</h3>
-      <table class="ios-table">
-        <thead>
-          <tr>
-            <th>Candidate</th>
-            <th>Votes</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for c in candidates %}
-            <tr class="{% if c.votes == top_votes and c.votes > 0 %}winner{% endif %}">
-              <td>{{ c.candidate or 'N/A' }}</td>
-              <td><span class="vote-count" data-final="{{ c.votes }}">0</span></td>
+    <div class="chart-block ios-glass fade-in-up">
+      <h3 class="section-subheading">{{ position }}</h3>
+      <div class="glass-table-wrapper">
+        <table class="glass-table">
+          <thead>
+            <tr>
+              <th>Candidate</th>
+              <th>Votes</th>
             </tr>
-          {% endfor %}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {% for c in candidates %}
+              <tr class="{% if c.votes == top_votes and c.votes > 0 %}winner{% endif %}">
+                <td data-label="Candidate">{{ c.candidate or 'N/A' }}</td>
+                <td data-label="Votes"><span class="vote-count" data-final="{{ c.votes }}">0</span></td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
     </div>
   {% endfor %}
 {% else %}
-  <div class="glass-box">
+  <div class="glass-box no-data-box">
     <p>No results available yet.</p>
   </div>
 {% endif %}
@@ -50,76 +56,196 @@
 </script>
 
 <style>
-.gradient-heading {
-  font-size: 1.8rem;
+/* Heading styles */
+.page-heading {
+  font-size: 2.4rem;
+  font-weight: 800;
+  margin-bottom: 1rem;
   background: linear-gradient(to right, #007aff, #5856d6);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
+}
+.flex-heading {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+.heading-icon-lg {
+  width: 2.2rem;
+  height: 2.2rem;
+}
+.svg-glow {
+  filter: drop-shadow(0 0 5px rgba(59,130,246,0.8));
+}
+
+/* Section heading */
+.section-subheading {
+  margin-top: 0;
+  font-size: 1.6rem;
   font-weight: 700;
-  margin-bottom: 2rem;
-}
-
-.position-title {
-  font-size: 1.3rem;
-  font-weight: 600;
+  color: var(--text);
   margin-bottom: 1rem;
-  color: var(--text);
 }
 
-.glass-box.leaderboard-box {
-  margin-bottom: 2rem;
-  background: rgba(255, 255, 255, 0.08);
-  backdrop-filter: blur(12px);
-  border-radius: 16px;
+/* Container for each leaderboard */
+.chart-block {
   padding: 1.5rem;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
-  transition: all 0.3s ease;
+  background: var(--glass-bg);
+  border-radius: 0.75rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  margin-bottom: 2rem;
+  transition: transform 0.3s ease;
+}
+.chart-block:hover {
+  transform: scale(1.02);
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.12);
 }
 
-.ios-table {
-  width: 100%;
-  border-collapse: separate;
-  border-spacing: 0;
+/* Glass and blur background */
+.ios-glass {
   background: rgba(255, 255, 255, 0.06);
-  backdrop-filter: blur(10px);
-  border-radius: 12px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
-  overflow: hidden;
+  backdrop-filter: blur(18px);
+  border-radius: 18px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.08);
 }
 
-.ios-table th, .ios-table td {
-  padding: 0.8rem 1rem;
-  text-align: center;
+/* Table container */
+.glass-table-wrapper {
+  overflow-x: auto;
+}
+
+/* Table styles */
+.glass-table {
+  width: 100%;
+  border-collapse: collapse;
+  border-spacing: 0;
+  border-radius: 16px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(16px);
+  box-shadow: 0 14px 32px rgba(0, 0, 0, 0.08);
+}
+
+.glass-table thead {
+  background-color: var(--button-bg);
+}
+
+.glass-table thead th,
+.glass-table tbody td {
+  padding: 14px;
+  font-size: 1rem;
   color: var(--text);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  text-align: center;
   font-weight: 500;
 }
 
-.ios-table thead th {
-  background-color: #007aff;
-  color: white;
-  font-weight: bold;
-  font-size: 0.95rem;
+.glass-table tbody td {
+  background: rgba(255, 255, 255, 0.04);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
 }
 
-.ios-table tbody tr:last-child td {
-  border-bottom: none;
+/* Responsive: show labels on small screens */
+@media screen and (max-width: 768px) {
+  .glass-table thead {
+    display: none;
+  }
+  .glass-table, .glass-table tbody, .glass-table tr, .glass-table td {
+    display: block;
+    width: 100%;
+    text-align: left;
+  }
+  .glass-table tr {
+    margin-bottom: 1rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    background: rgba(255, 255, 255, 0.06);
+  }
+  .glass-table tbody td {
+    border-bottom: none;
+    padding-left: 50%;
+    position: relative;
+  }
+  .glass-table tbody td::before {
+    content: attr(data-label);
+    position: absolute;
+    left: 14px;
+    top: 14px;
+    font-weight: 700;
+    color: var(--text);
+    opacity: 0.8;
+  }
 }
 
+/* Winner row highlight */
 .winner {
   background: linear-gradient(to right, rgba(0, 122, 255, 0.2), rgba(88, 86, 214, 0.2));
   font-weight: 700;
   border-left: 5px solid #007aff;
+  transition: background 0.3s ease;
 }
-
 .winner td {
   color: #007aff;
   font-weight: 600;
 }
 
+/* Vote count style */
 .vote-count {
   font-variant-numeric: tabular-nums;
   transition: color 0.3s ease;
 }
+
+/* No data box */
+.no-data-box {
+  background: var(--glass-bg);
+  backdrop-filter: blur(16px);
+  border-radius: 16px;
+  padding: 2rem;
+  text-align: center;
+  font-size: 1rem;
+  color: var(--text);
+  box-shadow: 0 6px 24px rgba(0,0,0,0.06);
+  margin-top: 2rem;
+}
+
+/* Dark mode */
+html[data-theme='dark'] .chart-block {
+  background: rgba(255, 255, 255, 0.06);
+  box-shadow: 0 6px 24px rgba(255, 255, 255, 0.08);
+}
+html[data-theme='dark'] .glass-table {
+  background: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 14px 32px rgba(255, 255, 255, 0.07);
+}
+html[data-theme='dark'] .glass-table thead {
+  background-color: var(--button-bg);
+}
+html[data-theme='dark'] .winner {
+  background: linear-gradient(to right, rgba(0, 94, 203, 0.2), rgba(88, 86, 214, 0.2));
+  border-left-color: #005ecb;
+}
+html[data-theme='dark'] .winner td {
+  color: #005ecb;
+}
+html[data-theme='dark'] .no-data-box {
+  background: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 6px 24px rgba(255, 255, 255, 0.05);
+  color: #ccc;
+}
+
+/* Fade in animation */
+.fade-in-up {
+  animation: fadeInUp 0.5s ease forwards;
+}
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
 </style>
+
 {% endblock %}

@@ -1,4 +1,9 @@
 {% extends "base.html" %}
+
+{% block base_background %}
+  {{ super() }}
+{% endblock %}
+
 {% block content %}
 
 <script>
@@ -350,6 +355,7 @@ body {
     filter: invert(1);
   }
 }
+
 </style>
 
 <script>

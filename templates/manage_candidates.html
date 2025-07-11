@@ -1,44 +1,49 @@
 {% extends "admin_base.html" %}
 {% block admin_content %}
 
-<div class="glass-container">
-  <h2>🎯 Manage Candidates</h2>
+<h1 class="page-heading flex-heading">
+  <img src="{{ url_for('static', filename='icons/vote.svg') }}" alt="Manage Candidates" class="heading-icon-lg" />
+  Manage Candidates
+</h1>
 
-  <form method="POST" action="{{ url_for('manage_candidates') }}" class="glass-box">
-    <input type="hidden" name="action" value="add">
+<form method="POST" action="{{ url_for('manage_candidates') }}" class="glass-box">
+  <input type="hidden" name="action" value="add">
 
-    <label>Candidate Name:</label>
-    <input type="text" name="name" placeholder="Enter name" required>
+  <label for="candidate-name"><strong>Candidate Name:</strong></label>
+  <input type="text" id="candidate-name" name="name" placeholder="Enter name" required>
 
-    <label>Position:</label>
-    <select name="position_id" required>
-      <option value="" disabled selected>Select Position</option>
-      {% for pos in positions %}
-        <option value="{{ pos.id }}">{{ pos.name }}</option>
-      {% endfor %}
-    </select>
+  <label for="position-id"><strong>Position:</strong></label>
+  <select id="position-id" name="position_id" required>
+    <option value="" disabled selected>Select Position</option>
+    {% for pos in positions %}
+      <option value="{{ pos.id }}">{{ pos.name }}</option>
+    {% endfor %}
+  </select>
 
-    <button type="submit" class="btn-add">➕ Add Candidate</button>
-  </form>
+  <button type="submit" class="glass-btn btn-add">
+    <img src="{{ url_for('static', filename='icons/plus.svg') }}" alt="Add" class="btn-icon" />
+    Add Candidate
+  </button>
+</form>
 
-  <hr>
+<h3 class="section-subheading">Existing Candidates</h3>
 
-  <h3>📋 Existing Candidates</h3>
-  <div class="scroll-table">
-    <table class="glass-table">
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Position</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for c in candidates %}
-        <tr>
-          <td>{{ c.name }}</td>
-          <td>{{ c.position }}</td>
-          <td>
+<div class="scroll-table">
+  <table class="glass-table" role="grid" aria-label="Candidates List">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Position</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for c in candidates %}
+      <tr>
+        <td data-label="Name">{{ c.name }}</td>
+        <td data-label="Position">{{ c.position }}</td>
+        <td data-label="Actions">
+          <div class="btn-group">
             <form method="POST" action="{{ url_for('manage_candidates') }}" class="inline-form">
               <input type="hidden" name="action" value="edit">
               <input type="hidden" name="id" value="{{ c.id }}">
@@ -48,24 +53,66 @@
                   <option value="{{ pos.id }}" {% if pos.name == c.position %}selected{% endif %}>{{ pos.name }}</option>
                 {% endfor %}
               </select>
-              <button type="submit" class="btn-update">Update</button>
+              <button type="submit" class="glass-btn btn-edit">
+                <img src="{{ url_for('static', filename='icons/edit.svg') }}" alt="Update" class="btn-icon" />
+                Update
+              </button>
             </form>
-            <form method="POST" action="{{ url_for('manage_candidates') }}" class="inline-form">
+            <form method="POST" action="{{ url_for('manage_candidates') }}" class="inline-form" onsubmit="return confirm('Delete this candidate?');">
               <input type="hidden" name="action" value="delete">
               <input type="hidden" name="id" value="{{ c.id }}">
-              <button type="submit" class="btn-danger" onclick="return confirm('Delete this candidate?')">Delete</button>
+              <button type="submit" class="glass-btn btn-delete">
+                <img src="{{ url_for('static', filename='icons/trash.svg') }}" alt="Delete" class="btn-icon" />
+                Delete
+              </button>
             </form>
-          </td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  </div>
+          </div>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
 </div>
 
 <style>
+:root {
+  --button-bg: #007aff;
+  --text: #1e1e1e;
+  --glass-bg: rgba(255, 255, 255, 0.1);
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --button-bg: #3a65b5;
+    --text: #ddd;
+    --glass-bg: rgba(0, 0, 0, 0.3);
+  }
+}
+
+/* General styles */
+.page-heading {
+  font-size: 2.8rem;
+  font-weight: 900;
+  margin-bottom: 1rem;
+  background: linear-gradient(to right, #007aff, #5856d6);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  user-select: none;
+}
+.flex-heading {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+.section-subheading {
+  margin-top: 2rem;
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+/* Glass box form */
 .glass-box {
-  background: var(--glass-bg, rgba(255, 255, 255, 0.08));
+  background: var(--glass-bg);
   backdrop-filter: blur(14px);
   padding: 1.5rem;
   border-radius: 20px;
@@ -73,72 +120,106 @@
   box-shadow: 0 12px 32px rgba(0,0,0,0.1);
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
-
 .glass-box input[type="text"],
 .glass-box select {
   width: 100%;
   padding: 0.75rem;
   margin-top: 0.4rem;
   margin-bottom: 1rem;
-  border: 1px solid rgba(0,0,0,0.1);
   border-radius: 12px;
   background: rgba(255, 255, 255, 0.2);
   color: var(--text);
   backdrop-filter: blur(6px);
   font-size: 1rem;
+  border: 1px solid rgba(0, 0, 0, 0.1);
 }
 
-.btn-add {
-  background: linear-gradient(to right, #1d8cf8, #3358f4);
-  color: #fff;
-  padding: 12px 24px;
-  font-weight: 600;
+/* Buttons */
+.glass-btn {
+  padding: 10px 18px;
   border: none;
   border-radius: 12px;
+  color: white;
+  font-weight: 700;
   cursor: pointer;
-  font-size: 1rem;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-  transition: all 0.3s ease;
+  backdrop-filter: blur(6px);
+  transition: all 0.25s ease;
+  font-size: 0.95rem;
+  margin: 3px 4px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--button-bg);
+}
+.glass-btn:hover {
+  transform: scale(1.05);
+  filter: brightness(1.1);
+}
+.btn-add {
+  background: var(--button-bg);
+}
+.btn-delete {
+  background: rgba(220, 53, 69, 0.85);
+}
+.btn-delete:hover {
+  background: rgba(220, 53, 69, 1);
+}
+.btn-edit {
+  background: #28a745cc;
+}
+.btn-edit:hover {
+  background: #28a745;
+}
+.btn-icon {
+  width: 16px;
+  height: 16px;
+  vertical-align: middle;
+}
+@media (prefers-color-scheme: dark) {
+  .btn-icon {
+    filter: invert(1) drop-shadow(0 0 2px white);
+  }
 }
 
-.btn-add:hover {
-  background: linear-gradient(to right, #1266dd, #254de4);
-  transform: translateY(-1px);
-}
-
-.btn-update,
-.btn-danger {
-  padding: 8px 16px;
-  border: none;
+/* Inputs and selects inside inline-form (Actions) */
+.inline-form input[type="text"],
+.inline-form select {
+  padding: 6px 10px;
   border-radius: 10px;
-  font-weight: 600;
-  cursor: pointer;
-  margin-top: 6px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(6px);
+  color: var(--text);
   font-size: 0.9rem;
+  margin-right: 6px;
+  min-width: 120px;
+  max-width: 180px;
+  vertical-align: middle;
+  transition: border-color 0.2s ease;
+  box-sizing: border-box;
 }
 
-.btn-update {
-  background-color: #2ecc71;
-  color: #fff;
+.inline-form input[type="text"]:focus,
+.inline-form select:focus {
+  outline: none;
+  border-color: var(--button-bg);
+  box-shadow: 0 0 6px var(--button-bg);
 }
 
-.btn-update:hover {
-  background-color: #27ae60;
+/* Responsive tweak to stack inputs on narrow screens */
+@media (max-width: 480px) {
+  .inline-form input[type="text"],
+  .inline-form select {
+    display: block;
+    width: 100%;
+    margin: 0 0 8px 0;
+  }
 }
 
-.btn-danger {
-  background-color: #e74c3c;
-  color: #fff;
-}
-
-.btn-danger:hover {
-  background-color: #c0392b;
-}
-
+/* Table */
 .scroll-table {
   overflow-x: auto;
 }
-
 .glass-table {
   width: 100%;
   border-collapse: collapse;
@@ -148,8 +229,8 @@
   border-radius: 16px;
   overflow: hidden;
 }
-
-.glass-table th, .glass-table td {
+.glass-table th,
+.glass-table td {
   padding: 1rem;
   text-align: center;
   border-bottom: 1px solid rgba(255, 255, 255, 0.12);
@@ -157,9 +238,74 @@
   font-size: 0.95rem;
 }
 
+/* Actions layout */
 .inline-form {
   display: inline-block;
-  margin: 0 5px;
+  margin: 4px 2px;
+}
+.btn-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  justify-content: center;
+}
+
+/* Heading icons */
+.heading-icon-lg {
+  width: 2.8rem;
+  height: 2.8rem;
+}
+@media (prefers-color-scheme: light) {
+  .heading-icon-lg {
+    filter: brightness(0) drop-shadow(0 0 2px rgba(0, 0, 0, 0.3));
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .heading-icon-lg {
+    filter: invert(1) brightness(1.5) drop-shadow(0 0 2px rgba(255, 255, 255, 0.6));
+  }
+}
+
+/* Responsive table for mobile */
+@media screen and (max-width: 768px) {
+  .glass-table thead {
+    display: none;
+  }
+  .glass-table, .glass-table tbody, .glass-table tr, .glass-table td {
+    display: block;
+    width: 100%;
+    text-align: left;
+  }
+  .glass-table tr {
+    margin-bottom: 1rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    background: var(--glass-bg);
+    padding: 1rem;
+  }
+  .glass-table td {
+    padding: 0.75rem 1rem;
+    border-bottom: none;
+    position: relative;
+    font-size: 0.95rem;
+    color: var(--text);
+  }
+  .glass-table td::before {
+    content: attr(data-label);
+    font-weight: 600;
+    display: block;
+    margin-bottom: 6px;
+    color: var(--text);
+    opacity: 0.75;
+  }
+  .btn-group {
+    justify-content: flex-start;
+    gap: 0.75rem;
+  }
+  .inline-form {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
 }
 </style>
 

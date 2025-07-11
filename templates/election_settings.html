@@ -1,39 +1,39 @@
 {% extends "admin_base.html" %}
 {% block admin_content %}
 
-<div class="glass-container fade-in">
-  <h2 style="margin-bottom: 1.5rem;">🗳️ Election Settings</h2>
+<h1 class="page-heading flex-heading">
+  <img src="{{ url_for('static', filename='icons/settings.svg') }}" alt="Settings" class="heading-icon-lg" />
+  Election Settings
+</h1>
 
-  <form method="POST" class="glass-box" onsubmit="return validateDeadline()">
-    <label for="title">Election Title</label>
-    <input type="text" id="title" name="title" value="{{ election.title }}" required />
+<form method="POST" class="glass-box" onsubmit="return validateDeadline()" style="max-width: 100%; margin-top: 1.5rem;">
+  <label for="title">Election Title</label>
+  <input type="text" id="title" name="title" value="{{ election.title }}" required />
 
-    <label for="start">Start Date & Time</label>
-    <input type="datetime-local" id="start" name="start" value="{{ election.start_date }}" required />
+  <label for="start">Start Date & Time</label>
+  <input type="datetime-local" id="start" name="start" value="{{ election.start_date }}" required />
 
-    <label for="deadline">Deadline</label>
-    <input type="datetime-local" id="deadline" name="deadline" value="{{ election.deadline }}" required oninput="updateCountdown()" />
+  <label for="deadline">Deadline</label>
+  <input type="datetime-local" id="deadline" name="deadline" value="{{ election.deadline }}" required oninput="updateCountdown()" />
 
-    <div id="deadline-warning" style="color: red; font-size: 0.9rem; display: none;">⚠️ Deadline cannot be in the past!</div>
-    <div id="countdown" style="margin-top: 0.5rem; font-size: 0.9rem; color: var(--text);"></div>
+  <div id="deadline-warning" class="warning-text" style="display: none;">⚠️ Deadline cannot be in the past!</div>
+  <div id="countdown" class="countdown-text"></div>
 
-    <button type="submit" class="btn-update">💾 Update Settings</button>
-  </form>
-</div>
+  <button type="submit" class="glass-btn btn-update" style="margin-top: 1rem;">
+    <img src="{{ url_for('static', filename='icons/save.svg') }}" alt="Save" class="btn-icon" />
+    Update Settings
+  </button>
+</form>
 
 <style>
-  .glass-container {
-    max-width: 600px;
-    margin: auto;
-    padding: 2rem;
-  }
+  /* Reuse styles from dashboard */
 
   .glass-box {
     background: rgba(255, 255, 255, 0.06);
-    backdrop-filter: blur(14px);
-    border-radius: 20px;
-    padding: 2rem;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+    backdrop-filter: blur(18px);
+    border-radius: 16px;
+    padding: 1.5rem 2rem;
+    box-shadow: 0 14px 32px rgba(0, 0, 0, 0.07);
     color: var(--text);
   }
 
@@ -44,14 +44,8 @@
   }
 
   .glass-box input,
-  .glass-box select,
-  .btn-update {
+  .glass-box select {
     width: 100%;
-    max-width: 100%;
-    box-sizing: border-box;
-  }
-
-  .glass-box input {
     padding: 0.7rem 1rem;
     font-size: 1rem;
     border-radius: 12px;
@@ -60,6 +54,7 @@
     color: var(--text);
     transition: all 0.3s ease;
     margin-bottom: 1rem;
+    box-sizing: border-box;
   }
 
   html[data-theme='dark'] .glass-box input {
@@ -69,30 +64,58 @@
   }
 
   .btn-update {
-    padding: 12px;
-    font-size: 1rem;
-    background: var(--button-bg);
-    color: white;
+    padding: 10px 18px;
     border: none;
     border-radius: 12px;
-    font-weight: 600;
+    color: white;
+    font-weight: 700;
     cursor: pointer;
-    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.1);
-    transition: all 0.3s ease;
-    margin-top: 1rem;
+    backdrop-filter: blur(6px);
+    transition: all 0.25s ease;
+    font-size: 0.95rem;
+    margin: 3px 4px 0 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: var(--button-bg);
   }
 
   .btn-update:hover {
     background-color: #3a65b5;
   }
 
+  .btn-icon {
+    width: 16px;
+    height: 16px;
+    vertical-align: middle;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .btn-icon {
+      filter: invert(1) drop-shadow(0 0 2px white);
+    }
+  }
+
+  .warning-text {
+    color: #e74c3c;
+    font-size: 0.9rem;
+    margin-top: 0.3rem;
+  }
+
+  .countdown-text {
+    margin-top: 0.5rem;
+    font-size: 0.9rem;
+    color: var(--text);
+  }
+
   @media (max-width: 600px) {
     .glass-box {
-      padding: 1.5rem;
+      padding: 1rem 1.5rem;
     }
-
     .btn-update {
-      font-size: 0.95rem;
+      font-size: 0.9rem;
+      width: 100%;
+      justify-content: center;
     }
   }
 </style>

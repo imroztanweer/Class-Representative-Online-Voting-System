@@ -90,15 +90,15 @@
     <tbody>
       {% for vote in ballots %}
       <tr>
-        <td>{{ vote.id }}</td>
-        <td>{{ vote.student_regno }}</td>
-        <td>{{ vote.candidate }}</td>
-        <td>{{ vote.position }}</td>
-        <td>{{ vote.timestamp }}</td>
+        <td data-label="Vote ID">{{ vote.id }}</td>
+        <td data-label="Student Reg No">{{ vote.student_regno }}</td>
+        <td data-label="Candidate">{{ vote.candidate }}</td>
+        <td data-label="Position">{{ vote.position }}</td>
+        <td data-label="Timestamp">{{ vote.timestamp }}</td>
         <td data-label="Action">
-          <form action="{{ url_for('admin_delete_vote', vote_id=vote.id) }}" method="POST" onsubmit="return confirmDelete(this);" style="display:inline;" class="inline-form">
+          <form action="{{ url_for('admin_delete_vote', vote_id=vote.id) }}" method="POST" onsubmit="return confirmDelete(this);" class="inline-form">
             <input type="text" name="remark" placeholder="Reason" required class="remark-input">
-            <button type="submit" class="glass-btn btn-delete" aria-label="Delete Vote">
+            <button type="submit" class="glass-btn btn-delete">
               <img src="{{ url_for('static', filename='icons/trash.svg') }}" alt="Delete" class="btn-icon" />
               Delete
             </button>
@@ -120,5 +120,190 @@
     return confirm("Are you sure you want to delete this vote?");
   }
 </script>
+
+<style>
+.page-heading {
+  font-size: 2.4rem;
+  font-weight: 800;
+  margin-bottom: 1rem;
+  background: linear-gradient(to right, #007aff, #5856d6);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.flex-heading {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.section-subheading {
+  margin-top: 2rem;
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.heading-icon-lg {
+  width: 2.2rem;
+  height: 2.2rem;
+}
+.svg-glow {
+  filter: drop-shadow(0 0 5px rgba(59,130,246,0.8));
+}
+
+.section-divider {
+  margin: 2.5rem 0;
+  border: none;
+  border-top: 1px solid rgba(128, 128, 128, 0.2);
+}
+
+.charts-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.chart-block {
+  padding: 1.5rem;
+  background: var(--glass-bg);
+  border-radius: 0.75rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+}
+
+.chart-container {
+  position: relative;
+  width: 100%;
+  max-width: 500px;
+  height: 200px;
+  margin: 0 auto;
+}
+
+
+.glass-table-wrapper {
+  overflow-x: auto;
+}
+
+.glass-table {
+  width: 100%;
+  border-collapse: collapse;
+  border-spacing: 0;
+  border-radius: 16px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(16px);
+  box-shadow: 0 14px 32px rgba(0, 0, 0, 0.08);
+  margin-top: 1.5rem;
+}
+
+.glass-table thead {
+  background-color: var(--button-bg);
+}
+
+.glass-table thead th,
+.glass-table td {
+  padding: 14px;
+  font-size: 1rem;
+  color: var(--text);
+  text-align: center;
+}
+
+.glass-table td {
+  background: rgba(255, 255, 255, 0.04);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.glass-table tr:hover {
+  background: rgba(0, 122, 255, 0.06);
+}
+
+@media screen and (max-width: 768px) {
+  .glass-table thead {
+    display: none;
+  }
+  .glass-table, .glass-table tbody, .glass-table tr, .glass-table td {
+    display: block;
+    width: 100%;
+    text-align: left;
+  }
+  .glass-table tr {
+    margin-bottom: 1rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  }
+  .glass-table td::before {
+    content: attr(data-label);
+    font-weight: 600;
+    display: block;
+    margin-bottom: 4px;
+    color: var(--text);
+    opacity: 0.75;
+  }
+  .glass-table td[data-label="Action"] {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+}
+
+/* Buttons */
+.glass-btn {
+  padding: 10px 18px;
+  border: none;
+  border-radius: 12px;
+  color: white;
+  font-weight: 700;
+  cursor: pointer;
+  backdrop-filter: blur(6px);
+  transition: all 0.25s ease;
+  font-size: 0.95rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--button-bg);
+}
+.glass-btn:hover {
+  transform: scale(1.05);
+  filter: brightness(1.1);
+}
+.btn-icon {
+  width: 16px;
+  height: 16px;
+}
+.btn-delete {
+  background: rgba(220, 53, 69, 0.85);
+}
+.btn-delete:hover {
+  background: rgba(220, 53, 69, 1);
+}
+
+/* Delete form layout */
+.inline-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.inline-form .remark-input {
+  padding: 0.4rem 0.6rem;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 0.9rem;
+  width: 100%;
+}
+@media (min-width: 600px) {
+  .inline-form {
+    flex-direction: row;
+    align-items: center;
+    gap: 0.6rem;
+  }
+  .inline-form .remark-input {
+    flex: 1;
+  }
+  .inline-form .glass-btn {
+    margin-top: 0 !important;
+    white-space: nowrap;
+  }
+}
+</style>
 
 {% endblock %}

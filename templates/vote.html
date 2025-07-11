@@ -1,11 +1,15 @@
 {% extends "student_base.html" %}
 {% block student_content %}
 
+<h1 class="page-heading flex-heading">
+  <img src="{{ url_for('static', filename='icons/inbox.svg') }}" alt="Cast Your Vote" class="heading-icon-lg" />
+  Cast Your Vote
+</h1>
+
 <div class="container fade-in">
 
   <!-- Voting Form -->
   <div class="vote-glass-card" id="voteFormCard">
-    <h2>🗳️ Cast Your Vote</h2>
     <form method="POST" action="{{ url_for('submit_vote') }}" id="voteForm" class="vote-form-ios">
       {% for position, candidates in grouped.items() %}
         <fieldset class="fieldset-ios">
@@ -22,19 +26,32 @@
         </fieldset>
       {% endfor %}
       <button type="button" onclick="confirmVote()" id="submitButton" class="ios-button full-width">
-        ✅ Submit Vote
+        <img src="{{ url_for('static', filename='icons/check.svg') }}" alt="Submit Vote" class="btn-icon inline-icon" />
+        Submit Vote
       </button>
-      <p id="voteError" class="error-message hidden">⚠️ Please select one candidate for every position.</p>
+      <p id="voteError" class="error-message hidden">
+        <img src="{{ url_for('static', filename='icons/alert.svg') }}" alt="Alert" class="inline-icon" style="vertical-align:middle; width:16px; height:16px; margin-right:6px;" />
+        Please select one candidate for every position.
+      </p>
     </form>
   </div>
 
   <!-- Confirmation Box -->
   <div class="confirmation-box glass-card hidden" id="confirmationBox">
-    <h3>🔐 Confirm Your Vote</h3>
+    <h3>
+      <img src="{{ url_for('static', filename='icons/lock.svg') }}" alt="Confirm Vote" class="inline-icon" style="vertical-align:middle; width:20px; height:20px; margin-right:6px;" />
+      Confirm Your Vote
+    </h3>
     <p>Please make sure you’ve selected your choices correctly.</p>
     <div class="confirm-actions">
-      <button onclick="submitFinalVote()" class="ios-button">✅ Confirm & Submit</button>
-      <button onclick="editVote()" class="ios-button secondary">🔙 Edit Choices</button>
+      <button onclick="submitFinalVote()" class="ios-button">
+        <img src="{{ url_for('static', filename='icons/check.svg') }}" alt="Confirm & Submit" class="btn-icon inline-icon" />
+        Confirm & Submit
+      </button>
+      <button onclick="editVote()" class="ios-button secondary">
+        <img src="{{ url_for('static', filename='icons/back.svg') }}" alt="Edit Choices" class="btn-icon" />
+        Edit Choices
+      </button>
     </div>
   </div>
 
@@ -47,6 +64,49 @@
 </div>
 
 <style>
+:root {
+  --button-bg: #007aff;
+  --text: #1e1e1e;
+  --glass-bg: rgba(255, 255, 255, 0.1);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --button-bg: #3a65b5;
+    --text: #ddd;
+    --glass-bg: rgba(0, 0, 0, 0.3);
+  }
+}
+
+/* Page Heading */
+.page-heading {
+  font-size: 2.8rem; /* original size from dashboard */
+  font-weight: 900;
+  margin-bottom: 1.5rem;
+  color: var(--text);
+  user-select: none;
+}
+
+.flex-heading {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+/* Heading Icons */
+.heading-icon-lg {
+  width: 2.8rem;
+  height: 2.8rem;
+  filter: brightness(0) saturate(100%) invert(22%) sepia(72%) saturate(4340%) hue-rotate(206deg) brightness(96%) contrast(95%);
+  transition: filter 0.3s ease;
+}
+
+/* Container */
+.container {
+  max-width: 700px;
+  margin: 0 auto;
+}
+
 .vote-glass-card {
   background: rgba(255, 255, 255, 0.06);
   backdrop-filter: blur(14px);
@@ -54,6 +114,7 @@
   border-radius: 20px;
   box-shadow: 0 6px 20px rgba(0,0,0,0.1);
   margin-bottom: 2rem;
+  color: var(--text);
 }
 
 .vote-form-ios {
@@ -87,6 +148,7 @@
   border: 2px solid transparent;
   transition: all 0.2s ease;
   cursor: pointer;
+  color: var(--text);
 }
 
 .candidate-ios input[type="radio"] {
@@ -132,6 +194,7 @@
   background: rgba(255,255,255,0.06);
   backdrop-filter: blur(12px);
   text-align: center;
+  color: var(--text);
 }
 
 .confirm-actions {
@@ -167,6 +230,9 @@
   font-weight: 600;
   text-align: center;
   transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .hidden {
@@ -177,6 +243,77 @@
   width: 100%;
 }
 
+.btn-icon {
+  width: 16px;
+  height: 16px;
+  vertical-align: middle;
+}
+
+.inline-icon {
+  width: 20px;
+  height: 20px;
+  vertical-align: middle;
+}
+
+/* Buttons */
+.ios-button {
+  padding: 12px 20px;
+  font-size: 1rem;
+  font-weight: 600;
+  color: white;
+  background: var(--button-bg);
+  border: none;
+  border-radius: 30px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  user-select: none;
+}
+
+.ios-button:hover {
+  filter: brightness(1.1);
+  transform: scale(1.03);
+}
+
+/* Dark mode */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --button-bg: #3a65b5;
+    --text: #ddd;
+    --glass-bg: rgba(0, 0, 0, 0.3);
+  }
+
+  .heading-icon-lg {
+    filter: invert(100%) brightness(150%) drop-shadow(0 0 3px #ffffffcc);
+  }
+
+  .btn-icon,
+  .inline-icon {
+    filter: invert(100%) brightness(150%) drop-shadow(0 0 3px #ffffffcc);
+    transition: filter 0.3s ease;
+  }
+
+  /* Except back.svg - no glow, keep original styling */
+  button.ios-button.secondary img[src$="back.svg"] {
+    filter: none !important;
+  }
+
+  .vote-glass-card {
+    background: rgba(255, 255, 255, 0.06);
+    box-shadow: 0 6px 18px rgba(255, 255, 255, 0.05);
+  }
+
+  .confirmation-box {
+    background: rgba(255,255,255,0.06);
+  }
+
+  .error-message {
+    background-color: rgba(255, 0, 0, 0.25);
+    color: #f88;
+  }
+}
 @media (max-width: 600px) {
   .confirm-actions {
     flex-direction: column;

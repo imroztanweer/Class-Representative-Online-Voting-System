@@ -8,7 +8,7 @@
       <span class="gradient-text">Login</span>
     </h2>
 
-    <form method="POST" action="{{ url_for('login') }}" class="login-form" novalidate>
+    <form method="POST" action="{{ url_for('login') }}" class="login-form" novalidate onkeydown="checkCapsLock(event)" onkeyup="checkCapsLock(event)">
       <div class="form-group">
         <label for="regno">Registration Number</label>
         <input type="text" id="regno" name="regno" required autofocus autocomplete="username" />
@@ -17,6 +17,11 @@
       <div class="form-group">
         <label for="password">Password</label>
         <input type="password" id="password" name="password" required autocomplete="current-password" />
+      </div>
+
+      <div id="capslock-warning" style="display:none; margin-bottom: 1rem; color: #ff4d4f; font-weight: 600; display: flex; align-items: center; gap: 0.5rem;">
+        <img src="{{ url_for('static', filename='icons/alert.svg') }}" alt="Caps Lock Warning" style="width: 18px; height: 18px;" />
+        Caps Lock is ON
       </div>
 
       <button type="submit" class="votex-login-btn login-submit">Login</button>
@@ -33,6 +38,16 @@
     </div>
   </div>
 </div>
+
+<script>
+  function checkCapsLock(event) {
+    const capsWarning = document.getElementById('capslock-warning');
+    if (!event.getModifierState) return;
+
+    const isCaps = event.getModifierState('CapsLock');
+    capsWarning.style.display = isCaps ? 'flex' : 'none';
+  }
+</script>
 
 <style>
   :root {
@@ -141,11 +156,18 @@
     transition: box-shadow 0.3s ease, border 0.3s ease, background 0.3s ease;
   }
 
+  /* Fix: make text visible in dark mode while typing */
+  html[data-theme="dark"] .form-group input {
+    background-color: rgba(0, 0, 0, 0.4);
+    color: #fff;
+  }
+
   .form-group input:focus {
     outline: none;
     background: #fefefe;
     border-color: #007aff;
     box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.25);
+    color: var(--text);
   }
 
   .votex-login-btn.login-submit {
@@ -189,6 +211,15 @@
   }
   .login-forgot:hover {
     text-decoration: underline;
+  }
+
+  /* Caps Lock alert icon glow */
+  #capslock-warning img {
+    filter: none;
+    transition: filter 0.3s ease;
+  }
+  html[data-theme="dark"] #capslock-warning img {
+    filter: invert(1) drop-shadow(0 0 4px #ff4d4f);
   }
 
   @media (max-width: 480px) {

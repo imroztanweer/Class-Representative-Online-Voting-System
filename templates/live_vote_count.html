@@ -1,182 +1,130 @@
 {% extends "student_base.html" %}
 {% block student_content %}
 
-<div class="container fade-in">
-  <h2 class="page-title">📊 Live Vote Count</h2>
+<h1 class="page-heading flex-heading">
+  <img src="{{ url_for('static', filename='icons/bar.svg') }}" alt="Live Vote Count" class="heading-icon-lg svg-glow" />
+  Live Vote Count
+</h1>
 
-  {% if results %}
-    <div class="charts-wrapper">
-      {% for position, candidates in results.items() %}
-        <section class="chart-container ios-glass fade-in-up">
-          <h3 class="chart-title">{{ position }}</h3>
+{% if results %}
+  {% set ns = namespace(grouped={}) %}
+  {% for item in results|dictsort %}
+    {% set pos = item[0] %}
+    {% if pos not in ns.grouped %}
+      {% set _ = ns.grouped.update({ pos: item[1] }) %}
+    {% endif %}
+  {% endfor %}
+
+  <div class="charts-wrapper">
+    {% for pos, candidates in ns.grouped.items() %}
+      <div class="chart-block glass-table">
+        <h3 class="section-subheading">{{ pos }}</h3>
+        <div class="chart-container">
           <canvas id="chart-{{ loop.index }}"></canvas>
-        </section>
-      {% endfor %}
-    </div>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script>
-      {% for position, candidates in results.items() %}
-        const ctx{{ loop.index }} = document.getElementById('chart-{{ loop.index }}').getContext('2d');
-        const data{{ loop.index }} = {
-          labels: [{% for c in candidates %}"{{ c.candidate or 'N/A' }}",{% endfor %}],
+  <script src="{{ url_for('static', filename='chart.min.js') }}"></script>
+  <script>
+    {% for pos, candidates in ns.grouped.items() %}
+      const ctx{{ loop.index }} = document.getElementById('chart-{{ loop.index }}').getContext('2d');
+      new Chart(ctx{{ loop.index }}, {
+        type: 'bar',
+        data: {
+          labels: [{% for c in candidates %}"{{ c.candidate }}"{% if not loop.last %}, {% endif %}{% endfor %}],
           datasets: [{
             label: 'Votes',
-            data: [{% for c in candidates %}{{ c.votes }},{% endfor %}],
+            data: [{% for c in candidates %}{{ c.votes }}{% if not loop.last %}, {% endif %}{% endfor %}],
             backgroundColor: [
-              '#ff4d4f80', '#1890ff80', '#fadb1480', '#52c41a80', '#9254de80', '#fa8c1680'
+              'rgba(59,130,246,0.6)', 'rgba(34,197,94,0.6)',
+              'rgba(234,179,8,0.6)', 'rgba(239,68,68,0.6)',
+              'rgba(168,85,247,0.6)', 'rgba(14,165,233,0.6)'
             ],
-            borderColor: [
-              '#ff4d4f', '#1890ff', '#fadb14', '#52c41a', '#9254de', '#fa8c16'
-            ],
-            borderWidth: 1.5,
-            borderRadius: 10,
-            hoverOffset: 12
+            borderColor: 'rgba(0,0,0,0.1)',
+            borderWidth: 1,
+            borderRadius: 8
           }]
-        };
-        const config{{ loop.index }} = {
-          type: 'bar',
-          data: data{{ loop.index }},
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: {
-              y: {
-                beginAtZero: true,
-                ticks: { precision: 0 }
-              }
-            },
-            plugins: {
-              legend: { display: false },
-              tooltip: {
-                backgroundColor: '#333',
-                titleColor: '#fff',
-                bodyColor: '#fff'
-              }
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            y: {
+              beginAtZero: true,
+              ticks: { precision: 0 }
             }
+          },
+          plugins: {
+            legend: { display: false }
           }
-        };
-        new Chart(ctx{{ loop.index }}, config{{ loop.index }});
-      {% endfor %}
-    </script>
-  {% else %}
-    <p class="no-data-msg">No vote data available yet.</p>
-  {% endif %}
-</div>
-
-<noscript>
-  <div style="text-align:center; padding: 2rem; color: var(--text);">
-    ❗ JavaScript is required to view live charts.
-  </div>
-</noscript>
+        }
+      });
+    {% endfor %}
+  </script>
+{% else %}
+  <p>No vote data available yet.</p>
+{% endif %}
 
 <style>
-.container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 2.5rem 1rem;
-  position: relative;
-  z-index: 1;
-}
-
-.page-title {
-  text-align: center;
-  font-size: 2rem;
-  font-weight: 700;
+.page-heading {
+  font-size: 2.4rem;
+  font-weight: 800;
+  margin-bottom: 1rem;
   background: linear-gradient(to right, #007aff, #5856d6);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  margin-bottom: 2rem;
+}
+
+.flex-heading {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.section-subheading {
+  margin-top: 2rem;
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.heading-icon-lg {
+  width: 2.2rem;
+  height: 2.2rem;
+}
+.svg-glow {
+  filter: drop-shadow(0 0 5px rgba(59,130,246,0.8));
 }
 
 .charts-wrapper {
   display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
+  flex-direction: column;
   gap: 2rem;
 }
 
-.chart-container {
-  flex: 1 1 45%;
-  max-width: 45%;
-  min-width: 300px;
+.chart-block {
   padding: 1.5rem;
+  background: var(--glass-bg);
+  border-radius: 0.75rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+}
+
+.chart-container {
   position: relative;
-  transition: transform 0.3s ease;
+  width: 100%;
+  max-width: 500px;
+  height: 200px;
+  margin: 0 auto;
 }
 
-.ios-glass {
-  background: rgba(255, 255, 255, 0.08);
-  backdrop-filter: blur(18px);
-  border-radius: 18px;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.08);
-}
-
-.ios-glass:hover {
-  transform: scale(1.02);
-  box-shadow: 0 12px 36px rgba(0,0,0,0.12);
-}
-
-.chart-title {
-  text-align: center;
-  margin-bottom: 1rem;
-  font-size: 1.15rem;
-  font-weight: 600;
-  color: var(--text);
-}
-
-canvas {
-  width: 100% !important;
-  height: 300px !important;
-  max-height: 300px;
-}
-
-.fade-in-up {
-  animation: fadeInUp 0.6s ease both;
-}
-
-.no-data-msg {
-  text-align: center;
-  font-size: 1rem;
-  color: var(--text);
-  opacity: 0.7;
-  margin-top: 2rem;
-}
-
-/* Dark mode support */
-html[data-theme='dark'] .ios-glass {
-  background: rgba(255, 255, 255, 0.06);
-  box-shadow: 0 6px 20px rgba(255, 255, 255, 0.05);
-}
-
-html[data-theme='dark'] .chart-title {
-  color: #ffffffcc;
-}
-
-@media (max-width: 768px) {
+@media (max-width: 600px) {
   .chart-container {
-    flex: 1 1 100%;
     max-width: 100%;
-  }
-
-  canvas {
-    max-height: 250px;
-  }
-
-  .page-title {
-    font-size: 1.7rem;
-  }
-}
-
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
+    height: 180px;
   }
 }
 </style>
+
 {% endblock %}

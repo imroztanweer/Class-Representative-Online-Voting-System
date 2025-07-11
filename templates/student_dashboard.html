@@ -1,12 +1,18 @@
 {% extends "student_base.html" %}
 {% block student_content %}
 
-<h2 class="gradient-heading">🏠 Dashboard Home</h2>
+<h1 class="gradient-heading flex-heading">
+  <img src="{{ url_for('static', filename='icons/home.svg') }}" alt="Home" class="heading-icon-sm" />
+  Dashboard Home
+</h1>
 
 <div class="dashboard-cards">
   <!-- Student Info -->
   <div class="dashboard-card">
-    <h3>👤 Your Profile</h3>
+    <h3 class="card-heading">
+      <img src="{{ url_for('static', filename='icons/user.svg') }}" alt="Profile" class="card-icon" />
+      Your Profile
+    </h3>
     <p><strong>Name:</strong> {{ session.name }}</p>
     <p><strong>Reg No:</strong> {{ session.user }}</p>
     <p><strong>Course:</strong> {{ session.course }}</p>
@@ -23,7 +29,10 @@
 
   <!-- Election Info -->
   <div class="dashboard-card">
-    <h3>📅 Election Info</h3>
+    <h3 class="card-heading">
+      <img src="{{ url_for('static', filename='icons/calendar.svg') }}" alt="Election Info" class="card-icon" />
+      Election Info
+    </h3>
     <p><strong>Title:</strong> {{ election.title }}</p>
     <p><strong>Start:</strong> {{ election.start_date }}</p>
     <p><strong>Deadline:</strong> {{ election.deadline }}</p>
@@ -34,7 +43,10 @@
   <div class="dashboard-card action-card">
     {% if not session.voted and started %}
       <a href="{{ url_for('vote') }}">
-        <button class="ios-button">🗳️ Cast Your Vote</button>
+        <button class="ios-button">
+          <img src="{{ url_for('static', filename='icons/inbox.svg') }}" alt="Cast Your Vote" class="btn-icon" />
+          Cast Your Vote
+        </button>
       </a>
     {% elif not started %}
       <p class="vote-msg">Voting has not started yet.</p>
@@ -49,12 +61,30 @@
 
 <style>
 .gradient-heading {
-  font-size: 1.8rem;
-  font-weight: 700;
+  font-size: 2.8rem;
+  font-weight: 900;
   background: linear-gradient(to right, #007aff, #5856d6);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   margin-bottom: 2rem;
+  user-select: none;
+}
+
+.flex-heading {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.heading-icon-sm {
+  width: 28px;
+  height: 28px;
+  vertical-align: middle;
+}
+@media (prefers-color-scheme: dark) {
+  .heading-icon-sm {
+    filter: invert(1) brightness(1.3) drop-shadow(0 0 3px rgba(255, 255, 255, 0.7));
+  }
 }
 
 .dashboard-cards {
@@ -76,10 +106,25 @@
   gap: 0.6rem;
 }
 
-.dashboard-card h3 {
-  margin-bottom: 0.6rem;
+.card-heading {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
   font-size: 1.25rem;
   font-weight: 700;
+  margin-bottom: 0.6rem;
+  color: var(--text);
+}
+
+.card-icon {
+  width: 22px;
+  height: 22px;
+  vertical-align: middle;
+}
+@media (prefers-color-scheme: dark) {
+  .card-icon {
+    filter: invert(1) brightness(1.3) drop-shadow(0 0 2px rgba(255, 255, 255, 0.7));
+  }
 }
 
 .badge {
@@ -122,6 +167,10 @@
   cursor: pointer;
   transition: all 0.25s ease-in-out;
   width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
 }
 
 .ios-button:hover {

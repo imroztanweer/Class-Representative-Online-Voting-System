@@ -1,91 +1,127 @@
 {% extends "admin_base.html" %}
 {% block admin_content %}
 
-<div class="container fade-in">
-  <h2 class="section-title">📋 Audit Log</h2>
+<h1 class="page-heading flex-heading">
+  <img src="{{ url_for('static', filename='icons/logs.svg') }}" alt="Audit Log" class="heading-icon-lg" />
+  Audit Log
+</h1>
 
-  {% if logs %}
-    <div class="glass-table-wrapper">
-      <table class="glass-table">
-        <thead>
-          <tr>
-            <th>Timestamp</th>
-            <th>User</th>
-            <th>Action</th>
-            <th>Details</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for log in logs %}
-          <tr>
-            <td>{{ log.timestamp }}</td>
-            <td>{{ log.user }}</td>
-            <td>{{ log.action }}</td>
-            <td>{{ log.details }}</td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    </div>
-  {% else %}
-    <div class="info-box no-logs">No audit log entries found.</div>
-  {% endif %}
-</div>
+{% if logs %}
+  <div class="glass-table-wrapper">
+    <table class="glass-table">
+      <thead>
+        <tr>
+          <th>Timestamp</th>
+          <th>User</th>
+          <th>Action</th>
+          <th>Details</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for log in logs %}
+        <tr>
+          <td>{{ log.timestamp }}</td>
+          <td>{{ log.user }}</td>
+          <td>{{ log.action }}</td>
+          <td>{{ log.details }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% else %}
+  <div class="info-box no-logs">No audit log entries found.</div>
+{% endif %}
 
 <style>
-.section-title {
-  margin-bottom: 1.5rem;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
+  /* Reuse styles consistent with dashboard */
 
-.glass-table-wrapper {
-  overflow-x: auto;
-}
+  .glass-table-wrapper {
+    overflow-x: auto;
+  }
 
-.glass-table {
-  width: 100%;
-  border-collapse: collapse;
-}
+  .glass-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: rgba(255, 255, 255, 0.06);
+    backdrop-filter: blur(18px);
+    border-radius: 16px;
+    box-shadow: 0 14px 32px rgba(0, 0, 0, 0.07);
+    margin-top: 1.5rem;
+  }
 
-.glass-table th,
-.glass-table td {
-  padding: 0.75rem 1rem;
-  text-align: left;
-  white-space: nowrap;
-}
+  .glass-table thead {
+    background-color: var(--button-bg);
+  }
 
-.glass-table th {
-  background-color: var(--glass-bg);
-  color: var(--text);
-  font-weight: 700;
-}
-
-.glass-table td {
-  color: var(--text);
-  border-top: 1px solid rgba(255, 255, 255, 0.05);
-}
-
-.no-logs {
-  margin-top: 2rem;
-  font-style: italic;
-  color: var(--text-muted, #888);
-  padding: 1rem;
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 12px;
-  text-align: center;
-}
-
-/* Mobile tweaks */
-@media (max-width: 768px) {
   .glass-table th,
   .glass-table td {
-    padding: 0.6rem 0.75rem;
-    font-size: 0.85rem;
-    white-space: normal;
+    padding: 0.75rem 1rem;
+    text-align: left;
+    white-space: nowrap;
+    color: var(--text);
+    font-weight: 600;
   }
-}
+
+  .glass-table td {
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    font-weight: 400;
+  }
+
+  .info-box.no-logs {
+    margin-top: 2rem;
+    font-style: italic;
+    color: var(--text-muted, #888);
+    padding: 1rem;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    text-align: center;
+  }
+
+  /* Heading */
+
+  .page-heading {
+    font-size: 2.8rem;
+    font-weight: 900;
+    margin-bottom: 1rem;
+    background: linear-gradient(to right, #007aff, #5856d6);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    user-select: none;
+  }
+
+  .flex-heading {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+  }
+
+  .heading-icon-lg {
+    width: 2.8rem;
+    height: 2.8rem;
+  }
+
+  @media (prefers-color-scheme: light) {
+    .heading-icon-lg {
+      filter: brightness(0) drop-shadow(0 0 2px rgba(0, 0, 0, 0.3));
+    }
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .heading-icon-lg {
+      filter: invert(1) brightness(1.5) drop-shadow(0 0 2px rgba(255, 255, 255, 0.6));
+    }
+  }
+
+  /* Responsive tweaks */
+  @media (max-width: 768px) {
+    .glass-table th,
+    .glass-table td {
+      padding: 0.6rem 0.75rem;
+      font-size: 0.85rem;
+      white-space: normal;
+    }
+  }
 </style>
 
 {% endblock %}
