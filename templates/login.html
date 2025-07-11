@@ -8,7 +8,7 @@
       <span class="gradient-text">Login</span>
     </h2>
 
-    <form method="POST" action="{{ url_for('login') }}" class="login-form" novalidate onkeydown="checkCapsLock(event)" onkeyup="checkCapsLock(event)">
+    <form method="POST" action="{{ url_for('login') }}" class="login-form" novalidate>
       <div class="form-group">
         <label for="regno">Registration Number</label>
         <input type="text" id="regno" name="regno" required autofocus autocomplete="username" />
@@ -40,13 +40,24 @@
 </div>
 
 <script>
-  function checkCapsLock(event) {
-    const capsWarning = document.getElementById('capslock-warning');
-    if (!event.getModifierState) return;
+  const passwordInput = document.getElementById('password');
+  const capsWarning = document.getElementById('capslock-warning');
 
-    const isCaps = event.getModifierState('CapsLock');
-    capsWarning.style.display = isCaps ? 'flex' : 'none';
+  function isLetterKey(e) {
+    return e.key.length === 1 && /^[a-zA-Z]$/.test(e.key);
   }
+
+  function checkCapsLock(e) {
+    if (!e.getModifierState || !isLetterKey(e)) return;
+    const capsOn = e.getModifierState('CapsLock');
+    capsWarning.style.display = capsOn ? 'flex' : 'none';
+  }
+
+  passwordInput.addEventListener('keydown', checkCapsLock);
+  passwordInput.addEventListener('keyup', checkCapsLock);
+  passwordInput.addEventListener('blur', () => {
+    capsWarning.style.display = 'none';
+  });
 </script>
 
 <style>
@@ -54,6 +65,7 @@
     --glass-bg: rgba(255, 255, 255, 0.1);
     --text: #1e1e1e;
   }
+
   @media (prefers-color-scheme: dark) {
     :root {
       --glass-bg: rgba(0, 0, 0, 0.3);
@@ -119,6 +131,7 @@
     filter: drop-shadow(0 0 3px rgba(0, 0, 0, 0.15));
     transition: filter 0.3s ease;
   }
+
   html[data-theme="dark"] .login-icon {
     filter: invert(1) drop-shadow(0 0 3px rgba(255, 255, 255, 0.8));
   }
@@ -156,7 +169,6 @@
     transition: box-shadow 0.3s ease, border 0.3s ease, background 0.3s ease;
   }
 
-  /* Fix: make text visible in dark mode while typing */
   html[data-theme="dark"] .form-group input {
     background-color: rgba(0, 0, 0, 0.4);
     color: #fff;
@@ -183,6 +195,7 @@
     transition: all 0.3s ease;
     cursor: pointer;
   }
+
   .votex-login-btn.login-submit:hover {
     background-color: #005ecb;
     transform: scale(1.05);
@@ -203,21 +216,23 @@
     text-align: center;
     margin-top: 1rem;
   }
+
   .login-forgot {
     font-size: 0.95rem;
     color: #007aff;
     text-decoration: none;
     font-weight: 500;
   }
+
   .login-forgot:hover {
     text-decoration: underline;
   }
 
-  /* Caps Lock alert icon glow */
   #capslock-warning img {
     filter: none;
     transition: filter 0.3s ease;
   }
+
   html[data-theme="dark"] #capslock-warning img {
     filter: invert(1) drop-shadow(0 0 4px #ff4d4f);
   }
@@ -226,9 +241,11 @@
     .login-wrapper {
       padding: 3rem 1rem;
     }
+
     .login-container {
       padding: 2rem 1.2rem;
     }
+
     .login-heading {
       font-size: 1.8rem;
     }

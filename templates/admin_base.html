@@ -5,7 +5,6 @@
 {% endblock %}
 
 {% block content %}
-
 <script>
   (function () {
     const collapsed = localStorage.getItem("adminSidebarCollapsed");
@@ -18,13 +17,11 @@
 
 <div class="admin-dashboard">
   <nav class="admin-sidebar glassy-sidebar" id="adminSidebar">
-    <!-- Hamburger Toggle -->
     <button class="hamburger-toggle" onclick="toggleMenu()" aria-label="Toggle Admin Menu">
       <img src="{{ url_for('static', filename='icons/menu.svg') }}" alt="Menu" class="icon-img menu-icon" />
       <span class="label">Admin Tools</span>
     </button>
 
-    <!-- Sidebar Menu -->
     <ul id="adminMenu" role="menu">
       <li>
         <a href="{{ url_for('admin_dashboard') }}"
@@ -280,6 +277,7 @@ body {
   color: var(--text);
 }
 
+/* ✅ Mobile View Styling */
 @media (max-width: 768px) {
   .admin-dashboard {
     flex-direction: column;
@@ -288,6 +286,7 @@ body {
   .admin-sidebar {
     width: 100% !important;
     padding: 0.75rem 0.5rem !important;
+    background: #000 !important; /* Black background for mobile */
   }
 
   .sidebar-collapsed .admin-sidebar {
@@ -320,11 +319,20 @@ body {
     gap: 0.2rem;
     padding: 0.6rem 0.3rem;
     font-size: 0.75rem;
+    color: #fff !important; /* White text on black bg */
   }
 
-  .admin-sidebar .icon-img {
-    width: 22px;
-    height: 22px;
+  .admin-sidebar a.active {
+    background-color: #fff !important;
+    color: #000 !important;
+  }
+
+  .admin-sidebar a .icon-img {
+    filter: invert(1); /* white icons */
+  }
+
+  .admin-sidebar a.active .icon-img {
+    filter: invert(0); /* dark icon for white bg */
   }
 
   .admin-main-content {
@@ -334,28 +342,6 @@ body {
     padding: 1rem 0.75rem;
   }
 }
-
-/* ✅ UPDATED: Light mode now fully inverted from dark */
-@media (prefers-color-scheme: light) {
-  :root {
-    --text: #000000;
-    --glass-bg: rgba(0, 0, 0, 0.12);
-    --sidebar-bg: #ffffff;
-    --hover-bg: rgba(0, 0, 0, 0.08);
-    --active-bg: #000000;
-    --active-text: #ffffff;
-    --active-icon: invert(1);
-  }
-
-  .admin-sidebar a .icon-img {
-    filter: invert(0);
-  }
-
-  .admin-sidebar a.active .icon-img {
-    filter: invert(1);
-  }
-}
-
 </style>
 
 <script>

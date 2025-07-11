@@ -265,14 +265,20 @@ def manage_candidates():
     db = get_db()
     if request.method == 'POST':
         action = request.form.get('action')
-        name = request.form.get('name')
+        student_regno = request.form.get('student_regno')
         pos_id = request.form.get('position_id')
         cand_id = request.form.get('id')
 
-        if action == 'add' and name and pos_id:
-            db.execute("INSERT INTO candidates (name, position_id) VALUES (?, ?)", (name, pos_id))
-        elif action == 'edit' and name and pos_id and cand_id:
-            db.execute("UPDATE candidates SET name = ?, position_id = ? WHERE id = ?", (name, pos_id, cand_id))
+        if action == 'add' and student_regno and pos_id:
+            student = db.execute("SELECT * FROM students WHERE regno = ?", (student_regno,)).fetchone()
+            if student:
+                db.execute("INSERT INTO candidates (name, position_id, student_regno) VALUES (?, ?, ?)",
+                           (student['name'], pos_id, student_regno))
+        elif action == 'edit' and student_regno and pos_id and cand_id:
+            student = db.execute("SELECT * FROM students WHERE regno = ?", (student_regno,)).fetchone()
+            if student:
+                db.execute("UPDATE candidates SET name = ?, position_id = ?, student_regno = ? WHERE id = ?",
+                           (student['name'], pos_id, student_regno, cand_id))
         elif action == 'delete' and cand_id:
             db.execute("DELETE FROM candidates WHERE id = ?", (cand_id,))
 
@@ -282,11 +288,14 @@ def manage_candidates():
 
     positions = db.execute("SELECT * FROM positions").fetchall()
     candidates = db.execute("""
-        SELECT c.*, p.name as position FROM candidates c
+        SELECT c.*, p.name as position, s.avatar as avatar
+        FROM candidates c
         JOIN positions p ON c.position_id = p.id
+        LEFT JOIN students s ON s.regno = c.student_regno
     """).fetchall()
     db.close()
     return render_template('manage_candidates.html', positions=positions, candidates=candidates)
+
 
 @app.route('/election_settings', methods=['GET', 'POST'])
 @admin_required
@@ -595,7 +604,6 @@ def upload_avatar():
 
         flash('Avatar updated successfully.')
     return redirect(url_for('student_profile'))
-
 
 # ----------- Main -----------
 
