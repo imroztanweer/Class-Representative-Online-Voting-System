@@ -673,3 +673,41 @@ html[data-theme="dark"] .feature-box::before {
   filter: invert(1);
   mix-blend-mode: lighten;
 }
+html[data-theme="light"] .search-icon,
+html[data-theme="light"] .heading-icon-lg {
+  filter: brightness(0) drop-shadow(0 0 2px rgba(0, 0, 0, 0.3));
+}
+
+html[data-theme="dark"] .search-icon,
+html[data-theme="dark"] .heading-icon-lg {
+  filter: invert(1) brightness(1.5) drop-shadow(0 0 2px rgba(255, 255, 255, 0.6));
+}
+html[data-theme="light"] .dataTables_filter input {
+  box-shadow: 0 0 6px rgba(0, 0, 0, 0.2), 0 0 12px rgba(0, 0, 0, 0.1);
+}
+
+html[data-theme="dark"] .dataTables_filter input {
+  box-shadow: 0 0 6px rgba(255, 255, 255, 0.2), 0 0 12px rgba(255, 255, 255, 0.1);
+}
+.page-heading {
+  font-size: 2.8rem;
+  font-weight: 900;
+  margin-bottom: 1.5rem;
+  background: linear-gradient(to right, #007aff, #5856d6);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  user-select: none;
+}
+
+.section-subheading {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--text);
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+}
+
+.svg-glow {
+  filter: drop-shadow(0 0 6px rgba(59,130,246,0.8));
+}
+

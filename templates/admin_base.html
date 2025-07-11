@@ -1,7 +1,6 @@
 {% extends "base.html" %}
 {% block content %}
 
-<!-- Sidebar state handler (runs before page loads) -->
 <script>
   (function () {
     const collapsed = localStorage.getItem("adminSidebarCollapsed");
@@ -14,16 +13,19 @@
 
 <div class="admin-dashboard">
   <nav class="admin-sidebar glassy-sidebar" id="adminSidebar">
+    <!-- Hamburger Toggle -->
     <button class="hamburger-toggle" onclick="toggleMenu()" aria-label="Toggle Admin Menu">
-      <img src="{{ url_for('static', filename='icons/menu.svg') }}" alt="Icon: Menu" class="icon-img menu-icon" />
+      <img src="{{ url_for('static', filename='icons/menu.svg') }}" alt="Menu" class="icon-img menu-icon" />
       <span class="label">Admin Tools</span>
     </button>
+
+    <!-- Sidebar Menu -->
     <ul id="adminMenu" role="menu">
       <li>
         <a href="{{ url_for('admin_dashboard') }}"
            class="{% if request.endpoint == 'admin_dashboard' %}active{% endif %}"
            data-title="Dashboard Home">
-          <img src="{{ url_for('static', filename='icons/home.svg') }}" alt="Icon: Home" class="icon-img" />
+          <img src="{{ url_for('static', filename='icons/home.svg') }}" alt="Home" class="icon-img" />
           <span class="label">Dashboard Home</span>
         </a>
       </li>
@@ -31,7 +33,7 @@
         <a href="{{ url_for('manage_candidates') }}"
            class="{% if request.endpoint == 'manage_candidates' %}active{% endif %}"
            data-title="Manage Candidates">
-          <img src="{{ url_for('static', filename='icons/vote.svg') }}" alt="Icon: Candidates" class="icon-img" />
+          <img src="{{ url_for('static', filename='icons/vote.svg') }}" alt="Candidates" class="icon-img" />
           <span class="label">Manage Candidates</span>
         </a>
       </li>
@@ -39,7 +41,7 @@
         <a href="{{ url_for('manage_positions') }}"
            class="{% if request.endpoint == 'manage_positions' %}active{% endif %}"
            data-title="Manage Positions">
-          <img src="{{ url_for('static', filename='icons/edit.svg') }}" alt="Icon: Positions" class="icon-img" />
+          <img src="{{ url_for('static', filename='icons/edit.svg') }}" alt="Positions" class="icon-img" />
           <span class="label">Manage Positions</span>
         </a>
       </li>
@@ -47,7 +49,7 @@
         <a href="{{ url_for('election_settings') }}"
            class="{% if request.endpoint == 'election_settings' %}active{% endif %}"
            data-title="Election Settings">
-          <img src="{{ url_for('static', filename='icons/settings.svg') }}" alt="Icon: Settings" class="icon-img" />
+          <img src="{{ url_for('static', filename='icons/settings.svg') }}" alt="Settings" class="icon-img" />
           <span class="label">Election Settings</span>
         </a>
       </li>
@@ -55,7 +57,7 @@
         <a href="{{ url_for('audit_log') }}"
            class="{% if request.endpoint == 'audit_log' %}active{% endif %}"
            data-title="Audit Logs">
-          <img src="{{ url_for('static', filename='icons/logs.svg') }}" alt="Icon: Audit" class="icon-img" />
+          <img src="{{ url_for('static', filename='icons/logs.svg') }}" alt="Audit" class="icon-img" />
           <span class="label">Audit Logs</span>
         </a>
       </li>
@@ -63,7 +65,7 @@
         <a href="{{ url_for('admin_votes') }}"
            class="{% if request.endpoint == 'admin_votes' %}active{% endif %}"
            data-title="Live Vote Count">
-          <img src="{{ url_for('static', filename='icons/bar.svg') }}" alt="Icon: Live Vote" class="icon-img" />
+          <img src="{{ url_for('static', filename='icons/bar.svg') }}" alt="Vote Count" class="icon-img" />
           <span class="label">Live Vote Count</span>
         </a>
       </li>
@@ -75,6 +77,7 @@
   </main>
 </div>
 
+<!-- Styles -->
 <style>
 :root {
   --text: #111;
@@ -88,14 +91,26 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --text: #eee;
-    --glass-bg: rgba(0, 0, 0, 0.3);
-    --sidebar-bg: rgba(0, 0, 0, 0.2);
+    --text: #ffffff;
+    --glass-bg: rgba(0, 0, 0, 0.12);
+    --sidebar-bg: #000000;
     --hover-bg: rgba(255, 255, 255, 0.08);
-    --active-bg: #fff;
-    --active-text: #000;
+    --active-bg: #ffffff;
+    --active-text: #000000;
     --active-icon: invert(0);
   }
+
+  .admin-sidebar a .icon-img {
+    filter: invert(1);
+  }
+
+  .admin-sidebar a.active .icon-img {
+    filter: invert(0);
+  }
+}
+
+body {
+  background-color: transparent !important;
 }
 
 .admin-dashboard {
@@ -106,54 +121,53 @@
 
 .admin-sidebar.glassy-sidebar {
   width: 280px;
-  padding: 1.2rem;
+  padding: 1rem 1rem 0.5rem;
   background: var(--sidebar-bg);
   backdrop-filter: blur(20px);
   border-right: 1px solid rgba(255, 255, 255, 0.15);
   box-shadow: inset -2px 0 4px rgba(0,0,0,0.05);
-  border-radius: 0;
   transition: width 0.3s ease, padding 0.3s ease;
   overflow-x: hidden;
 }
 
 .sidebar-collapsed .admin-sidebar.glassy-sidebar {
   width: 80px;
-  padding: 1.2rem 0.6rem;
+  padding: 1rem 0.5rem 0.5rem;
 }
 
 .hamburger-toggle {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.4rem 0.75rem;
   background: none;
   border: none;
-  padding: 0.6rem 1rem;
   font-weight: 600;
   font-size: 1rem;
-  width: 100%;
-  text-align: left;
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
   color: var(--text);
-  border-radius: 0;
-  margin-bottom: 1.5rem;
+  border-radius: 8px;
+  transition: background 0.25s ease;
+  margin-bottom: 1rem;
   cursor: pointer;
-  transition: background 0.25s ease, border-radius 0.25s ease;
 }
 
 .hamburger-toggle:hover {
   background-color: var(--hover-bg);
-  border-radius: 12px;
 }
 
+.sidebar-collapsed .hamburger-toggle {
+  justify-content: center;
+  padding: 0.4rem;
+}
+
+.sidebar-collapsed .hamburger-toggle .label {
+  display: none;
+}
+
+.icon-img,
 .menu-icon {
-  width: 20px;
-  height: 20px;
-  display: inline-block;
-  vertical-align: middle;
-  filter: invert(0);
-  transition: filter 0.3s ease;
-}
-
-.icon-img {
   width: 20px;
   height: 20px;
   filter: invert(0);
@@ -171,10 +185,13 @@
   list-style: none;
   padding-left: 0;
   margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
 }
 
 .admin-sidebar li {
-  margin-bottom: 1rem;
+  margin-bottom: 0.4rem;
 }
 
 .admin-sidebar a {
@@ -183,22 +200,20 @@
   color: var(--text);
   display: flex;
   align-items: center;
-  gap: 0.6rem;
-  padding: 0.6rem 1rem;
-  border-radius: 0;
-  transition: background 0.25s ease, border-radius 0.25s ease;
+  gap: 0.4rem;
+  padding: 0.4rem 0.75rem;
+  border-radius: 8px;
+  transition: background 0.25s ease;
   position: relative;
 }
 
 .admin-sidebar a:hover {
   background-color: var(--hover-bg);
-  border-radius: 12px;
 }
 
 .admin-sidebar a.active {
   background-color: var(--active-bg);
   color: var(--active-text);
-  border-radius: 12px;
 }
 
 .admin-sidebar a.active .icon-img {
@@ -207,7 +222,7 @@
 
 .sidebar-collapsed .admin-sidebar a {
   justify-content: center;
-  padding: 0.6rem;
+  padding: 0.4rem;
 }
 
 .sidebar-collapsed .admin-sidebar .label {
@@ -242,11 +257,11 @@
 
 .admin-main-content.glassy-content {
   flex-grow: 1;
-  padding: 2rem;
-  margin: 1rem;
+  padding: 1rem 1rem;
+  margin: 0.5rem;
   background: var(--glass-bg);
   backdrop-filter: blur(24px);
-  border-radius: 0;
+  border-radius: 0.5rem;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
   color: var(--text);
 }
@@ -260,37 +275,79 @@
   color: var(--text);
 }
 
-/* ✅ Mobile responsiveness with collapsed state support */
 @media (max-width: 768px) {
   .admin-dashboard {
     flex-direction: column;
   }
 
   .admin-sidebar {
-    transition: width 0.3s ease, padding 0.3s ease;
     width: 100% !important;
-    padding: 1rem !important;
+    padding: 0.75rem 0.5rem !important;
   }
 
   .sidebar-collapsed .admin-sidebar {
-    width: 80px !important;
-    padding: 1rem 0.5rem !important;
+    width: 100% !important;
+    padding: 0.75rem 0.5rem !important;
   }
 
-  .sidebar-collapsed .admin-sidebar a {
-    justify-content: center;
-    padding: 0.6rem;
-  }
-
-  .sidebar-collapsed .admin-sidebar .label {
+  .hamburger-toggle {
     display: none;
+  }
+
+  .admin-sidebar ul {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.75rem;
+    padding: 0;
+    margin: 0 auto;
+    max-width: 480px;
+  }
+
+  .admin-sidebar li {
+    margin: 0;
+    text-align: center;
+  }
+
+  .admin-sidebar a {
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 0.2rem;
+    padding: 0.6rem 0.3rem;
+    font-size: 0.75rem;
+  }
+
+  .admin-sidebar .icon-img {
+    width: 22px;
+    height: 22px;
   }
 
   .admin-main-content {
     width: 100%;
-    margin: 0;
-    border-radius: 0;
-    padding: 1.5rem 1rem;
+    margin: 0.25rem 0;
+    border-radius: 0.25rem;
+    padding: 1rem 0.75rem;
+  }
+}
+
+/* ✅ UPDATED: Light mode now fully inverted from dark */
+@media (prefers-color-scheme: light) {
+  :root {
+    --text: #000000;
+    --glass-bg: rgba(0, 0, 0, 0.12);
+    --sidebar-bg: #ffffff;
+    --hover-bg: rgba(0, 0, 0, 0.08);
+    --active-bg: #000000;
+    --active-text: #ffffff;
+    --active-icon: invert(1);
+  }
+
+  .admin-sidebar a .icon-img {
+    filter: invert(0);
+  }
+
+  .admin-sidebar a.active .icon-img {
+    filter: invert(1);
   }
 }
 </style>

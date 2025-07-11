@@ -65,27 +65,27 @@
 </head>
 
 <body>
+
+  {% block base_background %}
   <canvas id="starfield"></canvas>
   <div class="floating-shape shape1"></div>
   <div class="floating-shape shape2"></div>
   <div class="floating-shape shape3"></div>
   <div id="drawer-overlay" class="drawer-overlay"></div>
+  {% endblock %}
 
-  <!-- Navbar -->
+  {% block base_header %}
   <nav class="navbar">
     <div class="nav-container" style="display: flex; align-items: center; width: 100%;">
-      <!-- Logo -->
       <div class="logo-box" onclick="handleLogoClick()" style="cursor: pointer; display: flex; align-items: center;">
         <img id="nav-logo" src="{{ url_for('static', filename='lightLogo.png') }}" alt="VoteX Logo" class="logo" />
         <span class="nav-title">Elections made Effortless</span>
       </div>
 
-      <!-- Hamburger -->
       <div class="hamburger" onclick="toggleMobileMenu()" aria-label="Toggle mobile menu">
         <div></div><div></div><div></div>
       </div>
 
-      <!-- Actions -->
       <div class="nav-actions" id="nav-actions" style="margin-left: auto; display: flex; align-items: center; gap: 1rem;">
         <div id="header-clock" class="nav-clock"></div>
         {% if session.get('user') %}
@@ -101,7 +101,6 @@
       </div>
     </div>
 
-    <!-- Mobile Menu -->
     <div class="mobile-menu" id="mobile-menu">
       <div class="mobile-actions">
         {% if session.get('user') %}
@@ -117,11 +116,10 @@
       </div>
     </div>
   </nav>
+  {% endblock %}
 
-  <!-- Main -->
-  <main>{% block content %}{% endblock %}</main>
+  {% block content %}{% endblock %}
 
-  <!-- Footer -->
   <footer>
     <div class="footer-container">
       <div class="footer-credit">Designed by Imroz Tanweer</div>
@@ -134,7 +132,6 @@
     </div>
   </footer>
 
-  <!-- Scripts -->
   <script>
     function handleLogoClick() {
       const isLoggedIn = {{ 'true' if session.get('user') else 'false' }};
@@ -187,8 +184,7 @@
         weekday: 'short', year: 'numeric', month: 'short',
         day: 'numeric', hour: '2-digit', minute: '2-digit'
       };
-      const str = now.toLocaleString('en-US', options);
-      document.getElementById('header-clock').innerText = str;
+      document.getElementById('header-clock').innerText = now.toLocaleString('en-US', options);
     }
 
     setInterval(updateClock, 1000);
@@ -214,54 +210,53 @@
 
     document.getElementById('drawer-overlay').addEventListener('click', () => toggleMobileMenu(true));
 
-    // Starfield with parallax
     const canvas = document.getElementById("starfield");
-    const ctx = canvas.getContext("2d");
-    let stars = [];
-    let scrollOffset = 0;
+    if (canvas) {
+      const ctx = canvas.getContext("2d");
+      let stars = [];
+      let scrollOffset = 0;
 
-    window.addEventListener('scroll', () => {
-      scrollOffset = window.scrollY * 0.2;
-    });
-
-    function initStars(count) {
-      stars = [];
-      for (let i = 0; i < count; i++) {
-        stars.push({
-          x: Math.random() * window.innerWidth,
-          y: Math.random() * window.innerHeight,
-          r: Math.random() * 1.5 + 0.5,
-          speed: Math.random() * 0.5 + 0.2,
-        });
-      }
-    }
-
-    function animateStars() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      ctx.fillStyle = htmlEl.getAttribute("data-theme") === "dark" ? "white" : "black";
-      stars.forEach(star => {
-        star.y += star.speed;
-        if (star.y > canvas.height) star.y = 0;
-
-        const parallaxY = star.y + scrollOffset;
-        ctx.beginPath();
-        ctx.arc(star.x, parallaxY % canvas.height, star.r, 0, 2 * Math.PI);
-        ctx.fill();
+      window.addEventListener('scroll', () => {
+        scrollOffset = window.scrollY * 0.2;
       });
-      requestAnimationFrame(animateStars);
+
+      function initStars(count) {
+        stars = [];
+        for (let i = 0; i < count; i++) {
+          stars.push({
+            x: Math.random() * window.innerWidth,
+            y: Math.random() * window.innerHeight,
+            r: Math.random() * 1.5 + 0.5,
+            speed: Math.random() * 0.5 + 0.2,
+          });
+        }
+      }
+
+      function animateStars() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = htmlEl.getAttribute("data-theme") === "dark" ? "white" : "black";
+        stars.forEach(star => {
+          star.y += star.speed;
+          if (star.y > canvas.height) star.y = 0;
+          const parallaxY = star.y + scrollOffset;
+          ctx.beginPath();
+          ctx.arc(star.x, parallaxY % canvas.height, star.r, 0, 2 * Math.PI);
+          ctx.fill();
+        });
+        requestAnimationFrame(animateStars);
+      }
+
+      function resizeCanvas() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        initStars(160);
+      }
+
+      window.addEventListener("resize", resizeCanvas);
+      resizeCanvas();
+      animateStars();
     }
 
-    function resizeCanvas() {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-      initStars(160);
-    }
-
-    window.addEventListener("resize", resizeCanvas);
-    resizeCanvas();
-    animateStars();
-
-    // Floating shapes interaction
     document.addEventListener("mousemove", (e) => {
       const x = (e.clientX / window.innerWidth - 0.5) * 30;
       const y = (e.clientY / window.innerHeight - 0.5) * 30;

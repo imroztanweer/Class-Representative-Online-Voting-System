@@ -468,23 +468,21 @@ def reset_vote(regno):
 def admin_votes():
     db = get_db()
 
-    # Fetch vote count per candidate
+    # Fetch vote count per candidate (only for existing candidates with valid positions)
     vote_data = db.execute("""
-        SELECT c.name AS candidate, COUNT(b.id) as votes
-FROM candidates c
-LEFT JOIN ballots b ON c.id = b.candidate_id
-GROUP BY c.id
-ORDER BY votes DESC
-
-
+        SELECT p.name AS position, c.name AS candidate, COUNT(b.id) AS votes
+        FROM candidates c
+        JOIN positions p ON c.position_id = p.id
+        LEFT JOIN ballots b ON c.id = b.candidate_id
+        GROUP BY c.id
+        ORDER BY p.name, votes DESC
     """).fetchall()
 
-    # Fetch individual ballots
+    # Fetch individual ballots — only those where candidate still exists
     ballots = db.execute("""
         SELECT b.id, b.student_regno, c.name as candidate, p.name as position, b.timestamp
         FROM ballots b
         JOIN candidates c ON b.candidate_id = c.id
-
         JOIN positions p ON b.position_id = p.id
         ORDER BY b.timestamp DESC
     """).fetchall()

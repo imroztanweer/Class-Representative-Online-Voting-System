@@ -1,180 +1,114 @@
 {% extends "admin_base.html" %}
 {% block admin_content %}
 
-<div class="container fade-in">
-  <h2 class="section-title">📊 Live Vote Count</h2>
+<h1 class="page-heading flex-heading">
+  <img src="{{ url_for('static', filename='icons/bar.svg') }}" alt="Vote Count" class="heading-icon-lg svg-glow" />
+  Live Vote Count
+</h1>
 
-  {% if vote_data %}
-    {% set ns = namespace(grouped={}) %}
-    {% for item in vote_data %}
-      {% set pos = item.position %}
-      {% if pos not in ns.grouped %}
-        {% set _ = ns.grouped.update({ pos: [] }) %}
-      {% endif %}
-      {% set _ = ns.grouped[pos].append(item) %}
-    {% endfor %}
+{% if vote_data %}
+  {% set ns = namespace(grouped={}) %}
+  {% for item in vote_data %}
+    {% set pos = item.position %}
+    {% if pos not in ns.grouped %}
+      {% set _ = ns.grouped.update({ pos: [] }) %}
+    {% endif %}
+    {% set _ = ns.grouped[pos].append(item) %}
+  {% endfor %}
 
-    <div class="charts-wrapper">
-      {% for pos, items in ns.grouped.items() %}
-        <div class="chart-block glass-table">
-          <h3 class="position-heading">📌 {{ pos }}</h3>
-          <div class="chart-container">
-            <canvas id="chart-{{ loop.index }}"></canvas>
-          </div>
+  <div class="charts-wrapper">
+    {% for pos, items in ns.grouped.items() %}
+      <div class="chart-block glass-table">
+        <h3 class="section-subheading">{{ pos }}</h3>
+        <div class="chart-container">
+          <canvas id="chart-{{ loop.index }}"></canvas>
         </div>
-      {% endfor %}
-    </div>
-
-    <script src="{{ url_for('static', filename='chart.min.js') }}"></script>
-    <script>
-      {% for pos, items in ns.grouped.items() %}
-        const ctx{{ loop.index }} = document.getElementById('chart-{{ loop.index }}').getContext('2d');
-        new Chart(ctx{{ loop.index }}, {
-          type: 'bar',
-          data: {
-            labels: [{% for item in items %}"{{ item.candidate }}"{% if not loop.last %}, {% endif %}{% endfor %}],
-            datasets: [{
-              label: 'Votes',
-              data: [{% for item in items %}{{ item.votes }}{% if not loop.last %}, {% endif %}{% endfor %}],
-              backgroundColor: [
-                'rgba(59,130,246,0.6)', 'rgba(34,197,94,0.6)',
-                'rgba(234,179,8,0.6)', 'rgba(239,68,68,0.6)',
-                'rgba(168,85,247,0.6)', 'rgba(14,165,233,0.6)'
-              ],
-              borderColor: 'rgba(0,0,0,0.1)',
-              borderWidth: 1,
-              borderRadius: 8
-            }]
-          },
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: {
-              y: {
-                beginAtZero: true,
-                ticks: { precision: 0 }
-              }
-            },
-            plugins: {
-              legend: { display: false }
-            }
-          }
-        });
-      {% endfor %}
-    </script>
-  {% else %}
-    <p>No vote data available yet.</p>
-  {% endif %}
-
-  <hr class="section-divider">
-
-  <h3 class="section-title">🗳️ All Ballots</h3>
-
-  <div class="glass-table-wrapper">
-    <table class="glass-table">
-      <thead>
-        <tr>
-          <th>Vote ID</th>
-          <th>Student Reg No</th>
-          <th>Candidate</th>
-          <th>Position</th>
-          <th>Timestamp</th>
-          <th>Action</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for vote in ballots %}
-        <tr>
-          <td>{{ vote.id }}</td>
-          <td>{{ vote.student_regno }}</td>
-          <td>{{ vote.candidate }}</td>
-          <td>{{ vote.position }}</td>
-          <td>{{ vote.timestamp }}</td>
-          <td>
-            <form action="{{ url_for('admin_delete_vote', vote_id=vote.id) }}" method="POST" onsubmit="return confirmDelete(this);" class="inline-form">
-              <input type="text" name="remark" placeholder="Reason" required class="remark-input">
-              <button type="submit" class="btn-danger">Delete</button>
-            </form>
-          </td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
+      </div>
+    {% endfor %}
   </div>
+
+  <script src="{{ url_for('static', filename='chart.min.js') }}"></script>
+  <script>
+    {% for pos, items in ns.grouped.items() %}
+      const ctx{{ loop.index }} = document.getElementById('chart-{{ loop.index }}').getContext('2d');
+      new Chart(ctx{{ loop.index }}, {
+        type: 'bar',
+        data: {
+          labels: [{% for item in items %}"{{ item.candidate }}"{% if not loop.last %}, {% endif %}{% endfor %}],
+          datasets: [{
+            label: 'Votes',
+            data: [{% for item in items %}{{ item.votes }}{% if not loop.last %}, {% endif %}{% endfor %}],
+            backgroundColor: [
+              'rgba(59,130,246,0.6)', 'rgba(34,197,94,0.6)',
+              'rgba(234,179,8,0.6)', 'rgba(239,68,68,0.6)',
+              'rgba(168,85,247,0.6)', 'rgba(14,165,233,0.6)'
+            ],
+            borderColor: 'rgba(0,0,0,0.1)',
+            borderWidth: 1,
+            borderRadius: 8
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            y: {
+              beginAtZero: true,
+              ticks: { precision: 0 }
+            }
+          },
+          plugins: {
+            legend: { display: false }
+          }
+        }
+      });
+    {% endfor %}
+  </script>
+{% else %}
+  <p>No vote data available yet.</p>
+{% endif %}
+
+<hr class="section-divider">
+
+<h3 class="section-subheading flex-heading">
+  <img src="{{ url_for('static', filename='icons/inbox.svg') }}" alt="Ballots" class="heading-icon-lg svg-glow" />
+  All Ballots
+</h3>
+
+<div class="glass-table-wrapper">
+  <table class="glass-table">
+    <thead>
+      <tr>
+        <th>Vote ID</th>
+        <th>Student Reg No</th>
+        <th>Candidate</th>
+        <th>Position</th>
+        <th>Timestamp</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for vote in ballots %}
+      <tr>
+        <td>{{ vote.id }}</td>
+        <td>{{ vote.student_regno }}</td>
+        <td>{{ vote.candidate }}</td>
+        <td>{{ vote.position }}</td>
+        <td>{{ vote.timestamp }}</td>
+        <td data-label="Action">
+          <form action="{{ url_for('admin_delete_vote', vote_id=vote.id) }}" method="POST" onsubmit="return confirmDelete(this);" style="display:inline;" class="inline-form">
+            <input type="text" name="remark" placeholder="Reason" required class="remark-input">
+            <button type="submit" class="glass-btn btn-delete" aria-label="Delete Vote">
+              <img src="{{ url_for('static', filename='icons/trash.svg') }}" alt="Delete" class="btn-icon" />
+              Delete
+            </button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
 </div>
-
-<style>
-.section-title {
-  margin-bottom: 1.75rem;
-}
-
-.section-divider {
-  margin: 2.5rem 0;
-}
-
-.charts-wrapper {
-  display: flex;
-  flex-direction: column;
-  gap: 2rem;
-}
-
-.chart-block {
-  padding: 1.5rem;
-}
-
-.chart-container {
-  position: relative;
-  width: 100%;
-  min-height: 280px;
-  aspect-ratio: 16 / 9;
-}
-
-.glass-table-wrapper {
-  overflow-x: auto;
-}
-
-.inline-form {
-  display: flex;
-  flex-direction: column;
-  gap: 0.4rem;
-}
-
-.inline-form .remark-input {
-  padding: 0.3rem 0.6rem;
-  border-radius: 8px;
-  border: 1px solid #ccc;
-  font-size: 0.9rem;
-  width: 100%;
-}
-
-.inline-form .btn-danger {
-  background-color: #dc3545;
-  color: white;
-  border: none;
-  padding: 0.45rem 0.8rem;
-  border-radius: 6px;
-  font-weight: bold;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-}
-
-.inline-form .btn-danger:hover {
-  background-color: #b02a37;
-}
-
-@media (min-width: 600px) {
-  .inline-form {
-    flex-direction: row;
-    align-items: center;
-    gap: 0.6rem;
-  }
-
-  .inline-form .remark-input {
-    flex: 1;
-    margin-bottom: 0;
-  }
-}
-</style>
 
 <script>
   function confirmDelete(form) {

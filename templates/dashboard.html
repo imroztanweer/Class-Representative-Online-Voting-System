@@ -1,273 +1,375 @@
 {% extends "admin_base.html" %}
 {% block admin_content %}
 
-<div class="glass-container fade-in">
-  <h1 class="page-heading">
-    🛠️ Admin Dashboard
-  </h1>
+<h1 class="page-heading flex-heading">
+  <img src="{{ url_for('static', filename='icons/tool.svg') }}" alt="Dashboard" class="heading-icon-lg" />
+  Admin Dashboard
+</h1>
 
-  <div class="info-box" style="margin-bottom: 1rem;">
-    <p><strong>Total Voters:</strong> {{ total }}</p>
-    <p><strong>Voted:</strong> {{ voted }}</p>
-  </div>
-
-  <div class="cta">
-    <a href="{{ url_for('add_student') }}">
-      <button class="btn-add">➕ Add New Voter</button>
-    </a>
-  </div>
-
-  <h3 class="section-subheading">Voter List</h3>
-
-  <table class="glass-table voter-table" role="grid" aria-label="Voter List">
-    <thead>
-      <tr>
-        <th scope="col">Reg No</th>
-        <th scope="col">Name</th>
-        <th scope="col">Course</th>
-        <th scope="col">Batch</th>
-        <th scope="col">Voted</th>
-        <th scope="col">Actions</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for s in students %}
-      <tr>
-        <td>{{ s.regno }}</td>
-        <td>{{ s.name }}</td>
-        <td>{{ s.course }}</td>
-        <td>{{ s.batch }}</td>
-        <td>
-          {% if s.voted %}
-            <span class="status-yes">Yes</span>
-          {% else %}
-            <span class="status-no">No</span>
-          {% endif %}
-        </td>
-        <td>
-          {% if s.regno != 'admin' %}
-            <a href="{{ url_for('edit_student', regno=s.regno) }}">
-              <button class="glass-btn btn-edit" aria-label="Edit {{ s.name }}">✏️ Edit</button>
-            </a>
-            <form method="POST" action="{{ url_for('delete_student', regno=s.regno) }}" style="display:inline;" onsubmit="return confirm('Are you sure you want to delete this student?');">
-              <button type="submit" class="glass-btn btn-delete" aria-label="Delete {{ s.name }}">🗑️ Delete</button>
-            </form>
-            <form method="POST" action="{{ url_for('reset_vote', regno=s.regno) }}" style="display:inline;" onsubmit="return confirm('Reset vote for this student?');">
-              <button type="submit" class="glass-btn btn-reset" aria-label="Reset Vote for {{ s.name }}">🔄 Reset Vote</button>
-            </form>
-            <form method="POST" action="{{ url_for('admin_reset_password', regno=s.regno) }}" style="display:inline;" onsubmit="return confirm('Reset password for this student to default (voter123)?');">
-              <button type="submit" class="glass-btn btn-reset-pass" aria-label="Reset Password for {{ s.name }}">🔑 Reset PW</button>
-            </form>
-          {% else %}
-            <span class="status-na">—</span>
-          {% endif %}
-        </td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
+<div class="info-box" style="margin-bottom: 1rem;">
+  <p><strong>Total Voters:</strong> {{ total }}</p>
+  <p><strong>Voted:</strong> {{ voted }}</p>
 </div>
 
+<div class="cta-row">
+  <div class="cta">
+    <a href="{{ url_for('add_student') }}">
+      <button class="glass-btn btn-add">
+        <img src="{{ url_for('static', filename='icons/plus.svg') }}" alt="Add" class="btn-icon" />
+        Add New Voter
+      </button>
+    </a>
+  </div>
+  <div class="cta">
+    <button id="export-csv-btn" class="glass-btn btn-add">
+      <img src="{{ url_for('static', filename='icons/export.svg') }}" alt="Export" class="btn-icon" />
+      Export to CSV
+    </button>
+  </div>
+  <div class="cta export-holder"></div>
+</div>
+
+<h3 class="section-subheading">Voter List</h3>
+<div class="custom-search-holder"></div>
+
+<table class="glass-table voter-table" role="grid" aria-label="Voter List">
+  <thead>
+    <tr>
+      <th scope="col">Reg No</th>
+      <th scope="col">Name</th>
+      <th scope="col">Course</th>
+      <th scope="col">Batch</th>
+      <th scope="col">Voted</th>
+      <th scope="col">Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for s in students %}
+    <tr>
+      <td data-label="Reg No">{{ s.regno }}</td>
+      <td data-label="Name">{{ s.name }}</td>
+      <td data-label="Course">{{ s.course }}</td>
+      <td data-label="Batch">{{ s.batch }}</td>
+      <td data-label="Voted">
+        {% if s.voted %}
+          <span class="status-yes">Yes</span>
+        {% else %}
+          <span class="status-no">No</span>
+        {% endif %}
+      </td>
+      <td data-label="Actions">
+        {% if s.regno != 'admin' %}
+          <a href="{{ url_for('edit_student', regno=s.regno) }}">
+            <button class="glass-btn btn-edit" aria-label="Edit {{ s.name }}">
+              <img src="{{ url_for('static', filename='icons/edit.svg') }}" alt="Edit" class="btn-icon" />
+              Edit
+            </button>
+          </a>
+          <form method="POST" action="{{ url_for('delete_student', regno=s.regno) }}" style="display:inline;" onsubmit="return confirm('Are you sure you want to delete this student?');">
+            <button type="submit" class="glass-btn btn-delete" aria-label="Delete {{ s.name }}">
+              <img src="{{ url_for('static', filename='icons/trash.svg') }}" alt="Delete" class="btn-icon" />
+              Delete
+            </button>
+          </form>
+          <form method="POST" action="{{ url_for('reset_vote', regno=s.regno) }}" style="display:inline;" onsubmit="return confirm('Reset vote for this student?');">
+            <button type="submit" class="glass-btn btn-reset" aria-label="Reset Vote for {{ s.name }}">
+              <img src="{{ url_for('static', filename='icons/refresh.svg') }}" alt="Reset Vote" class="btn-icon" />
+              Reset Vote
+            </button>
+          </form>
+          <form method="POST" action="{{ url_for('admin_reset_password', regno=s.regno) }}" style="display:inline;" onsubmit="return confirm('Reset password for this student to default (voter123)?');">
+            <button type="submit" class="glass-btn btn-reset-pass" aria-label="Reset Password for {{ s.name }}">
+              <img src="{{ url_for('static', filename='icons/lock.svg') }}" alt="Reset PW" class="btn-icon" />
+              Reset PW
+            </button>
+          </form>
+        {% else %}
+          <span class="status-na">—</span>
+        {% endif %}
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<!-- DataTables -->
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css" />
+<link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.1/css/buttons.dataTables.min.css" />
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.4.1/js/dataTables.buttons.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.html5.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+
+<script>
+  $(document).ready(function() {
+    const table = $('.voter-table').DataTable({
+      dom: '<"search-container"f>rt<"bottom"ip>',
+      buttons: [
+        {
+          extend: 'csvHtml5',
+          text: `<img src="{{ url_for('static', filename='icons/export.svg') }}" alt="Export" class="btn-icon" /> Export CSV`,
+          className: 'glass-btn btn-add',
+          filename: 'voter_list',
+          exportOptions: {
+            columns: [0, 1, 2, 3, 4]
+          }
+        }
+      ],
+      columnDefs: [{ orderable: false, targets: -1 }],
+      paging: true,
+      responsive: true
+    });
+
+    $('#export-csv-btn').on('click', function () {
+      table.button('.buttons-csv').trigger();
+    });
+
+    setTimeout(function () {
+      $('.export-holder').append($('.dt-button'));
+      $('.search-container').appendTo('.custom-search-holder');
+      $('.dataTables_filter label').contents().filter(function() {
+        return this.nodeType === 3;
+      }).remove();
+      $('.dataTables_filter label').prepend(`
+        <img src="{{ url_for('static', filename='icons/search.svg') }}" alt="Search" class="search-icon" />
+      `);
+    }, 0);
+  });
+</script>
+
 <style>
+:root {
+  --button-bg: #007aff;
+  --text: #1e1e1e;
+  --glass-bg: rgba(255, 255, 255, 0.1);
+}
+@media (prefers-color-scheme: dark) {
   :root {
-    --button-bg: #007aff;
-    --text: #1e1e1e;
-    --glass-bg: rgba(255, 255, 255, 0.1);
+    --button-bg: #3a65b5;
+    --text: #ddd;
+    --glass-bg: rgba(0, 0, 0, 0.3);
   }
-  @media (prefers-color-scheme: dark) {
-    :root {
-      --button-bg: #3a65b5;
-      --text: #ddd;
-      --glass-bg: rgba(0, 0, 0, 0.3);
-    }
-  }
+}
 
-  .glass-container {
-    background: var(--glass-bg);
-    border-radius: 20px;
-    padding: 2rem 2.5rem;
-    box-shadow: 0 20px 50px rgba(0,0,0,0.1);
-    backdrop-filter: blur(18px) saturate(150%);
-    -webkit-backdrop-filter: blur(18px) saturate(150%);
-    color: var(--text);
-    max-width: 1100px;
-    margin: 2rem auto;
-  }
+/* Transparent background for entire page */
+body {
+  background: transparent !important;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
 
-  .fade-in {
-    animation: fadeIn 0.7s ease forwards;
-  }
+.page-heading {
+  font-size: 2.8rem;
+  font-weight: 900;
+  margin-bottom: 1rem;
+  background: linear-gradient(to right, #007aff, #5856d6);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  user-select: none;
+}
+.flex-heading {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+.section-subheading {
+  margin-top: 2rem;
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--text);
+}
+.info-box {
+  font-size: 1.2rem;
+  line-height: 1.6;
+  font-weight: 600;
+  user-select: none;
+}
 
-  @keyframes fadeIn {
-    from {opacity: 0; transform: translateY(12px);}
-    to {opacity: 1; transform: translateY(0);}
+/* Buttons */
+.glass-btn {
+  padding: 10px 18px;
+  border: none;
+  border-radius: 12px;
+  color: white;
+  font-weight: 700;
+  cursor: pointer;
+  backdrop-filter: blur(6px);
+  transition: all 0.25s ease;
+  font-size: 0.95rem;
+  margin: 3px 4px;
+  user-select: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--button-bg);
+  flex-shrink: 0;
+}
+.glass-btn:hover {
+  transform: scale(1.05);
+  filter: brightness(1.1);
+}
+.btn-icon {
+  width: 16px;
+  height: 16px;
+  vertical-align: middle;
+}
+@media (prefers-color-scheme: dark) {
+  .btn-icon {
+    filter: invert(1) drop-shadow(0 0 2px white);
   }
+}
+.btn-delete {
+  background: rgba(220, 53, 69, 0.85);
+}
+.btn-delete:hover {
+  background: rgba(220, 53, 69, 1);
+}
 
-  .page-heading {
-    font-size: 2.8rem;
-    font-weight: 900;
-    margin-bottom: 1rem;
-    background: linear-gradient(to right, #007aff, #5856d6);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    user-select: none;
-  }
+/* CTA layout */
+.cta-row {
+  display: flex;
+  gap: 1rem;
+  margin: 1.5rem 0;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.cta {
+  text-align: left;
+}
 
-  .section-subheading {
-    margin-top: 2rem;
-    font-size: 1.8rem;
-    font-weight: 700;
-    color: var(--text);
+/* Search */
+.custom-search-holder {
+  display: flex;
+  justify-content: flex-start;
+  margin: 1rem 0 1.5rem 0;
+}
+.dataTables_filter {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.dataTables_filter input {
+  border-radius: 12px;
+  border: none;
+  padding: 10px 14px;
+  font-size: 1rem;
+  backdrop-filter: blur(8px);
+  background: var(--glass-bg);
+  color: var(--text);
+  min-width: 250px;
+  box-shadow: 0 0 6px rgba(0, 0, 0, 0.2);
+}
+@media (prefers-color-scheme: dark) {
+  .dataTables_filter input {
+    box-shadow: 0 0 6px rgba(255, 255, 255, 0.2);
   }
+}
 
-  .info-box {
-    font-size: 1.2rem;
-    line-height: 1.6;
-    font-weight: 600;
-    user-select: none;
-  }
+/* Table */
+.glass-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(18px);
+  border-radius: 16px;
+  box-shadow: 0 14px 32px rgba(0,0,0,0.07);
+  margin-top: 1.5rem;
+  overflow: hidden;
+}
+.glass-table thead {
+  background-color: var(--button-bg);
+}
+.glass-table thead th,
+.glass-table td {
+  padding: 14px;
+  font-size: 1rem;
+  color: var(--text);
+  text-align: center;
+}
+.glass-table td {
+  background: rgba(255, 255, 255, 0.03);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+}
+.glass-table tr:hover {
+  background: rgba(0, 122, 255, 0.06);
+}
 
-  .cta {
-    margin: 1.5rem 0;
-    text-align: center;
-  }
-
-  .btn-add {
-    padding: 12px 28px;
-    font-size: 1.1rem;
-    background: var(--button-bg);
-    color: white;
-    border: none;
-    border-radius: 24px;
-    font-weight: 700;
-    box-shadow: 0 8px 22px rgba(0, 122, 255, 0.3);
-    cursor: pointer;
-    transition: background 0.3s ease, transform 0.2s ease;
-  }
-  .btn-add:hover {
-    background-color: #005ecb;
-    transform: scale(1.05);
-  }
-
-  .glass-table {
-    width: 100%;
-    border-collapse: separate;
-    border-spacing: 0;
-    background: rgba(255, 255, 255, 0.06);
-    backdrop-filter: blur(18px);
-    border-radius: 16px;
-    box-shadow: 0 14px 32px rgba(0,0,0,0.07);
-    margin-top: 1.5rem;
-    user-select: none;
-  }
-
+/* Mobile Table */
+@media screen and (max-width: 768px) {
   .glass-table thead {
-    background-color: var(--button-bg);
-    user-select: none;
+    display: none;
   }
-
-  .glass-table th {
-    padding: 14px;
-    color: white;
-    font-size: 1rem;
-    font-weight: 700;
-    text-align: center;
+  .glass-table, .glass-table tbody, .glass-table tr, .glass-table td {
+    display: block;
+    width: 100%;
+    text-align: left;
   }
-
-  .glass-table td {
-    padding: 14px;
-    font-size: 1rem;
-    color: var(--text);
-    text-align: center;
-    background: rgba(255, 255, 255, 0.03);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.07);
-  }
-
-  .glass-table tr:last-child td {
-    border-bottom: none;
-  }
-
-  .glass-btn {
-    padding: 7px 14px;
-    border: none;
+  .glass-table tr {
+    margin-bottom: 1rem;
     border-radius: 12px;
-    color: white;
-    font-weight: 700;
-    cursor: pointer;
-    backdrop-filter: blur(6px);
-    transition: background 0.3s ease, transform 0.15s ease;
-    font-size: 0.95rem;
-    margin: 3px 4px;
-    user-select: none;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
   }
-
-  .glass-btn:hover {
-    transform: scale(1.05);
-  }
-
-  .btn-edit {
-    background: rgba(0, 123, 255, 0.85);
-  }
-  .btn-edit:hover {
-    background: rgba(0, 123, 255, 1);
-  }
-
-  .btn-delete {
-    background: rgba(220, 53, 69, 0.85);
-  }
-  .btn-delete:hover {
-    background: rgba(220, 53, 69, 1);
-  }
-
-  .btn-reset {
-    background: rgba(255, 140, 0, 0.85);
-  }
-  .btn-reset:hover {
-    background: rgba(255, 140, 0, 1);
-  }
-
-  .btn-reset-pass {
-    background: rgba(100, 100, 255, 0.85);
-  }
-  .btn-reset-pass:hover {
-    background: rgba(100, 100, 255, 1);
-  }
-
-  .status-yes {
-    color: limegreen;
-    font-weight: 700;
-  }
-
-  .status-no {
-    color: crimson;
-    font-weight: 700;
-  }
-
-  .status-na {
-    color: gray;
+  .glass-table td::before {
+    content: attr(data-label);
     font-weight: 600;
+    display: block;
+    margin-bottom: 4px;
+    color: var(--text);
+    opacity: 0.75;
   }
-
-  @media (max-width: 768px) {
-    .glass-table th, .glass-table td {
-      font-size: 0.85rem;
-      padding: 10px;
-    }
-
-    .btn-add {
-      width: 100%;
-    }
-
-    .glass-btn {
-      display: block;
-      width: 100%;
-      margin: 6px 0;
-    }
-
-    .voter-table td {
-      word-break: break-word;
-    }
+  .glass-table td[data-label="Actions"] {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    justify-content: flex-start;
   }
+  .glass-table td {
+    font-size: 0.95rem;
+    padding: 12px;
+  }
+}
+
+/* Button responsiveness */
+@media screen and (max-width: 600px) {
+  .cta-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .glass-btn {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* Status colors */
+.status-yes { color: limegreen; font-weight: 700; }
+.status-no  { color: crimson; font-weight: 700; }
+.status-na  { color: gray; font-weight: 600; }
+
+/* Icons */
+.search-icon, .heading-icon-lg {
+  width: 20px;
+  height: 20px;
+  margin-right: 6px;
+  vertical-align: middle;
+}
+.heading-icon-lg {
+  width: 2.8rem;
+  height: 2.8rem;
+}
+@media (prefers-color-scheme: light) {
+  .search-icon, .heading-icon-lg {
+    filter: brightness(0) drop-shadow(0 0 2px rgba(0, 0, 0, 0.3));
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .search-icon, .heading-icon-lg {
+    filter: invert(1) brightness(1.5) drop-shadow(0 0 2px rgba(255, 255, 255, 0.6));
+  }
+}
 </style>
 
 {% endblock %}
